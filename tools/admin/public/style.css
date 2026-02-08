@@ -80,6 +80,30 @@ label input, label textarea, label select {
   font-family: inherit;
 }
 textarea { resize: vertical; }
+input[readonly] { background: #f0f0f0; color: #666; }
+
+.copyable-field {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-top: 0.25rem;
+}
+.copyable-field input {
+  flex: 1;
+  width: auto;
+  margin-top: 0;
+}
+.copy-btn {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 0.5rem;
+  background: white;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: background 0.2s;
+}
+.copy-btn:hover { background: #f0f0f0; }
+.copy-btn.copied { background: #d4edda; }
 
 .row { display: flex; gap: 1rem; }
 .row label { flex: 1; }
@@ -161,9 +185,44 @@ textarea { resize: vertical; }
   color: #333;
 }
 
-.credits-list { display: flex; flex-direction: column; gap: 0.75rem; }
+.credits-list { display: flex; flex-direction: column; gap: 1.5rem; }
 .credits-list .empty { color: #888; text-align: center; padding: 2rem; }
 .credits-list .error { color: #991b1b; text-align: center; padding: 1rem; }
+
+/* Credits Sections */
+.credits-section {
+  background: white;
+  border: 1px solid #e5e5e5;
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+.credits-section-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.75rem 1rem;
+  background: #f9f9f9;
+  border-bottom: 1px solid #e5e5e5;
+  margin: 0;
+}
+.credits-section-title .credits-section-count {
+  font-weight: 400;
+  color: #888;
+}
+.credits-section-list {
+  display: flex;
+  flex-direction: column;
+}
+.credits-section-list .credit-card {
+  border: none;
+  border-radius: 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+.credits-section-list .credit-card:last-child {
+  border-bottom: none;
+}
+.credits-section-list .credit-card:hover {
+  background: #fef2f8;
+}
 
 .credit-card {
   display: flex;
@@ -196,9 +255,10 @@ textarea { resize: vertical; }
 .credit-role { font-size: 0.8rem; color: #888; margin-bottom: 0.25rem; }
 .credit-details { font-size: 0.8rem; color: #666; }
 .credit-details span { margin-right: 1rem; }
-.credit-links { font-size: 0.8rem; margin-top: 0.25rem; }
-.credit-links a { color: #e91e8c; margin-right: 0.75rem; text-decoration: none; }
-.credit-links a:hover { text-decoration: underline; }
+.credit-links { font-size: 0.8rem; margin-top: 0.25rem; display: flex; gap: 0.5rem; align-items: center; }
+.credit-links a { color: #666; text-decoration: none; display: flex; align-items: center; }
+.credit-links a:hover { color: #e91e8c; }
+.credit-links a.social-icon svg { transition: color 0.2s; }
 
 .credit-actions { display: flex; gap: 0.25rem; }
 

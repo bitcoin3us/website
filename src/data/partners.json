@@ -6,7 +6,8 @@
       "url": "https://www.bitcoin4youth.com/",
       "logo": "https://m.primal.net/KRoM.png",
       "nostrUrl": "https://njump.me/npub1p0s2hqy2eew49zye7jw79374u0jj4t7erthx4mcsy3r0ddkzkkxqxaa7gv",
-      "xUrl": "https://x.com/BTCJuniorClub"
+      "xUrl": "https://x.com/BTCJuniorClub",
+      "githubUrl": ""
     },
     {
       "name": "EconoKids",
@@ -14,7 +15,8 @@
       "url": "https://econokidz.com/",
       "logo": "https://unavatar.io/twitter/EconoKidz",
       "nostrUrl": "",
-      "xUrl": "https://x.com/EconoKidz"
+      "xUrl": "https://x.com/EconoKidz",
+      "githubUrl": ""
     }
   ],
   "technologyPartners": [
@@ -24,7 +26,8 @@
       "url": "https://lnbits.com/",
       "logo": "https://image.nostr.build/746ac622954f1fc2843e576828712d3659ff186bcc5c478de9483fcf0036796c.jpg",
       "nostrUrl": "https://njump.me/npub10efcj7x65z2ak6vd69xr8f2hvqwuaqrhlygl3yqa4y63hfvc02mqwzaeh3",
-      "xUrl": ""
+      "xUrl": "",
+      "githubUrl": "https://github.com/lnbits/lnbits"
     },
     {
       "name": "MicroPythonOS",
@@ -32,7 +35,8 @@
       "url": "https://micropythonos.com/",
       "logo": "",
       "nostrUrl": "",
-      "xUrl": ""
+      "xUrl": "",
+      "githubUrl": "https://github.com/MicroPythonOS"
     }
   ],
   "appearances": [
@@ -42,7 +46,8 @@
       "url": "https://adoptingbitcoin.org/",
       "logo": "https://m.primal.net/PvTZ.png",
       "nostrUrl": "https://njump.me/npub1ad0ptuzte83alpkpqqctvewlaqj5zq23c83m82xw8apg4t6zlyns6xng2c",
-      "xUrl": "https://x.com/AdoptingBTC"
+      "xUrl": "https://x.com/AdoptingBTC",
+      "githubUrl": ""
     },
     {
       "name": "Bitcoin Berlin",
@@ -50,7 +55,8 @@
       "url": "https://beacons.ai/bitcoinberlinsv",
       "logo": "https://unavatar.io/twitter/bitcoinberlinsv",
       "nostrUrl": "",
-      "xUrl": "https://x.com/bitcoinberlinsv"
+      "xUrl": "https://x.com/bitcoinberlinsv",
+      "githubUrl": ""
     },
     {
       "name": "Noderunners Conference",
@@ -58,7 +64,8 @@
       "url": "https://noderunners.network/en/conference",
       "logo": "https://blossom.primal.net/7ba8a475e819bc6ea7b4febf8bed9167b1e92ffd39e68a8c49a5e02476ecbc7b.jpg",
       "nostrUrl": "https://njump.me/npub1phht66uk5uhekpqcylc45gyapjnu88r55sfktr9xlkug6lsf2zys8p3495",
-      "xUrl": "https://x.com/NoderunnersNET"
+      "xUrl": "https://x.com/NoderunnersNET",
+      "githubUrl": ""
     },
     {
       "name": "Sats Conf",
@@ -66,7 +73,8 @@
       "url": "https://satsconf.com.br/",
       "logo": "https://unavatar.io/twitter/satsconf_",
       "nostrUrl": "",
-      "xUrl": "https://x.com/satsconf_"
+      "xUrl": "https://x.com/satsconf_",
+      "githubUrl": ""
     },
     {
       "name": "Learning Bitcoin",
@@ -74,7 +82,8 @@
       "url": "https://www.learningbitcoin.ca/",
       "logo": "https://coinos.io/api/public/d80a2a90a086792668a4dd016a0309e77037b81a5d237b08edb7d984ce65d89c.webp",
       "nostrUrl": "https://njump.me/npub1ku3r3n4hau650a5cjudhtja2pdfsr7yxjzda9lx2py4knr3ld69s7j4wnw",
-      "xUrl": "https://x.com/learningbtcfdn"
+      "xUrl": "https://x.com/learningbtcfdn",
+      "githubUrl": ""
     },
     {
       "name": "Satoshi Summer Camp",
@@ -82,7 +91,8 @@
       "url": "https://b.tc/conference/2024/summer-camp",
       "logo": "https://blossom.primal.net/386e48830d62a25f6ba12c97cbee103daf2f44c7b868772a1669fbefc599e136.png",
       "nostrUrl": "https://njump.me/npub1rwh33t5x8n7czknhts5fg0v0fml8mkl7neaarksumkkf8d679qrqcz7avv",
-      "xUrl": "https://x.com/TheBitcoinConf"
+      "xUrl": "https://x.com/TheBitcoinConf",
+      "githubUrl": ""
     },
     {
       "name": "BTC Prague",
@@ -90,7 +100,8 @@
       "url": "https://btcprague.com/",
       "logo": "https://pbs.twimg.com/profile_images/1676983239888588801/-OSqlrx1_400x400.jpg",
       "nostrUrl": "https://njump.me/npub167n5w6cj2wseqtmk26zllc7n28uv9c4vw28k2kht206vnghe5a7stgzu3r",
-      "xUrl": "https://x.com/BtcPrague"
+      "xUrl": "https://x.com/BtcPrague",
+      "githubUrl": ""
     },
     {
       "name": "Bitcoin Atlantis",
@@ -98,7 +109,8 @@
       "url": "https://bitcoinatlantis.com/",
       "logo": "https://cdn.satlantis.io/1etgqcj9gc6yaxttuwu9eqgs3ynt2dzaudvwnrssrn2zdt2useaasfj8n6e-1743759746074-FREE%20icon%20en%20taman%CC%83o%20mediano.jpeg",
       "nostrUrl": "https://njump.me/npub1etgqcj9gc6yaxttuwu9eqgs3ynt2dzaudvwnrssrn2zdt2useaasfj8n6e",
-      "xUrl": "https://x.com/FREEMadeiraOrg"
+      "xUrl": "https://x.com/FREEMadeiraOrg",
+      "githubUrl": ""
     },
     {
       "name": "Adopting Bitcoin Arnhem",
@@ -106,7 +118,8 @@
       "url": "https://www.adoptingbitcoinarnhem.com/",
       "logo": "https://m.primal.net/HTCX.png",
       "nostrUrl": "https://njump.me/npub1uv2tr83c5y7k82af6zdzlqs8m0klcmndd8u5vmlg2eyrskld6uzsv4rmr8",
-      "xUrl": "https://x.com/AB_Arnhem"
+      "xUrl": "https://x.com/AB_Arnhem",
+      "githubUrl": ""
     },
     {
       "name": "Bitcoin 2024",
@@ -114,7 +127,8 @@
       "url": "https://b.tc/conference/2024",
       "logo": "https://blossom.primal.net/386e48830d62a25f6ba12c97cbee103daf2f44c7b868772a1669fbefc599e136.png",
       "nostrUrl": "https://njump.me/npub1rwh33t5x8n7czknhts5fg0v0fml8mkl7neaarksumkkf8d679qrqcz7avv",
-      "xUrl": "https://x.com/TheBitcoinConf"
+      "xUrl": "https://x.com/TheBitcoinConf",
+      "githubUrl": ""
     }
   ],
   "inTheNews": [
@@ -124,7 +138,8 @@
       "url": "https://bitcoinfocus.nl/",
       "logo": "https://unavatar.io/twitter/BitcoinFocusNL",
       "nostrUrl": "",
-      "xUrl": "https://x.com/BitcoinFocusNL"
+      "xUrl": "https://x.com/BitcoinFocusNL",
+      "githubUrl": ""
     },
     {
       "name": "LNbits News",
@@ -132,7 +147,8 @@
       "url": "https://news.lnbits.com/",
       "logo": "https://image.nostr.build/746ac622954f1fc2843e576828712d3659ff186bcc5c478de9483fcf0036796c.jpg",
       "nostrUrl": "https://njump.me/npub10efcj7x65z2ak6vd69xr8f2hvqwuaqrhlygl3yqa4y63hfvc02mqwzaeh3",
-      "xUrl": "https://x.com/lnbits"
+      "xUrl": "https://x.com/lnbits",
+      "githubUrl": ""
     },
     {
       "name": "Lightning News",
@@ -140,7 +156,8 @@
       "url": "https://lightning.news/",
       "logo": "https://unavatar.io/twitter/LightningNewsX",
       "nostrUrl": "",
-      "xUrl": "https://x.com/LightningNewsX"
+      "xUrl": "https://x.com/LightningNewsX",
+      "githubUrl": ""
     }
   ]
 }

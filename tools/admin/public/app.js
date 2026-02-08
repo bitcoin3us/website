@@ -253,6 +253,14 @@ async function loadCredits() {
   }
 }
 
+// SVG icons for social links
+const ICONS = {
+  nostr: `<svg viewBox="40 38 185 180" width="16" height="16" fill="currentColor"><path d="M210.8 199.4c0 3.1-2.5 5.7-5.7 5.7h-68c-3.1 0-5.7-2.5-5.7-5.7v-15.5c.3-19 2.3-37.2 6.5-45.5 2.5-5 6.7-7.7 11.5-9.1 9.1-2.7 24.9-.9 31.7-1.2 0 0 20.4.8 20.4-10.7s-9.1-8.6-9.1-8.6c-10 .3-17.7-.4-22.6-2.4-8.3-3.3-8.6-9.2-8.6-11.2-.4-23.1-34.5-25.9-64.5-20.1-32.8 6.2.4 53.3.4 116.1v8.4c0 3.1-2.6 5.6-5.7 5.6H57.7c-3.1 0-5.7-2.5-5.7-5.7v-144c0-3.1 2.5-5.7 5.7-5.7h31.7c3.1 0 5.7 2.5 5.7 5.7 0 4.7 5.2 7.2 9 4.5 11.4-8.2 26-12.5 42.4-12.5 36.6 0 64.4 21.4 64.4 68.7v83.2ZM150 99.3c0-6.7-5.4-12.1-12.1-12.1s-12.1 5.4-12.1 12.1 5.4 12.1 12.1 12.1S150 106 150 99.3Z"/></svg>`,
+  x: `<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>`,
+  github: `<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.604-3.369-1.341-3.369-1.341-.454-1.155-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg>`,
+  web: `<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>`
+};
+
 function renderCreditCard(c) {
   return `
     <div class="credit-card" data-id="${c.id}">
@@ -268,14 +276,11 @@ function renderCreditCard(c) {
           ${c.name || 'Unnamed'}
         </div>
         <div class="credit-role">${c.notes || ''}</div>
-        <div class="credit-details">
-          ${c.email ? `<span title="Email">${c.email}</span>` : ''}
-          ${c.lightningAddress ? `<span title="Lightning">⚡ ${c.lightningAddress}</span>` : ''}
-        </div>
         <div class="credit-links">
-          ${c.nostrNpub ? `<a href="https://njump.me/${c.nostrNpub}" target="_blank" title="Nostr">Nostr</a>` : ''}
-          ${c.xProfileUrl ? `<a href="${c.xProfileUrl}" target="_blank" title="X">X</a>` : ''}
-          ${c.websiteUrl ? `<a href="${c.websiteUrl}" target="_blank" title="Website">Web</a>` : ''}
+          ${c.nostrNpub ? `<a href="https://njump.me/${c.nostrNpub}" target="_blank" title="Nostr" class="social-icon">${ICONS.nostr}</a>` : ''}
+          ${c.xProfileUrl ? `<a href="${c.xProfileUrl}" target="_blank" title="X" class="social-icon">${ICONS.x}</a>` : ''}
+          ${c.githubUrl ? `<a href="${c.githubUrl}" target="_blank" title="GitHub" class="social-icon">${ICONS.github}</a>` : ''}
+          ${c.websiteUrl ? `<a href="${c.websiteUrl}" target="_blank" title="Website" class="social-icon">${ICONS.web}</a>` : ''}
         </div>
       </div>
       <div class="credit-actions">
@@ -379,6 +384,7 @@ function openModal(credit = null) {
     document.getElementById('credit-x-pic').value = '';
   }
   document.getElementById('credit-website-url').value = credit?.websiteUrl || '';
+  document.getElementById('credit-github-url').value = credit?.githubUrl || '';
   document.getElementById('credit-notes').value = credit?.notes || '';
   document.getElementById('credit-show-on-website').checked = credit?.showOnWebsite || false;
   document.getElementById('credit-website-section').value = credit?.websiteSection || '';
@@ -425,6 +431,7 @@ creditForm.addEventListener('submit', async e => {
     xProfileUrl: document.getElementById('credit-x-url').value,
     xProfilePic: document.getElementById('credit-x-pic').value,
     websiteUrl: document.getElementById('credit-website-url').value,
+    githubUrl: document.getElementById('credit-github-url').value,
     notes: document.getElementById('credit-notes').value,
     showOnWebsite: document.getElementById('credit-show-on-website').checked,
     websiteSection: document.getElementById('credit-website-section').value,
@@ -611,9 +618,10 @@ function renderPartnerCard(p) {
         <div class="credit-name">${p.name || 'Unnamed'}</div>
         <div class="credit-role">${p.description || ''}</div>
         <div class="credit-links">
-          ${p.websiteUrl ? `<a href="${p.websiteUrl}" target="_blank" title="Website">Web</a>` : ''}
-          ${p.nostrNpub ? `<a href="https://njump.me/${p.nostrNpub}" target="_blank" title="Nostr">Nostr</a>` : ''}
-          ${p.xProfileUrl ? `<a href="${p.xProfileUrl}" target="_blank" title="X">X</a>` : ''}
+          ${p.nostrNpub ? `<a href="https://njump.me/${p.nostrNpub}" target="_blank" title="Nostr" class="social-icon">${ICONS.nostr}</a>` : ''}
+          ${p.xProfileUrl ? `<a href="${p.xProfileUrl}" target="_blank" title="X" class="social-icon">${ICONS.x}</a>` : ''}
+          ${p.githubUrl ? `<a href="${p.githubUrl}" target="_blank" title="GitHub" class="social-icon">${ICONS.github}</a>` : ''}
+          ${p.websiteUrl ? `<a href="${p.websiteUrl}" target="_blank" title="Website" class="social-icon">${ICONS.web}</a>` : ''}
         </div>
       </div>
       <div class="credit-actions">
@@ -714,6 +722,7 @@ function openPartnerModal(partner = null) {
   } else {
     document.getElementById('partner-x-pic').value = '';
   }
+  document.getElementById('partner-github-url').value = partner?.githubUrl || '';
   document.getElementById('partner-show-on-website').checked = partner?.showOnWebsite || false;
   document.getElementById('partner-section').value = partner?.section || '';
   partnerModal.hidden = false;
@@ -759,6 +768,7 @@ partnerForm.addEventListener('submit', async e => {
     nostrProfilePic: document.getElementById('partner-nostr-pic').value,
     xProfileUrl: document.getElementById('partner-x-url').value,
     xProfilePic: document.getElementById('partner-x-pic').value,
+    githubUrl: document.getElementById('partner-github-url').value,
     showOnWebsite: document.getElementById('partner-show-on-website').checked,
     section: document.getElementById('partner-section').value,
   };

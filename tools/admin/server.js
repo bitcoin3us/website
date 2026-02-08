@@ -244,6 +244,7 @@ app.post('/api/credits', (req, res) => {
       xProfileUrl: req.body.xProfileUrl || '',
       xProfilePic: req.body.xProfilePic || '',
       websiteUrl: req.body.websiteUrl || '',
+      githubUrl: req.body.githubUrl || '',
       notes: req.body.notes || '',
       showOnWebsite: req.body.showOnWebsite ?? false,
       websiteSection: req.body.websiteSection || '',
@@ -278,6 +279,7 @@ app.put('/api/credits/:id', (req, res) => {
       xProfileUrl: req.body.xProfileUrl ?? data.credits[index].xProfileUrl,
       xProfilePic: req.body.xProfilePic ?? data.credits[index].xProfilePic,
       websiteUrl: req.body.websiteUrl ?? data.credits[index].websiteUrl ?? '',
+      githubUrl: req.body.githubUrl ?? data.credits[index].githubUrl ?? '',
       notes: req.body.notes ?? data.credits[index].notes,
       showOnWebsite: req.body.showOnWebsite ?? data.credits[index].showOnWebsite ?? false,
       websiteSection: req.body.websiteSection ?? data.credits[index].websiteSection ?? '',
@@ -322,6 +324,7 @@ app.post('/api/credits/sync', (req, res) => {
       const nostrUrl = c.nostrNpub ? `https://njump.me/${c.nostrNpub}` : '';
       const xUrl = c.xProfileUrl || '';
       const websiteUrl = c.websiteUrl || '';
+      const githubUrl = c.githubUrl || '';
 
       // Priority: websiteUrl > nostrUrl > xUrl
       const primaryUrl = websiteUrl || nostrUrl || xUrl;
@@ -331,9 +334,10 @@ app.post('/api/credits/sync', (req, res) => {
         url: primaryUrl,
         avatar: c.nostrProfilePic || c.xProfilePic || '',
         isBitcoinKid: c.isBitcoinKid || false,
-        // Always include nostrUrl and xUrl for social icons
+        // Always include social URLs for icons
         nostrUrl: nostrUrl,
         xUrl: xUrl,
+        githubUrl: githubUrl,
       };
 
       if (includeContribution) {
@@ -421,6 +425,7 @@ app.post('/api/partners', (req, res) => {
       nostrProfilePic: req.body.nostrProfilePic || '',
       xProfileUrl: req.body.xProfileUrl || '',
       xProfilePic: req.body.xProfilePic || '',
+      githubUrl: req.body.githubUrl || '',
       section: req.body.section || '',
       showOnWebsite: req.body.showOnWebsite ?? false,
       dateAdded: req.body.dateAdded || new Date().toISOString().split('T')[0],
@@ -451,6 +456,7 @@ app.put('/api/partners/:id', (req, res) => {
       nostrProfilePic: req.body.nostrProfilePic ?? data.partners[index].nostrProfilePic,
       xProfileUrl: req.body.xProfileUrl ?? data.partners[index].xProfileUrl,
       xProfilePic: req.body.xProfilePic ?? data.partners[index].xProfilePic,
+      githubUrl: req.body.githubUrl ?? data.partners[index].githubUrl ?? '',
       section: req.body.section ?? data.partners[index].section,
       showOnWebsite: req.body.showOnWebsite ?? data.partners[index].showOnWebsite,
     };
@@ -490,6 +496,7 @@ app.post('/api/partners/sync', (req, res) => {
       const nostrUrl = p.nostrNpub ? `https://njump.me/${p.nostrNpub}` : '';
       const xUrl = p.xProfileUrl || '';
       const websiteUrl = p.websiteUrl || '';
+      const githubUrl = p.githubUrl || '';
       const primaryUrl = websiteUrl || nostrUrl || xUrl;
 
       return {
@@ -497,8 +504,9 @@ app.post('/api/partners/sync', (req, res) => {
         description: p.description || '',
         url: primaryUrl,
         logo: p.logoUrl || p.nostrProfilePic || p.xProfilePic || '',
-        nostrUrl: websiteUrl && nostrUrl ? nostrUrl : '',
-        xUrl: websiteUrl && xUrl ? xUrl : '',
+        nostrUrl: nostrUrl,
+        xUrl: xUrl,
+        githubUrl: githubUrl,
       };
     };
 
