@@ -191,6 +191,58 @@ const syncResult = document.getElementById('sync-result');
 
 let allCredits = [];
 
+// Bech32 decoding for npub -> hex conversion
+const BECH32_CHARSET = 'qpzry9x8gf2tvdw0s3jn54khce6mua7l';
+
+function bech32Decode(str) {
+  str = str.toLowerCase();
+  const pos = str.lastIndexOf('1');
+  if (pos < 1 || pos + 7 > str.length) return null;
+
+  const hrp = str.slice(0, pos);
+  const dataStr = str.slice(pos + 1);
+
+  const data = [];
+  for (const c of dataStr) {
+    const idx = BECH32_CHARSET.indexOf(c);
+    if (idx === -1) return null;
+    data.push(idx);
+  }
+
+  // Remove checksum (last 6 characters)
+  const values = data.slice(0, -6);
+
+  // Convert 5-bit values to 8-bit bytes
+  let acc = 0;
+  let bits = 0;
+  const bytes = [];
+  for (const v of values) {
+    acc = (acc << 5) | v;
+    bits += 5;
+    while (bits >= 8) {
+      bits -= 8;
+      bytes.push((acc >> bits) & 0xff);
+    }
+  }
+
+  return { hrp, bytes };
+}
+
+function npubToHex(npub) {
+  if (!npub || !npub.startsWith('npub1')) return '';
+  const decoded = bech32Decode(npub);
+  if (!decoded || decoded.hrp !== 'npub') return '';
+  return decoded.bytes.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// Extract X username from profile URL
+function extractXUsername(url) {
+  if (!url) return '';
+  // Match twitter.com/username or x.com/username
+  const match = url.match(/(?:twitter\.com|x\.com)\/([a-zA-Z0-9_]+)/i);
+  return match ? match[1] : '';
+}
+
 async function loadCredits() {
   try {
     const resp = await fetch('/api/credits');
@@ -201,13 +253,8 @@ async function loadCredits() {
   }
 }
 
-function renderCredits(credits) {
-  if (credits.length === 0) {
-    creditsList.innerHTML = '<p class="empty">No credits yet. Click "Add Credit" to create one.</p>';
-    return;
-  }
-
-  creditsList.innerHTML = credits.map(c => `
+function renderCreditCard(c) {
+  return `
     <div class="credit-card" data-id="${c.id}">
       <div class="credit-avatar">
         ${c.nostrProfilePic || c.xProfilePic
@@ -219,9 +266,8 @@ function renderCredits(credits) {
         <div class="credit-name">
           ${c.isBitcoinKid ? '<span class="bitcoin-kid-star">⭐</span>' : ''}
           ${c.name || 'Unnamed'}
-          ${c.showOnWebsite ? `<span class="credit-badge on-website">${c.websiteSection || 'On Website'}</span>` : ''}
         </div>
-        <div class="credit-role">${c.role || ''}</div>
+        <div class="credit-role">${c.notes || ''}</div>
         <div class="credit-details">
           ${c.email ? `<span title="Email">${c.email}</span>` : ''}
           ${c.lightningAddress ? `<span title="Lightning">⚡ ${c.lightningAddress}</span>` : ''}
@@ -229,6 +275,7 @@ function renderCredits(credits) {
         <div class="credit-links">
           ${c.nostrNpub ? `<a href="https://njump.me/${c.nostrNpub}" target="_blank" title="Nostr">Nostr</a>` : ''}
           ${c.xProfileUrl ? `<a href="${c.xProfileUrl}" target="_blank" title="X">X</a>` : ''}
+          ${c.websiteUrl ? `<a href="${c.websiteUrl}" target="_blank" title="Website">Web</a>` : ''}
         </div>
       </div>
       <div class="credit-actions">
@@ -236,7 +283,60 @@ function renderCredits(credits) {
         <button class="btn-icon delete-credit" title="Delete">🗑️</button>
       </div>
     </div>
-  `).join('');
+  `;
+}
+
+function renderCredits(credits) {
+  if (credits.length === 0) {
+    creditsList.innerHTML = '<p class="empty">No credits yet. Click "Add Credit" to create one.</p>';
+    return;
+  }
+
+  // Group credits by section
+  const coreTeam = credits.filter(c => c.websiteSection === 'Core Team');
+  const contributors = credits.filter(c => c.websiteSection === 'Contributor');
+  const specialThanks = credits.filter(c => c.websiteSection === 'Special Thanks');
+  const other = credits.filter(c => !c.websiteSection || !['Core Team', 'Contributor', 'Special Thanks'].includes(c.websiteSection));
+
+  let html = '';
+
+  if (coreTeam.length > 0) {
+    html += `
+      <div class="credits-section">
+        <h3 class="credits-section-title">Core Team <span class="credits-section-count">(${coreTeam.length})</span></h3>
+        <div class="credits-section-list">${coreTeam.map(renderCreditCard).join('')}</div>
+      </div>
+    `;
+  }
+
+  if (contributors.length > 0) {
+    html += `
+      <div class="credits-section">
+        <h3 class="credits-section-title">Contributors <span class="credits-section-count">(${contributors.length})</span></h3>
+        <div class="credits-section-list">${contributors.map(renderCreditCard).join('')}</div>
+      </div>
+    `;
+  }
+
+  if (specialThanks.length > 0) {
+    html += `
+      <div class="credits-section">
+        <h3 class="credits-section-title">Special Thanks <span class="credits-section-count">(${specialThanks.length})</span></h3>
+        <div class="credits-section-list">${specialThanks.map(renderCreditCard).join('')}</div>
+      </div>
+    `;
+  }
+
+  if (other.length > 0) {
+    html += `
+      <div class="credits-section">
+        <h3 class="credits-section-title">Not Assigned <span class="credits-section-count">(${other.length})</span></h3>
+        <div class="credits-section-list">${other.map(renderCreditCard).join('')}</div>
+      </div>
+    `;
+  }
+
+  creditsList.innerHTML = html;
 
   // Attach event listeners
   creditsList.querySelectorAll('.edit-credit').forEach(btn => {
@@ -251,14 +351,34 @@ function openModal(credit = null) {
   modalTitle.textContent = credit ? 'Edit Credit' : 'Add Credit';
   document.getElementById('credit-id').value = credit?.id || '';
   document.getElementById('credit-name').value = credit?.name || '';
-  document.getElementById('credit-email').value = credit?.email || '';
-  document.getElementById('credit-role').value = credit?.role || '';
-  document.getElementById('credit-lightning').value = credit?.lightningAddress || '';
   document.getElementById('credit-nostr-npub').value = credit?.nostrNpub || '';
-  document.getElementById('credit-nostr-hex').value = credit?.nostrHex || '';
-  document.getElementById('credit-nostr-pic').value = credit?.nostrProfilePic || '';
+  // Auto-calculate hex from npub when opening modal
+  const npubValue = credit?.nostrNpub || '';
+  const hex = npubValue ? npubToHex(npubValue) : '';
+  document.getElementById('credit-nostr-hex').value = hex;
+  // Use stored pic or fetch from Primal
+  if (credit?.nostrProfilePic) {
+    document.getElementById('credit-nostr-pic').value = credit.nostrProfilePic;
+  } else if (hex) {
+    document.getElementById('credit-nostr-pic').value = 'Loading...';
+    fetch(`/api/nostr/profile/${hex}`)
+      .then(r => r.json())
+      .then(p => { document.getElementById('credit-nostr-pic').value = p.picture || ''; })
+      .catch(() => { document.getElementById('credit-nostr-pic').value = ''; });
+  } else {
+    document.getElementById('credit-nostr-pic').value = '';
+  }
   document.getElementById('credit-x-url').value = credit?.xProfileUrl || '';
-  document.getElementById('credit-x-pic').value = credit?.xProfilePic || '';
+  // Use stored pic or auto-generate from X URL
+  if (credit?.xProfilePic) {
+    document.getElementById('credit-x-pic').value = credit.xProfilePic;
+  } else if (credit?.xProfileUrl) {
+    const username = extractXUsername(credit.xProfileUrl);
+    document.getElementById('credit-x-pic').value = username ? `https://unavatar.io/twitter/${username}` : '';
+  } else {
+    document.getElementById('credit-x-pic').value = '';
+  }
+  document.getElementById('credit-website-url').value = credit?.websiteUrl || '';
   document.getElementById('credit-notes').value = credit?.notes || '';
   document.getElementById('credit-show-on-website').checked = credit?.showOnWebsite || false;
   document.getElementById('credit-website-section').value = credit?.websiteSection || '';
@@ -299,14 +419,12 @@ creditForm.addEventListener('submit', async e => {
   const id = document.getElementById('credit-id').value;
   const data = {
     name: document.getElementById('credit-name').value,
-    email: document.getElementById('credit-email').value,
-    role: document.getElementById('credit-role').value,
-    lightningAddress: document.getElementById('credit-lightning').value,
     nostrNpub: document.getElementById('credit-nostr-npub').value,
     nostrHex: document.getElementById('credit-nostr-hex').value,
     nostrProfilePic: document.getElementById('credit-nostr-pic').value,
     xProfileUrl: document.getElementById('credit-x-url').value,
     xProfilePic: document.getElementById('credit-x-pic').value,
+    websiteUrl: document.getElementById('credit-website-url').value,
     notes: document.getElementById('credit-notes').value,
     showOnWebsite: document.getElementById('credit-show-on-website').checked,
     websiteSection: document.getElementById('credit-website-section').value,
@@ -350,11 +468,8 @@ syncCreditsBtn.addEventListener('click', async () => {
   syncCreditsBtn.disabled = true;
   syncCreditsBtn.textContent = 'Syncing...';
 
-  // Get enabled sections from checkboxes
-  const sections = [];
-  if (document.getElementById('sync-core-team').checked) sections.push('Core Team');
-  if (document.getElementById('sync-contributor').checked) sections.push('Contributor');
-  if (document.getElementById('sync-special-thanks').checked) sections.push('Special Thanks');
+  // Always sync all sections
+  const sections = ['Core Team', 'Contributor', 'Special Thanks'];
 
   try {
     const resp = await fetch('/api/credits/sync', {
@@ -383,3 +498,362 @@ syncCreditsBtn.addEventListener('click', async () => {
 
 // Load credits when tab is clicked
 document.querySelector('[data-tab="credits"]').addEventListener('click', loadCredits);
+
+// Auto-calculate nostr hex and fetch profile picture from Primal
+document.getElementById('credit-nostr-npub').addEventListener('input', async e => {
+  const npub = e.target.value.trim();
+  const hexField = document.getElementById('credit-nostr-hex');
+  const picField = document.getElementById('credit-nostr-pic');
+  const hex = npubToHex(npub);
+  hexField.value = hex;
+
+  // Fetch profile picture from Primal via our API
+  if (hex) {
+    picField.value = 'Loading...';
+    try {
+      const resp = await fetch(`/api/nostr/profile/${hex}`);
+      const profile = await resp.json();
+      picField.value = profile.picture || '';
+    } catch (err) {
+      picField.value = '';
+    }
+  } else {
+    picField.value = '';
+  }
+});
+
+// Copy hex to clipboard
+document.getElementById('copy-hex-btn').addEventListener('click', async () => {
+  const hexField = document.getElementById('credit-nostr-hex');
+  const copyBtn = document.getElementById('copy-hex-btn');
+  if (!hexField.value) return;
+
+  try {
+    await navigator.clipboard.writeText(hexField.value);
+    copyBtn.textContent = '✓';
+    copyBtn.classList.add('copied');
+    setTimeout(() => {
+      copyBtn.textContent = '📋';
+      copyBtn.classList.remove('copied');
+    }, 1500);
+  } catch (err) {
+    hexField.select();
+    document.execCommand('copy');
+  }
+});
+
+// Auto-populate X profile picture from X profile URL
+document.getElementById('credit-x-url').addEventListener('input', e => {
+  const url = e.target.value.trim();
+  const picField = document.getElementById('credit-x-pic');
+  const username = extractXUsername(url);
+
+  if (username) {
+    picField.value = `https://unavatar.io/twitter/${username}`;
+  } else {
+    picField.value = '';
+  }
+});
+
+// Copy X profile pic URL to clipboard
+document.getElementById('copy-x-pic-btn').addEventListener('click', async () => {
+  const picField = document.getElementById('credit-x-pic');
+  const copyBtn = document.getElementById('copy-x-pic-btn');
+  if (!picField.value) return;
+
+  try {
+    await navigator.clipboard.writeText(picField.value);
+    copyBtn.textContent = '✓';
+    copyBtn.classList.add('copied');
+    setTimeout(() => {
+      copyBtn.textContent = '📋';
+      copyBtn.classList.remove('copied');
+    }, 1500);
+  } catch (err) {
+    picField.select();
+    document.execCommand('copy');
+  }
+});
+
+// --- Partners / Friends & Family ---
+const partnersList = document.getElementById('partners-list');
+const partnerModal = document.getElementById('partner-modal');
+const partnerForm = document.getElementById('partner-form');
+const partnerModalTitle = document.getElementById('partner-modal-title');
+const addPartnerBtn = document.getElementById('add-partner-btn');
+const cancelPartnerBtn = document.getElementById('cancel-partner-btn');
+const partnersSearch = document.getElementById('partners-search');
+const syncPartnersBtn = document.getElementById('sync-partners-btn');
+const partnersSyncResult = document.getElementById('partners-sync-result');
+
+let allPartners = [];
+
+async function loadPartners() {
+  try {
+    const resp = await fetch('/api/partners');
+    allPartners = await resp.json();
+    renderPartners(allPartners);
+  } catch (err) {
+    partnersList.innerHTML = `<p class="error">Failed to load partners: ${err.message}</p>`;
+  }
+}
+
+function renderPartnerCard(p) {
+  return `
+    <div class="credit-card" data-id="${p.id}">
+      <div class="credit-avatar">
+        ${p.logoUrl || p.nostrProfilePic || p.xProfilePic
+          ? `<img src="${p.logoUrl || p.nostrProfilePic || p.xProfilePic}" alt="${p.name}" onerror="this.style.display='none'">`
+          : `<span>${(p.name || '?')[0].toUpperCase()}</span>`
+        }
+      </div>
+      <div class="credit-info">
+        <div class="credit-name">${p.name || 'Unnamed'}</div>
+        <div class="credit-role">${p.description || ''}</div>
+        <div class="credit-links">
+          ${p.websiteUrl ? `<a href="${p.websiteUrl}" target="_blank" title="Website">Web</a>` : ''}
+          ${p.nostrNpub ? `<a href="https://njump.me/${p.nostrNpub}" target="_blank" title="Nostr">Nostr</a>` : ''}
+          ${p.xProfileUrl ? `<a href="${p.xProfileUrl}" target="_blank" title="X">X</a>` : ''}
+        </div>
+      </div>
+      <div class="credit-actions">
+        <button class="btn-icon edit-partner" title="Edit">✏️</button>
+        <button class="btn-icon delete-partner" title="Delete">🗑️</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderPartners(partners) {
+  if (partners.length === 0) {
+    partnersList.innerHTML = '<p class="empty">No partners yet. Click "Add Partner" to create one.</p>';
+    return;
+  }
+
+  // Group partners by section
+  const educationPartners = partners.filter(p => p.section === 'Education Partners');
+  const technologyPartners = partners.filter(p => p.section === 'Technology Partners');
+  const appearances = partners.filter(p => p.section === 'Appearances');
+  const inTheNews = partners.filter(p => p.section === 'In the News');
+  const other = partners.filter(p => !p.section || !['Education Partners', 'Technology Partners', 'Appearances', 'In the News'].includes(p.section));
+
+  let html = '';
+
+  if (educationPartners.length > 0) {
+    html += `
+      <div class="credits-section">
+        <h3 class="credits-section-title">Education Partners <span class="credits-section-count">(${educationPartners.length})</span></h3>
+        <div class="credits-section-list">${educationPartners.map(renderPartnerCard).join('')}</div>
+      </div>
+    `;
+  }
+
+  if (technologyPartners.length > 0) {
+    html += `
+      <div class="credits-section">
+        <h3 class="credits-section-title">Technology Partners <span class="credits-section-count">(${technologyPartners.length})</span></h3>
+        <div class="credits-section-list">${technologyPartners.map(renderPartnerCard).join('')}</div>
+      </div>
+    `;
+  }
+
+  if (appearances.length > 0) {
+    html += `
+      <div class="credits-section">
+        <h3 class="credits-section-title">Appearances <span class="credits-section-count">(${appearances.length})</span></h3>
+        <div class="credits-section-list">${appearances.map(renderPartnerCard).join('')}</div>
+      </div>
+    `;
+  }
+
+  if (inTheNews.length > 0) {
+    html += `
+      <div class="credits-section">
+        <h3 class="credits-section-title">In the News <span class="credits-section-count">(${inTheNews.length})</span></h3>
+        <div class="credits-section-list">${inTheNews.map(renderPartnerCard).join('')}</div>
+      </div>
+    `;
+  }
+
+  if (other.length > 0) {
+    html += `
+      <div class="credits-section">
+        <h3 class="credits-section-title">Not Assigned <span class="credits-section-count">(${other.length})</span></h3>
+        <div class="credits-section-list">${other.map(renderPartnerCard).join('')}</div>
+      </div>
+    `;
+  }
+
+  partnersList.innerHTML = html;
+
+  // Attach event listeners
+  partnersList.querySelectorAll('.edit-partner').forEach(btn => {
+    btn.addEventListener('click', () => editPartner(btn.closest('.credit-card').dataset.id));
+  });
+  partnersList.querySelectorAll('.delete-partner').forEach(btn => {
+    btn.addEventListener('click', () => deletePartner(btn.closest('.credit-card').dataset.id));
+  });
+}
+
+function openPartnerModal(partner = null) {
+  partnerModalTitle.textContent = partner ? 'Edit Partner' : 'Add Partner';
+  document.getElementById('partner-id').value = partner?.id || '';
+  document.getElementById('partner-name').value = partner?.name || '';
+  document.getElementById('partner-description').value = partner?.description || '';
+  document.getElementById('partner-website-url').value = partner?.websiteUrl || '';
+  document.getElementById('partner-logo-url').value = partner?.logoUrl || '';
+  document.getElementById('partner-nostr-npub').value = partner?.nostrNpub || '';
+  document.getElementById('partner-nostr-pic').value = partner?.nostrProfilePic || '';
+  document.getElementById('partner-x-url').value = partner?.xProfileUrl || '';
+  // Auto-generate X pic from URL
+  if (partner?.xProfilePic) {
+    document.getElementById('partner-x-pic').value = partner.xProfilePic;
+  } else if (partner?.xProfileUrl) {
+    const username = extractXUsername(partner.xProfileUrl);
+    document.getElementById('partner-x-pic').value = username ? `https://unavatar.io/twitter/${username}` : '';
+  } else {
+    document.getElementById('partner-x-pic').value = '';
+  }
+  document.getElementById('partner-show-on-website').checked = partner?.showOnWebsite || false;
+  document.getElementById('partner-section').value = partner?.section || '';
+  partnerModal.hidden = false;
+}
+
+function closePartnerModal() {
+  partnerModal.hidden = true;
+  partnerForm.reset();
+}
+
+function editPartner(id) {
+  const partner = allPartners.find(p => p.id === id);
+  if (partner) openPartnerModal(partner);
+}
+
+async function deletePartner(id) {
+  const partner = allPartners.find(p => p.id === id);
+  if (!confirm(`Delete partner "${partner?.name || 'Unnamed'}"?`)) return;
+
+  try {
+    await fetch(`/api/partners/${id}`, { method: 'DELETE' });
+    loadPartners();
+  } catch (err) {
+    alert('Failed to delete: ' + err.message);
+  }
+}
+
+addPartnerBtn.addEventListener('click', () => openPartnerModal());
+cancelPartnerBtn.addEventListener('click', closePartnerModal);
+partnerModal.addEventListener('click', e => {
+  if (e.target === partnerModal) closePartnerModal();
+});
+
+partnerForm.addEventListener('submit', async e => {
+  e.preventDefault();
+  const id = document.getElementById('partner-id').value;
+  const data = {
+    name: document.getElementById('partner-name').value,
+    description: document.getElementById('partner-description').value,
+    websiteUrl: document.getElementById('partner-website-url').value,
+    logoUrl: document.getElementById('partner-logo-url').value,
+    nostrNpub: document.getElementById('partner-nostr-npub').value,
+    nostrProfilePic: document.getElementById('partner-nostr-pic').value,
+    xProfileUrl: document.getElementById('partner-x-url').value,
+    xProfilePic: document.getElementById('partner-x-pic').value,
+    showOnWebsite: document.getElementById('partner-show-on-website').checked,
+    section: document.getElementById('partner-section').value,
+  };
+
+  try {
+    if (id) {
+      await fetch(`/api/partners/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+    } else {
+      await fetch('/api/partners', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+    }
+    closePartnerModal();
+    loadPartners();
+  } catch (err) {
+    alert('Failed to save: ' + err.message);
+  }
+});
+
+partnersSearch.addEventListener('input', () => {
+  const query = partnersSearch.value.toLowerCase();
+  const filtered = allPartners.filter(p =>
+    (p.name || '').toLowerCase().includes(query) ||
+    (p.description || '').toLowerCase().includes(query)
+  );
+  renderPartners(filtered);
+});
+
+// Sync partners to website
+syncPartnersBtn.addEventListener('click', async () => {
+  syncPartnersBtn.disabled = true;
+  syncPartnersBtn.textContent = 'Syncing...';
+
+  try {
+    const resp = await fetch('/api/partners/sync', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    const data = await resp.json();
+
+    if (data.success) {
+      partnersSyncResult.className = 'result success';
+      partnersSyncResult.innerHTML = `Synced to <strong>${data.path}</strong>: ${data.exported.educationPartners} Education, ${data.exported.technologyPartners} Technology, ${data.exported.appearances} Appearances, ${data.exported.inTheNews} News`;
+    } else {
+      partnersSyncResult.className = 'result error';
+      partnersSyncResult.textContent = data.error;
+    }
+  } catch (err) {
+    partnersSyncResult.className = 'result error';
+    partnersSyncResult.textContent = err.message;
+  }
+
+  partnersSyncResult.hidden = false;
+  syncPartnersBtn.disabled = false;
+  syncPartnersBtn.textContent = 'Sync to Website';
+});
+
+// Load partners when tab is clicked
+document.querySelector('[data-tab="partners"]').addEventListener('click', loadPartners);
+
+// Auto-populate X profile picture from X URL for partners
+document.getElementById('partner-x-url').addEventListener('input', e => {
+  const url = e.target.value.trim();
+  const picField = document.getElementById('partner-x-pic');
+  const username = extractXUsername(url);
+
+  if (username) {
+    picField.value = `https://unavatar.io/twitter/${username}`;
+  } else {
+    picField.value = '';
+  }
+});
+
+// Auto-fetch Nostr profile pic for partners
+document.getElementById('partner-nostr-npub').addEventListener('input', async e => {
+  const npub = e.target.value.trim();
+  const picField = document.getElementById('partner-nostr-pic');
+  const hex = npubToHex(npub);
+
+  if (hex) {
+    picField.value = 'Loading...';
+    try {
+      const resp = await fetch(`/api/nostr/profile/${hex}`);
+      const profile = await resp.json();
+      picField.value = profile.picture || '';
+    } catch (err) {
+      picField.value = '';
+    }
+  } else {
+    picField.value = '';
+  }
+});

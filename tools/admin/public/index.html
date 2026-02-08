@@ -14,6 +14,7 @@
       <button class="tab" data-tab="showcase">Showcase</button>
       <button class="tab" data-tab="news">News Post</button>
       <button class="tab" data-tab="credits">Credits</button>
+      <button class="tab" data-tab="partners">Friends & Family</button>
     </nav>
   </header>
 
@@ -116,23 +117,6 @@
         <input type="text" id="credits-search" placeholder="Search credits..." class="search-input">
       </div>
 
-      <!-- Section Toggles -->
-      <div class="section-toggles">
-        <span class="toggle-label">Sync sections:</span>
-        <label class="section-toggle">
-          <input type="checkbox" id="sync-core-team" checked>
-          <span>Core Team</span>
-        </label>
-        <label class="section-toggle">
-          <input type="checkbox" id="sync-contributor" checked>
-          <span>Contributor</span>
-        </label>
-        <label class="section-toggle">
-          <input type="checkbox" id="sync-special-thanks" checked>
-          <span>Special Thanks</span>
-        </label>
-      </div>
-
       <div id="sync-result" class="result" hidden></div>
 
       <div id="credits-list" class="credits-list"></div>
@@ -144,25 +128,9 @@
           <form id="credit-form">
             <input type="hidden" id="credit-id">
 
-            <div class="form-row">
-              <label>
-                Name
-                <input type="text" id="credit-name" required placeholder="John Doe">
-              </label>
-              <label>
-                Role/Contribution
-                <input type="text" id="credit-role" placeholder="Developer, Designer, etc.">
-              </label>
-            </div>
-
             <label>
-              Email
-              <input type="email" id="credit-email" placeholder="john@example.com">
-            </label>
-
-            <label>
-              Lightning Address
-              <input type="text" id="credit-lightning" placeholder="john@getalby.com">
+              Name / Organisation
+              <input type="text" id="credit-name" required placeholder="John Doe or Company Name">
             </label>
 
             <div class="form-row">
@@ -171,8 +139,11 @@
                 <input type="text" id="credit-nostr-npub" placeholder="npub1...">
               </label>
               <label>
-                Nostr Hex
-                <input type="text" id="credit-nostr-hex" placeholder="hex pubkey">
+                Nostr Hex <span class="hint">(auto-calculated)</span>
+                <div class="copyable-field">
+                  <input type="text" id="credit-nostr-hex" placeholder="auto-calculated from npub" readonly>
+                  <button type="button" id="copy-hex-btn" class="copy-btn" title="Copy to clipboard">📋</button>
+                </div>
               </label>
             </div>
 
@@ -187,14 +158,22 @@
                 <input type="url" id="credit-x-url" placeholder="https://x.com/username">
               </label>
               <label>
-                X Profile Picture URL
-                <input type="url" id="credit-x-pic" placeholder="https://...">
+                X Profile Picture URL <span class="hint">(auto-generated)</span>
+                <div class="copyable-field">
+                  <input type="url" id="credit-x-pic" placeholder="auto-generated from X URL" readonly>
+                  <button type="button" id="copy-x-pic-btn" class="copy-btn" title="Copy to clipboard">📋</button>
+                </div>
               </label>
             </div>
 
             <label>
+              Website URL
+              <input type="url" id="credit-website-url" placeholder="https://example.com">
+            </label>
+
+            <label>
               Notes
-              <textarea id="credit-notes" rows="3" placeholder="For Special Thanks, this becomes the note shown on the website..."></textarea>
+              <textarea id="credit-notes" rows="3" placeholder="Role, contribution, or any notes. For Core Team/Contributors this shows as their contribution on the website."></textarea>
             </label>
 
             <div class="switch-row">
@@ -226,6 +205,100 @@
             <div class="modal-actions">
               <button type="button" id="cancel-credit-btn" class="btn">Cancel</button>
               <button type="submit" class="btn primary">Save Credit</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- Partners / Friends & Family -->
+    <section id="partners" class="panel">
+      <h2>Friends & Family</h2>
+      <p class="hint">Manage partners and friends to show on the landing page. Data stored in ~/.lightningpiggy/</p>
+
+      <div class="credits-header">
+        <div class="credits-actions">
+          <button id="add-partner-btn" class="btn primary">+ Add Partner</button>
+          <button id="sync-partners-btn" class="btn">Sync to Website</button>
+        </div>
+        <input type="text" id="partners-search" placeholder="Search partners..." class="search-input">
+      </div>
+
+      <div id="partners-sync-result" class="result" hidden></div>
+
+      <div id="partners-list" class="credits-list"></div>
+
+      <!-- Add/Edit Partner Modal -->
+      <div id="partner-modal" class="modal" hidden>
+        <div class="modal-content">
+          <h3 id="partner-modal-title">Add Partner</h3>
+          <form id="partner-form">
+            <input type="hidden" id="partner-id">
+
+            <label>
+              Name / Organisation
+              <input type="text" id="partner-name" required placeholder="Company or Organization Name">
+            </label>
+
+            <label>
+              Description <span class="optional">(shown on website)</span>
+              <input type="text" id="partner-description" placeholder="Brief description">
+            </label>
+
+            <label>
+              Website URL
+              <input type="url" id="partner-website-url" placeholder="https://example.com">
+            </label>
+
+            <label>
+              Logo URL
+              <input type="url" id="partner-logo-url" placeholder="https://example.com/logo.png">
+            </label>
+
+            <div class="form-row">
+              <label>
+                Nostr npub <span class="optional">(optional)</span>
+                <input type="text" id="partner-nostr-npub" placeholder="npub1...">
+              </label>
+              <label>
+                Nostr Profile Picture URL
+                <input type="url" id="partner-nostr-pic" placeholder="https://...">
+              </label>
+            </div>
+
+            <div class="form-row">
+              <label>
+                X Profile URL <span class="optional">(optional)</span>
+                <input type="url" id="partner-x-url" placeholder="https://x.com/username">
+              </label>
+              <label>
+                X Profile Picture URL
+                <input type="url" id="partner-x-pic" placeholder="auto-generated from X URL" readonly>
+              </label>
+            </div>
+
+            <div class="switch-row">
+              <span class="switch-label">Show on Website</span>
+              <label class="switch">
+                <input type="checkbox" id="partner-show-on-website">
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <label>
+              Section
+              <select id="partner-section">
+                <option value="">Not on website</option>
+                <option value="Education Partners">Education Partners</option>
+                <option value="Technology Partners">Technology Partners</option>
+                <option value="Appearances">Appearances</option>
+                <option value="In the News">In the News</option>
+              </select>
+            </label>
+
+            <div class="modal-actions">
+              <button type="button" id="cancel-partner-btn" class="btn">Cancel</button>
+              <button type="submit" class="btn primary">Save Partner</button>
             </div>
           </form>
         </div>
