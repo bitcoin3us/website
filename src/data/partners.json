@@ -6,7 +6,7 @@
       "url": "https://www.bitcoin4youth.com/",
       "logo": "https://m.primal.net/KRoM.png",
       "nostrUrl": "https://njump.me/npub1p0s2hqy2eew49zye7jw79374u0jj4t7erthx4mcsy3r0ddkzkkxqxaa7gv",
-      "xUrl": "https://x.com/BTCJuniorClub",
+      "xUrl": "",
       "githubUrl": ""
     },
     {
@@ -33,10 +33,37 @@
       "name": "MicroPythonOS",
       "description": "",
       "url": "https://micropythonos.com/",
-      "logo": "",
+      "logo": "/images/logos/micropythonos.png",
       "nostrUrl": "",
       "xUrl": "",
       "githubUrl": "https://github.com/MicroPythonOS"
+    },
+    {
+      "name": "Nostr Wallet Connect",
+      "description": "",
+      "url": "https://nwc.dev/",
+      "logo": "https://blossom.primal.net/c5de735ac64b3e7256f8d92274b0f5921df47f33b0961fb971457566aac2590e.png",
+      "nostrUrl": "https://njump.me/npub1getal6ykt05fsz5nqu4uld09nfj3y3qxmv8crys4aeut53unfvlqr80nfm",
+      "xUrl": "https://x.com/nwc_dev",
+      "githubUrl": ""
+    },
+    {
+      "name": "Bitcoin",
+      "description": "",
+      "url": "https://bitcoin.org/",
+      "logo": "/images/logos/bitcoin.png",
+      "nostrUrl": "",
+      "xUrl": "",
+      "githubUrl": "https://github.com/bitcoin/"
+    },
+    {
+      "name": "Lightning",
+      "description": "",
+      "url": "https://lightning.network/",
+      "logo": "/images/logos/lightning.png",
+      "nostrUrl": "",
+      "xUrl": "",
+      "githubUrl": "https://github.com/lightning"
     }
   ],
   "appearances": [
@@ -153,7 +180,7 @@
     {
       "name": "Lightning News",
       "description": "",
-      "url": "https://lightning.news/",
+      "url": "https://lightning.news/lightningpiggy-the-piggy-bank-that-beats-inflation/",
       "logo": "https://unavatar.io/twitter/LightningNewsX",
       "nostrUrl": "",
       "xUrl": "https://x.com/LightningNewsX",

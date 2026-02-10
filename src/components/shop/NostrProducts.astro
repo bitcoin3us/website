@@ -1,0 +1,337 @@
+---
+// NostrProducts.astro
+// Fetches and displays products from Nostr relays (NIP-15 Marketplace)
+
+interface Props {
+  merchantNpub: string;
+  plebeianMarketUrl?: string;
+}
+
+const { merchantNpub, plebeianMarketUrl = 'https://plebeian.market' } = Astro.props;
+---
+
+<div id="nostr-products" class="nostr-products" data-merchant-npub={merchantNpub} data-market-url={plebeianMarketUrl}>
+  <!-- Loading state -->
+  <div id="products-loading" class="text-center py-8">
+    <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-pink border-t-transparent"></div>
+    <p class="text-gray-500 mt-3">Loading products from Nostr...</p>
+  </div>
+
+  <!-- Error state -->
+  <div id="products-error" class="text-center py-8 hidden">
+    <p class="text-red-500">Failed to load products. Please try again later.</p>
+  </div>
+
+  <!-- Products grid -->
+  <div id="products-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 hidden"></div>
+
+  <!-- Empty state -->
+  <div id="products-empty" class="text-center py-8 hidden">
+    <p class="text-gray-500">No products available at the moment.</p>
+  </div>
+</div>
+
+<script>
+  // Bech32 decoding for npub -> hex conversion
+  const BECH32_CHARSET = 'qpzry9x8gf2tvdw0s3jn54khce6mua7l';
+
+  function bech32Decode(str: string) {
+    str = str.toLowerCase();
+    const pos = str.lastIndexOf('1');
+    if (pos < 1 || pos + 7 > str.length) return null;
+
+    const dataStr = str.slice(pos + 1);
+    const data: number[] = [];
+    for (const c of dataStr) {
+      const idx = BECH32_CHARSET.indexOf(c);
+      if (idx === -1) return null;
+      data.push(idx);
+    }
+
+    // Remove checksum (last 6 characters)
+    const values = data.slice(0, -6);
+
+    // Convert 5-bit values to 8-bit bytes
+    let acc = 0;
+    let bits = 0;
+    const bytes: number[] = [];
+    for (const v of values) {
+      acc = (acc << 5) | v;
+      bits += 5;
+      while (bits >= 8) {
+        bits -= 8;
+        bytes.push((acc >> bits) & 0xff);
+      }
+    }
+
+    return bytes;
+  }
+
+  function npubToHex(npub: string): string {
+    if (!npub || !npub.startsWith('npub1')) return '';
+    const bytes = bech32Decode(npub);
+    if (!bytes) return '';
+    return bytes.map(b => b.toString(16).padStart(2, '0')).join('');
+  }
+
+  // Nostr relay configuration
+  const RELAYS = [
+    'wss://relay.primal.net',
+    'wss://relay.damus.io',
+    'wss://nos.lol'
+  ];
+
+  interface Product {
+    id: string;
+    title: string;
+    price: string;
+    currency: string;
+    description: string;
+    images: string[];
+    quantity?: number;
+    stallId?: string;
+  }
+
+  function parseProductEvent(event: any): Product | null {
+    try {
+      // NIP-15 products have data in content as JSON
+      const content = JSON.parse(event.content);
+
+      // Also check tags for additional data
+      const tags: Record<string, string[]> = {};
+      event.tags?.forEach(([key, ...values]: string[]) => {
+        if (!tags[key]) tags[key] = [];
+        tags[key].push(values[0] || '');
+      });
+
+      // Get images from multiple sources
+      let images: string[] = [];
+
+      // 1. From content.images array
+      if (Array.isArray(content.images) && content.images.length > 0) {
+        images = content.images;
+      }
+      // 2. From content.image (single image)
+      else if (content.image) {
+        images = [content.image];
+      }
+      // 3. From tags (can have multiple image tags)
+      else if (tags.image && tags.image.length > 0) {
+        images = tags.image.filter(Boolean);
+      }
+      // 4. From t tags that might contain image URLs (some implementations)
+      else if (tags.t) {
+        const imgUrls = tags.t.filter(t => t && (t.startsWith('http') || t.startsWith('//')));
+        if (imgUrls.length > 0) images = imgUrls;
+      }
+
+      console.log('Product parsed:', content.name, 'Images:', images);
+
+      return {
+        id: content.id || (tags.d ? tags.d[0] : '') || event.id,
+        title: content.name || content.title || (tags.title ? tags.title[0] : '') || 'Untitled Product',
+        price: String(content.price || (tags.price ? tags.price[0] : '') || '0'),
+        currency: content.currency || (tags.currency ? tags.currency[0] : '') || 'sat',
+        description: content.description || content.summary || '',
+        images: images,
+        quantity: content.quantity,
+        stallId: content.stall_id || (tags.a ? tags.a[0]?.split(':')[2] : undefined)
+      };
+    } catch (e) {
+      console.error('Error parsing product event:', e, event);
+      // Fallback: try parsing from tags only
+      const tags: Record<string, string[]> = {};
+      event.tags?.forEach(([key, ...values]: string[]) => {
+        if (!tags[key]) tags[key] = [];
+        tags[key].push(values[0] || '');
+      });
+
+      if (!tags.d || tags.d.length === 0) return null;
+
+      return {
+        id: tags.d[0],
+        title: (tags.title ? tags.title[0] : '') || (tags.name ? tags.name[0] : '') || 'Untitled Product',
+        price: tags.price ? tags.price[0] : '0',
+        currency: tags.currency ? tags.currency[0] : 'sat',
+        description: event.content || '',
+        images: tags.image ? tags.image.filter(Boolean) : [],
+        stallId: tags.a ? tags.a[0]?.split(':')[2] : undefined
+      };
+    }
+  }
+
+  function fetchProductsFromRelay(relayUrl: string, merchantHex: string): Promise<Product[]> {
+    return new Promise((resolve) => {
+      const products: Product[] = [];
+      let ws: WebSocket;
+      let timeout: number;
+
+      try {
+        ws = new WebSocket(relayUrl);
+      } catch (e) {
+        resolve([]);
+        return;
+      }
+
+      const subId = Math.random().toString(36).slice(2, 10);
+
+      ws.onopen = () => {
+        // Subscribe to merchant's products (kind 30018) and classifieds (kind 30402)
+        ws.send(JSON.stringify([
+          'REQ',
+          subId,
+          {
+            kinds: [30018, 30402],
+            authors: [merchantHex]
+          }
+        ]));
+
+        timeout = window.setTimeout(() => {
+          ws.close();
+          resolve(products);
+        }, 5000);
+      };
+
+      ws.onmessage = (e) => {
+        try {
+          const msg = JSON.parse(e.data);
+          const eventKind = msg[2]?.kind;
+          if (msg[0] === 'EVENT' && msg[1] === subId && (eventKind === 30018 || eventKind === 30402)) {
+            console.log('Raw product event:', msg[2]);
+            const product = parseProductEvent(msg[2]);
+            if (product) {
+              products.push(product);
+            }
+          }
+          if (msg[0] === 'EOSE') {
+            clearTimeout(timeout);
+            ws.close();
+            resolve(products);
+          }
+        } catch (err) {
+          // Ignore parse errors
+        }
+      };
+
+      ws.onerror = () => {
+        clearTimeout(timeout);
+        resolve([]);
+      };
+
+      ws.onclose = () => {
+        clearTimeout(timeout);
+      };
+    });
+  }
+
+  async function fetchProducts(merchantHex: string): Promise<Product[]> {
+    // Query all relays in parallel
+    const results = await Promise.all(
+      RELAYS.map(relay => fetchProductsFromRelay(relay, merchantHex))
+    );
+
+    // Deduplicate products by ID (keep latest)
+    const productMap = new Map<string, Product>();
+    results.flat().forEach(product => {
+      if (!productMap.has(product.id)) {
+        productMap.set(product.id, product);
+      }
+    });
+
+    return Array.from(productMap.values());
+  }
+
+  function formatPrice(price: string, currency: string): string {
+    const numPrice = parseInt(price, 10);
+    if (currency === 'sat' || currency === 'sats') {
+      return `${numPrice.toLocaleString()} sats`;
+    }
+    if (currency === 'msat') {
+      return `${Math.floor(numPrice / 1000).toLocaleString()} sats`;
+    }
+    return `${numPrice} ${currency}`;
+  }
+
+  function renderProducts(products: Product[], marketUrl: string) {
+    const grid = document.getElementById('products-grid');
+    if (!grid) return;
+
+    grid.innerHTML = products.map(product => {
+      const productUrl = `${marketUrl}/products/${product.id}`;
+      return `
+        <a
+          href="${productUrl}"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="block bg-white rounded-xl border border-gray-200 hover:border-pink hover:shadow-lg transition-all overflow-hidden"
+        >
+          <div class="aspect-square bg-gray-100 flex items-center justify-center">
+            ${product.images[0]
+              ? `<img src="${product.images[0]}" alt="${product.title}" class="w-full h-full object-cover" referrerpolicy="no-referrer" onerror="this.parentElement.innerHTML='<span class=\\'text-4xl\\'>🐷</span>'">`
+              : `<span class="text-4xl">🐷</span>`
+            }
+          </div>
+          <div class="p-4">
+            <h3 class="font-bold text-gray-900 mb-1">${product.title}</h3>
+            <p class="text-sm text-gray-500 mb-2 line-clamp-2">${product.description}</p>
+            <div class="flex items-center justify-between">
+              <span class="text-lg font-bold text-pink">${formatPrice(product.price, product.currency)}</span>
+              <span class="text-sm text-gray-400">⚡ Lightning</span>
+            </div>
+          </div>
+        </a>
+      `;
+    }).join('');
+  }
+
+  // Initialize on page load
+  document.addEventListener('DOMContentLoaded', async () => {
+    const container = document.getElementById('nostr-products');
+    if (!container) return;
+
+    const merchantNpub = container.dataset.merchantNpub;
+    const marketUrl = container.dataset.marketUrl || 'https://plebeian.market';
+
+    if (!merchantNpub) {
+      console.error('No merchant npub provided');
+      return;
+    }
+
+    const merchantHex = npubToHex(merchantNpub);
+    if (!merchantHex) {
+      console.error('Invalid merchant npub');
+      return;
+    }
+
+    const loading = document.getElementById('products-loading');
+    const error = document.getElementById('products-error');
+    const grid = document.getElementById('products-grid');
+    const empty = document.getElementById('products-empty');
+
+    try {
+      const products = await fetchProducts(merchantHex);
+
+      loading?.classList.add('hidden');
+
+      if (products.length === 0) {
+        empty?.classList.remove('hidden');
+      } else {
+        renderProducts(products, marketUrl);
+        grid?.classList.remove('hidden');
+      }
+    } catch (e) {
+      console.error('Failed to fetch products:', e);
+      loading?.classList.add('hidden');
+      error?.classList.remove('hidden');
+    }
+  });
+</script>
+
+<style>
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>

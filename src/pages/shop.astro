@@ -1,6 +1,10 @@
 ---
 import ContentLayout from '../layouts/ContentLayout.astro';
 import Button from '../components/ui/Button.astro';
+import NostrProducts from '../components/shop/NostrProducts.astro';
+
+// LightningPiggy merchant npub on Plebeian Market
+const merchantNpub = 'npub1y2qcaseaspuwvjtyk4suswdhgselydc42ttlt0t2kzhnykne7s5swvaffq';
 ---
 
 <ContentLayout
@@ -8,18 +12,14 @@ import Button from '../components/ui/Button.astro';
   description="Buy a Lightning Piggy - Bitcoin piggy bank for kids"
   heroImage="/images/pages/robotechy-pigs.jpeg"
 >
-  <div class="not-prose mb-12 p-8 bg-gradient-to-br from-pink-light/30 to-yellow-light/30 rounded-2xl border border-pink/20 text-center">
-    <h2 class="text-2xl font-bold text-gray-900 mb-4">Lightning Piggy v2 is here!</h2>
-    <p class="text-gray-600 mb-6">
-      Get the latest edition directly from our foundation.
-    </p>
-    <Button
-      href="https://btcpay.ideasarelikeflames.org/apps/2tGWUJdP3FrKb7aFg5qEQTXrzB4z/pos"
-      variant="primary"
-      size="lg"
-    >
-      Buy Lightning Piggy v2
-    </Button>
+  <div class="not-prose mb-12">
+    <div class="text-center mb-8">
+      <h2 class="text-2xl font-bold text-gray-900 mb-2">Lightning Piggy Shop</h2>
+      <p class="text-gray-600">
+        Get your Lightning Piggy directly from us. Pay with Bitcoin Lightning! ⚡
+      </p>
+    </div>
+    <NostrProducts merchantNpub={merchantNpub} plebeianMarketUrl="https://plebeian.market" />
   </div>
 
   <h2>Retail Partners</h2>

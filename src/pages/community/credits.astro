@@ -2,17 +2,35 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import creditsData from '../../data/credits.json';
 
+// Helper to check if URL is a personal website (not a social profile)
+function isWebsiteUrl(url?: string): boolean {
+  if (!url) return false;
+  // Social profile patterns that should NOT show globe icon
+  const socialPatterns = [
+    /twitter\.com\//i,
+    /x\.com\//i,
+    /njump\.me\//i,
+    /github\.com\//i,
+    /nostr\.band\//i,
+    /primal\.net\//i,
+    /geyser\.fund\/project\//i,  // Geyser project pages are like social profiles
+  ];
+  return !socialPatterns.some(pattern => pattern.test(url));
+}
+
 // Helper to extract username and avatar from various URL formats
-function parseProfile(name: string, url?: string, avatar?: string, nostrUrl?: string, xUrl?: string, githubUrl?: string): { displayName: string; username: string; avatar: string; url?: string; nostrUrl?: string; xUrl?: string; githubUrl?: string } {
+function parseProfile(name: string, url?: string, avatar?: string, nostrUrl?: string, xUrl?: string, githubUrl?: string): { displayName: string; username: string; avatar: string; url?: string; websiteUrl?: string; nostrUrl?: string; xUrl?: string; githubUrl?: string } {
   const cleanName = name.replace(/^⭐️\s*/, '').trim();
+
+  const websiteUrl = isWebsiteUrl(url) ? url : undefined;
 
   // If avatar is explicitly provided, use it
   if (avatar) {
-    return { displayName: cleanName, username: cleanName, avatar, url, nostrUrl, xUrl, githubUrl };
+    return { displayName: cleanName, username: cleanName, avatar, url, websiteUrl, nostrUrl, xUrl, githubUrl };
   }
 
   if (!url) {
-    return { displayName: cleanName, username: cleanName, avatar: '', nostrUrl, xUrl, githubUrl };
+    return { displayName: cleanName, username: cleanName, avatar: '', websiteUrl, nostrUrl, xUrl, githubUrl };
   }
 
   // Twitter URLs - try to get avatar
@@ -23,6 +41,7 @@ function parseProfile(name: string, url?: string, avatar?: string, nostrUrl?: st
       username: `@${twitterMatch[1]}`,
       avatar: `https://unavatar.io/twitter/${twitterMatch[1]}`,
       url,
+      websiteUrl,
       nostrUrl,
       xUrl,
       githubUrl
@@ -35,6 +54,7 @@ function parseProfile(name: string, url?: string, avatar?: string, nostrUrl?: st
     username: cleanName,
     avatar: '',
     url,
+    websiteUrl,
     nostrUrl,
     xUrl,
     githubUrl
@@ -99,8 +119,19 @@ const { coreTeam = [], contributors = [], specialThanks = [] } = creditsData;
                       <p class="text-xs text-gray-500 mt-1">{person.contribution}</p>
                     </>
                   )}
-                  {(profile.nostrUrl || profile.xUrl || profile.githubUrl) && (
+                  {(profile.websiteUrl || profile.nostrUrl || profile.xUrl || profile.githubUrl) && (
                     <div class="flex justify-center gap-2 mt-2">
+                      {profile.websiteUrl && (
+                        <span
+                          class="text-gray-400 hover:text-blue-600 transition-colors cursor-pointer"
+                          onclick={`event.preventDefault(); event.stopPropagation(); window.open('${profile.websiteUrl}', '_blank');`}
+                          title="Website"
+                        >
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
+                          </svg>
+                        </span>
+                      )}
                       {profile.nostrUrl && (
                         <span
                           class="text-gray-400 hover:text-purple-600 transition-colors cursor-pointer"
@@ -185,8 +216,19 @@ const { coreTeam = [], contributors = [], specialThanks = [] } = creditsData;
                       <p class="text-xs text-gray-500 mt-1">{person.contribution}</p>
                     </>
                   )}
-                  {(profile.nostrUrl || profile.xUrl || profile.githubUrl) && (
+                  {(profile.websiteUrl || profile.nostrUrl || profile.xUrl || profile.githubUrl) && (
                     <div class="flex justify-center gap-2 mt-2">
+                      {profile.websiteUrl && (
+                        <span
+                          class="text-gray-400 hover:text-blue-600 transition-colors cursor-pointer"
+                          onclick={`event.preventDefault(); event.stopPropagation(); window.open('${profile.websiteUrl}', '_blank');`}
+                          title="Website"
+                        >
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
+                          </svg>
+                        </span>
+                      )}
                       {profile.nostrUrl && (
                         <span
                           class="text-gray-400 hover:text-purple-600 transition-colors cursor-pointer"
@@ -272,8 +314,19 @@ const { coreTeam = [], contributors = [], specialThanks = [] } = creditsData;
                       {item.note && <p class="text-xs text-gray-500 mt-1">{item.note}</p>}
                     </>
                   )}
-                  {(profile.nostrUrl || profile.xUrl || profile.githubUrl) && (
+                  {(profile.websiteUrl || profile.nostrUrl || profile.xUrl || profile.githubUrl) && (
                     <div class="flex justify-center gap-2 mt-2">
+                      {profile.websiteUrl && (
+                        <span
+                          class="text-gray-400 hover:text-blue-600 transition-colors cursor-pointer"
+                          onclick={`event.preventDefault(); event.stopPropagation(); window.open('${profile.websiteUrl}', '_blank');`}
+                          title="Website"
+                        >
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
+                          </svg>
+                        </span>
+                      )}
                       {profile.nostrUrl && (
                         <span
                           class="text-gray-400 hover:text-purple-600 transition-colors cursor-pointer"

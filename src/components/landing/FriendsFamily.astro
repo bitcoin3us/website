@@ -7,6 +7,21 @@ const { educationPartners = [], technologyPartners = [], appearances = [], inThe
 // Check if we have any partners to show
 const hasPartners = educationPartners.length > 0 || technologyPartners.length > 0 || appearances.length > 0 || inTheNews.length > 0;
 
+// Helper to check if URL is a personal website (not a social profile)
+function isWebsiteUrl(url?: string): boolean {
+  if (!url) return false;
+  // Social profile patterns that should NOT show globe icon
+  const socialPatterns = [
+    /twitter\.com\//i,
+    /x\.com\//i,
+    /njump\.me\//i,
+    /github\.com\//i,
+    /nostr\.band\//i,
+    /primal\.net\//i,
+  ];
+  return !socialPatterns.some(pattern => pattern.test(url));
+}
+
 // Reusable card component markup
 const renderCard = (partner: any) => partner;
 ---
@@ -49,8 +64,19 @@ const renderCard = (partner: any) => partner;
                 {partner.name}
               </h4>
               {partner.description && <p class="text-xs text-gray-500 mt-1">{partner.description}</p>}
-              {(partner.nostrUrl || partner.xUrl || partner.githubUrl) && (
+              {(isWebsiteUrl(partner.url) || partner.nostrUrl || partner.xUrl || partner.githubUrl) && (
                 <div class="flex justify-center gap-2 mt-2">
+                  {isWebsiteUrl(partner.url) && (
+                    <span
+                      class="text-gray-400 hover:text-blue-600 transition-colors cursor-pointer"
+                      onclick={`event.preventDefault(); event.stopPropagation(); window.open('${partner.url}', '_blank');`}
+                      title="Website"
+                    >
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
+                      </svg>
+                    </span>
+                  )}
                   {partner.nostrUrl && (
                     <span
                       class="text-gray-400 hover:text-purple-600 transition-colors cursor-pointer"
@@ -89,10 +115,10 @@ const renderCard = (partner: any) => partner;
       </div>
     )}
 
-    <!-- Technology Partners -->
+    <!-- Enabling Technologies -->
     {technologyPartners.length > 0 && (
       <div class="mt-12">
-        <h3 class="text-xl font-bold text-gray-900 mb-2 text-center">Technology Partners</h3>
+        <h3 class="text-xl font-bold text-gray-900 mb-2 text-center">Enabling Technologies</h3>
         <p class="text-gray-600 mb-6 text-center">The technologies and platforms that power Lightning Piggy.</p>
         <div class="flex flex-wrap justify-center gap-4">
           {technologyPartners.map((partner) => (
@@ -119,8 +145,19 @@ const renderCard = (partner: any) => partner;
                 {partner.name}
               </h4>
               {partner.description && <p class="text-xs text-gray-500 mt-1">{partner.description}</p>}
-              {(partner.nostrUrl || partner.xUrl || partner.githubUrl) && (
+              {(isWebsiteUrl(partner.url) || partner.nostrUrl || partner.xUrl || partner.githubUrl) && (
                 <div class="flex justify-center gap-2 mt-2">
+                  {isWebsiteUrl(partner.url) && (
+                    <span
+                      class="text-gray-400 hover:text-blue-600 transition-colors cursor-pointer"
+                      onclick={`event.preventDefault(); event.stopPropagation(); window.open('${partner.url}', '_blank');`}
+                      title="Website"
+                    >
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
+                      </svg>
+                    </span>
+                  )}
                   {partner.nostrUrl && (
                     <span
                       class="text-gray-400 hover:text-purple-600 transition-colors cursor-pointer"
@@ -189,8 +226,19 @@ const renderCard = (partner: any) => partner;
                 {partner.name}
               </h4>
               {partner.description && <p class="text-xs text-gray-500 mt-1">{partner.description}</p>}
-              {(partner.nostrUrl || partner.xUrl || partner.githubUrl) && (
+              {(isWebsiteUrl(partner.url) || partner.nostrUrl || partner.xUrl || partner.githubUrl) && (
                 <div class="flex justify-center gap-2 mt-2">
+                  {isWebsiteUrl(partner.url) && (
+                    <span
+                      class="text-gray-400 hover:text-blue-600 transition-colors cursor-pointer"
+                      onclick={`event.preventDefault(); event.stopPropagation(); window.open('${partner.url}', '_blank');`}
+                      title="Website"
+                    >
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
+                      </svg>
+                    </span>
+                  )}
                   {partner.nostrUrl && (
                     <span
                       class="text-gray-400 hover:text-purple-600 transition-colors cursor-pointer"
@@ -259,8 +307,19 @@ const renderCard = (partner: any) => partner;
                 {partner.name}
               </h4>
               {partner.description && <p class="text-xs text-gray-500 mt-1">{partner.description}</p>}
-              {(partner.nostrUrl || partner.xUrl || partner.githubUrl) && (
+              {(isWebsiteUrl(partner.url) || partner.nostrUrl || partner.xUrl || partner.githubUrl) && (
                 <div class="flex justify-center gap-2 mt-2">
+                  {isWebsiteUrl(partner.url) && (
+                    <span
+                      class="text-gray-400 hover:text-blue-600 transition-colors cursor-pointer"
+                      onclick={`event.preventDefault(); event.stopPropagation(); window.open('${partner.url}', '_blank');`}
+                      title="Website"
+                    >
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
+                      </svg>
+                    </span>
+                  )}
                   {partner.nostrUrl && (
                     <span
                       class="text-gray-400 hover:text-purple-600 transition-colors cursor-pointer"
