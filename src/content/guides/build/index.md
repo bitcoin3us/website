@@ -11,55 +11,26 @@ Making your very own Lightning Piggy is squealy easy. Here are the steps you nee
 1. Source the parts.
 2. Create a wallet.
 3. [Flash](https://lightningpiggy.github.io/?ref=lightningpiggy.com) the firmware.
-4. Make a [case](/build/cases) and assemble the parts.
+4. Connect to and configure your piggy.
+5. Make a [case](/build/cases) and assemble the parts.
 
-💡IMPORTANT: This is not a toy. It contains small parts which could be a choking and ingestion hazard. There are also sharp edges. It should not be handled by children under 4 years of age. Assembly and use of this product is at your own risk. We take no responsibility for any losses that may be incurred.
+💡 IMPORTANT: This is not a toy. It contains small parts which could be a choking and ingestion hazard. There are also sharp edges. It should not be handled by children under 4 years of age. Assembly and use of this product is at your own risk. We take no responsibility for any losses that may be incurred.
+
 ---
 
 ## Quick Start Guide
 
-If you already have the single board computer.
+If you already have the single board computer, follow these steps:
 
-Choose a wallet that supports Nostr Wallet Connect (NWC). We recommend [Alby Hub](https://albyhub.com/) because it's self-hosted; supports multiple friends and family accounts, and is super easy to use. Once setup, make a copy of the **Lightning Address** and **NWC link**, you’ll need them in the next step.
+1. Choose a wallet that supports Nostr Wallet Connect (NWC).
+   - **For beginners:** We recommend [Coinos](https://coinos.io) — it's simple and custodial (with the option to auto-withdraw to cold storage), so you can get started quickly.
+   - **For a non-custodial setup:** We recommend [Alby Hub](https://albyhub.com/) — it supports multiple friends and family accounts and is easy to use.
 
-Next flash the firmware. You’ll need:
+   Once your wallet is set up, copy your **Lightning Address** and **NWC link** — you'll need both in the next step.
 
-- A Wi-Fi enabled laptop/desktop computer.
+2. Flash the firmware using our [Web Installer](https://lightningpiggy.github.io/). You'll need a Wi-Fi enabled computer with Chrome, Brave, Opera, or Edge browser.
 
-- A browser that supports the Web Serial API (such as Google Chrome, Brave, Opera, or Microsoft Edge).
-
-- Your Lightning Piggy configuration details (summarised below) ready to copy and paste into the setup webpage.
-
-**Connection**
-**Required Credentials**
-
-**WiFi**
-- **SSID**   
- - **Password**
-
-**NWC**
-- **NWC link** e.g., `nostr+walletconnect://ba80990666ef0b...`   
- - **Lightning address** e.g., `LightningPiggy@coinos.io`
-
-Use our custom-built web installer to configure and flash the firmware onto your device. Once installed, the device will automatically reboot with its Wi-Fi access point enabled, allowing you to connect and complete the configuration. Just follow the on-screen instructions. Otherwise, to enter 'access point' mode, press and hold the IO39 (Wake-up) button done for at least 3 seconds.
-
-![](./T5-2.13-Buttons-1.jpeg)
-*Lightning Piggy's Controls*
-[Web Installer](https://lightningpiggy.github.io/)Starting from version 5, your Piggy will remember its configuration settings - even after a software update. So you won’t need to re-enter them, as long as you don’t choose to erase the device during installation.
-
-To access Piggy’s configuration settings, follow these steps:  
-
-**1.	Activate Piggy’s Wi-Fi access point:** From another device (e.g., a laptop or smartphone), hold down Piggy’s IO39 (Wake-up) button for at least 3 seconds.  
-
-**2.	Connect to the “Piggy Config” Wi-Fi network:** After a few seconds, a new Wi-Fi network called “Piggy Config” should appear. Connect your device to it.  
-
-**3.	Open the configuration page:** In your browser, go to: http://<"IP address of your Piggy">/ (The IP address will typically be something like 192.168.4.1.).
-
-Notes  
-
-•	Some operating systems may automatically disconnect from the Piggy network since there is no internet connection. If this happens, simply reconnect and continue configuring.  
-
-•	If you’re powering the Piggy via USB, you can enable the “Always run webserver” option in the settings. This keeps the Wi-Fi access point active, making it easier to reconnect anytime.
+3. Connect to and configure your Piggy (see [Accessing Piggy's Configuration Settings](#accessing-piggys-configuration-settings) below).
 
 ---
 
@@ -81,78 +52,51 @@ Notes
 
 **Micro USB data cable:** Available cheaply for bulk purchases from [Aliexpress](https://www.aliexpress.com) or [Amazon](http://amazon.com) if you don't have one lying around.
 
-💡IMPORTANT: Improper assembly and/or the use of improper/faulty batteries can present a fire hazard. We recommend using only high quality LiPo rechargeable batteries.***Before*** connecting the battery check the connector is correctly wired. The red wire needs to align with the positive "+" terminal, and the black wire needs to align with the negative "-" terminal. If the battery you have sourced has the polarity switched, it's possible to swop the wires by carefully lifting the plastic JST connecter retainers.
+💡 IMPORTANT: Improper assembly and/or the use of improper/faulty batteries can present a fire hazard. We recommend using only high quality LiPo rechargeable batteries. **Before** connecting the battery, check the connector is correctly wired. The red wire needs to align with the positive "+" terminal, and the black wire needs to align with the negative "-" terminal. If the battery you have sourced has the polarity switched, it's possible to swap the wires by carefully lifting the plastic JST connector retainers.
 
-![](./IMG_3154-2.jpeg)
-******Before*****connecting the battery check the connector is correctly wired.*
-Note: The device can operate without a battery if powered via using the micro USB port.
+![Before connecting the battery check the connector is correctly wired](./IMG_3154-2.jpeg)
+*Before connecting the battery, check the connector is correctly wired.*
+
+> **Note:** The device can operate without a battery if powered via the micro USB port.
 
 Here's an image showing your piggy's controls:
 
-![](./T5-2.13-Buttons-1.jpeg)
+![Lightning Piggy's Controls](./T5-2.13-Buttons-1.jpeg)
 *Lightning Piggy's Controls*
-If you’d like to add a tilt switch, simply solder it between pins 32 and 3V3. Any standard tilt switches will work; for example, the SW-520D ball switch is a suitable option.
+
+If you'd like to add a tilt switch, simply solder it between pins 32 and 3V3. Any standard tilt switches will work; for example, the SW-520D ball switch is a suitable option.
 
 ### 2. Create a Wallet
 
 Choose one of two options for connecting your piggy:
 
-**Use a Nostr Wallet Connect (NWC)-enabled wallet. Or, set up an LNBits wallet.**
+You have two options for connecting your piggy:
 
-[**NWC**](https://nwc.dev/) is a protocol that lets you securely link your Bitcoin wallet to applications without exposing your private keys, making it a simple and safe option.
+- [**NWC**](https://nwc.dev/) (Nostr Wallet Connect) - A protocol that lets you securely link your Bitcoin wallet to applications without exposing your private keys. Simple and safe.
+- [**LNBits**](https://lnbits.com/) - A versatile wallet and payment processing system for the Lightning Network, offering more control and customisation.
 
-[**LNBits**](https://lnbits.com/) is a versatile wallet and payment processing system for the Lightning Network, offering more control and customisation.
+Below is a detailed comparison:
 
-Below is a detailed comparison of both options to help you choose the best fit.
-
-**NWC**
-**LNBits**
-
-**Purpose**
-Protocol for connecting Lightning wallets to apps via Nostr
-Multi-wallet Lightning account system
-
-**Prerequisites**
-Works with Nostr, no server required, just a NWC-compatible wallet
-Requires hosting a server (trustless) or using a hosted instance (trusted)
-
-**Ease of Use**
-**Easy!** Copy and paste NWC link to connect a wallet
-Requires the setup of, or access to, an LNBits instance
-
-**Custodianship**
-Both non-custodial and custodial options, the Lightning Piggy software only views payments
-Both non-custodial (if self-hosted) and custodial (if using a hosted instance)
-
-**Wallet Support**
-Works with any NWC-enabled wallet (See below)
-Internal to LNBits but can also be connected to a NWC-enabled wallet through LNbits
-
-**Best For**
-Great for connecting a regular NWC-enabled wallet with your piggy
-Self-hosted Lightning wallets, managing multiple accounts from one interface, access to additional extension-based LNBits functionality
+| Feature | NWC | LNBits |
+|---------|-----|--------|
+| **Purpose** | Protocol for connecting Lightning wallets to apps via Nostr | Multi-wallet Lightning account system |
+| **Prerequisites** | No server required, just a NWC-compatible wallet | Requires hosting a server or using a hosted instance |
+| **Ease of Use** | Easy! Copy and paste NWC link | Requires LNBits instance setup |
+| **Custodianship** | Non-custodial and custodial options | Non-custodial (self-hosted) or custodial |
+| **Wallet Support** | Any NWC-enabled wallet | Internal + NWC via extension |
+| **Best For** | Simple wallet connection | Self-hosted, multiple accounts, extensions |
 
 ### Nostr Wallet Connect
 
-Choose an NWC-enabled wallet and follow the provider’s setup instructions. Below is a summary of some popular wallet options.
+Choose an NWC-enabled wallet and follow the provider's setup instructions. Here are some popular options:
 
-Wallet
-**Description**
-
-[Alby Hub](https://albyhub.com/)
-A self-custodial, open-source lightning wallet that connects to apps
-
-[Cashu](https://wallet.cashu.me)
-A free and open-source Bitcoin wallet that uses ecash
-
-[Coinos](https://coinos.io/)
-A free custodial web wallet and payment page
-
-[Primal](https://primal.net/)
-A popular nostr client with integrated custodial wallet
-
-[Zeus](https://zeusln.com/)
-A self-custodial, open-source Bitcoin wallet
+| Wallet | Description |
+|--------|-------------|
+| [Alby Hub](https://albyhub.com/) | Self-custodial, open-source lightning wallet that connects to apps |
+| [Cashu](https://wallet.cashu.me) | Free, open-source Bitcoin wallet that uses ecash |
+| [Coinos](https://coinos.io/) | Free custodial web wallet and payment page |
+| [Primal](https://primal.net/) | Popular nostr client with integrated custodial wallet |
+| [Zeus](https://zeusln.com/) | Self-custodial, open-source Bitcoin wallet |
 
 Go to the NWC information page in your chosen wallet (usually found in the settings). Locate and copy the NWC link, which should follow this structure:
 
@@ -167,44 +111,66 @@ If you wish to run a LNbits wallet, please refer to our detailed [guide](/build/
 
 ### 3. Flash the firmware
 
-You’ll need a Wi-Fi enabled laptop/desktop computer, a browser that supports the Web Serial API (such as Google Chrome, Brave, Opera, or Microsoft Edge), and your Lightning Piggy configuration details (summarised below) ready to copy and paste into the setup webpage.
+You'll need a Wi-Fi enabled laptop/desktop computer, a browser that supports the Web Serial API (such as Google Chrome, Brave, Opera, or Microsoft Edge), and a USB cable that can transmit data (some USB cables just supply power).
 
-**Connection**
-**Required Credentials**
+Use our custom-built [web Installer](https://lightningpiggy.github.io/) to flash the firmware onto your device. Once installed, the device will automatically reboot with its Wi-Fi access point enabled for approximately 20 seconds, allowing you to connect and configure the software.
 
-**WiFi**
-- **SSID**   
- - **Password**
+### 4. Connect to and configure your piggy
 
-**NWC**
-- **NWC link** e.g., `nostr+walletconnect://ba80990666ef0b...`   
- - **Lightning address** e.g., `LightningPiggy@coinos.io`
-
-**or LNBits**
-- **Server name** (e.g., `https://demo.lnpiggy.com`)   
- - **Invoice/read key** (e.g., `db400dfba...`, copied from your LNBits Wallet API toggle)
-
-Use our custom-built web installer to configure and flash the firmware onto your device. Once installed, the device will automatically reboot with its Wi-Fi access point enabled, allowing you to connect and complete the configuration. Just follow the on-screen instructions.
-
-[Web Installer](https://lightningpiggy.github.io/)If you don't see the Lightning Piggy access point in your available Wi-Fi networks after updating the software, simply press and hold the IO39 (Wake-up) button for at least 3 seconds to activate it.
+If you don't see the **Piggy Config** access point in your available Wi-Fi networks after updating the software, press and hold the IO39 (Wake-up) button for at least 3 seconds to activate it.
 
 ![](./T5-2.13-Buttons-1.jpeg)
 *Lightning Piggy's Controls*
-Notes  
 
-•	Some operating systems may automatically disconnect from the Piggy network since there is no internet connection. If this happens, simply reconnect and continue configuring.  
+Please note, since the piggy's access point doesn't provide internet access, the device you're using to connect to it may automatically disconnect after a period of inactivity. It is worth preparing your credentials (summarised below) in advance for easy copy and paste.
 
-•	If you’re powering the Piggy via USB, you can enable the “Always run webserver” option in the settings. This keeps the Wi-Fi access point active, making it easier to reconnect anytime.
+| Connection | Required Credentials |
+|------------|---------------------|
+| **WiFi** | SSID, Password |
+| **NWC** | NWC link (e.g., `nostr+walletconnect://...`), Lightning address |
+| **or LNBits** | Server name (e.g., `https://demo.lnpiggy.com`), Invoice/read key |
 
 ---
 
-### 4. Make a case and assemble the parts
+### Accessing Piggy's Configuration Settings
+
+**1. Activate Piggy's Wi-Fi access point**
+
+On another device (e.g., a laptop or smartphone), press and hold Piggy's **IO39 (Wake-up)** button for at least 3 seconds. A "Starting wireless Access Point for configuration..." message will appear on Piggy's display.
+
+**2. Connect to the "Piggy Config" Wi-Fi network**
+
+After a few seconds, a new Wi-Fi network called **Piggy Config** will appear in your device's Wi-Fi settings. Connect to it.
+
+Piggy's screen will display:
+
+- The **web address** to open in your browser (e.g., `http://192.168.4.1/`)
+- The **login credentials** — username: `piggy`, password: `oinkoink`
+
+**3. Open the configuration page**
+
+In your browser, navigate to the web address shown on Piggy's screen. Log in using the credentials above, then:
+
+1. Enter your **Wi-Fi network** details.
+2. Enter your **NWC (Nostr Wallet Connect)** or **LNbits** credentials.
+3. Click **Save**.
+4. Restart the device.
+
+The device should now connect to your Wi-Fi network and display your satoshi balance, QR code to receive lightning payments, and list your recent transactions (if any).
+
+> **Notes:**
+> - Starting from version 5, your Piggy will remember its configuration settings even after a software update. You won't need to re-enter them, as long as you don't choose to erase the device during installation.
+> - If you're powering the Piggy via USB, you can enable the "Always run webserver" option in the settings. This keeps the Wi-Fi access point active, making it easier to reconnect anytime.
+
+### 5. Make a case and assemble the parts
 
 Time to get creative! Build your very own Lightning Piggy case out of any material you wish to use, and assemble the parts.
 
-💡IMPORTANT: When installed correctly, the battery and/or board components should not get hot when it is being charged, i.e. the USB is connected to power and the battery is installed.Check out our new case options.
+💡 IMPORTANT: When installed correctly, the battery and/or board components should not get hot when it is being charged (i.e. the USB is connected to power and the battery is installed).
 
-[Cases](/build/cases)If you would like to share your design with others, please email your creation to [oink@lightningpiggy.com](mailto: oink@lightningpiggy.com) for inclusion on this website.
+Check out our [case options](/build/cases).
+
+If you would like to share your design with others, please either email your creation to [oink@lightningpiggy.com](mailto:oink@lightningpiggy.com), or post a note on nostr with a photo of your piggy, including the hashtag **#zapmypiggy** for inclusion on this website.
 
 ---
 Join our <a href="https://t.me/+Y2zSiQELdXxhZDlk" target="_blank" rel="noopener noreferrer">telegram chat</a> for help or inspiration, or to share your work with other Lightning Piggy builders.

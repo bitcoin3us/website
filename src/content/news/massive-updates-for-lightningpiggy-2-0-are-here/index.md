@@ -9,38 +9,37 @@ heroImage: './228bfad66cc9fb046608dab5ae9b24e21b648587dc75a3b94a5d686d25b4408c.p
 
 App v0.0.17–0.0.15 highlights:
 
-	•	Fixed the “camera stays blank” issue during QR scans
+ • Fixed the “camera stays blank” issue during QR scans
 
-	•	Payments list: tap to cycle font styles
+ • Payments list: tap to cycle font styles
 
-	•	Balance now switches denominations on tap
+ • Balance now switches denominations on tap
 
-	•	Replaced confetti GIF with a custom animation (no more slowdown)
+ • Replaced confetti GIF with a custom animation (no more slowdown)
 
-	•	Click the line under the balance to trigger confetti
+ • Click the line under the balance to trigger confetti
 
-	•	Added multi-relay support for Nostr Wallet Connect
+ • Added multi-relay support for Nostr Wallet Connect
 
-	•	Fully rewritten wallet classes (LNbits + NWC) for stability + speed
+ • Fully rewritten wallet classes (LNbits + NWC) for stability + speed
 
-	•	NWC now displays 6 payments and rechecks balance every 60s
+ • NWC now displays 6 payments and rechecks balance every 60s
 
-  
 MPOS v0.3.2 key improvements:
 
-	•	New setting: Auto Start App
+ • New setting: Auto Start App
 
-	•	Smoother gesture navigation (better back/menu triggers)
+ • Smoother gesture navigation (better back/menu triggers)
 
-	•	OTA rollback if launcher fails
+ • OTA rollback if launcher fails
 
-	•	“Home” menu renamed to “Launch”
+ • “Home” menu renamed to “Launch”
 
-	•	Improved drawing performance on ESP32
+ • Improved drawing performance on ESP32
 
-	•	Rebuilt WebSocketApp + python-nostr on uasyncio
+ • Rebuilt WebSocketApp + python-nostr on uasyncio
 
-	•	Updated aiohttp_ws to 0.0.6 with fragmentation support
+ • Updated aiohttp_ws to 0.0.6 with fragmentation support
 
 Enjoy the update! Stay humble, hog sats!
 

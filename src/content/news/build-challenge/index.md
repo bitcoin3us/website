@@ -14,22 +14,22 @@ Design, build and decorate a piggy using any materials you wish. Please include 
 
 ## **Friends of Lightning Piggy**
 
-**Owl: **Wise and fearless | Inspiration: Satoshi
+**Owl:**Wise and fearless | Inspiration: Satoshi
 
-**Black Panther: **Smart, cool, and fit, shadowy super coder | Inspiration: Hal
+**Black Panther:**Smart, cool, and fit, shadowy super coder | Inspiration: Hal
 
-**Space Cat: **Likes tacos | Inspiration: Hodlnaut
+**Space Cat:**Likes tacos | Inspiration: Hodlnaut
 
-**Rabbit: **Bright green and orange eyed | Inspiration: Gigi
+**Rabbit:**Bright green and orange eyed | Inspiration: Gigi
 
-**Two Pizzas: **Delicious but expensive | Inspiration: Laszlo
+**Two Pizzas:**Delicious but expensive | Inspiration: Laszlo
 
-**Torogoz (A colourful bird): **Leading the way | Inspiration: Torogoz, the National bird of El Salvador
+**Torogoz (A colourful bird):**Leading the way | Inspiration: Torogoz, the National bird of El Salvador
 
-**Honey Badger: **Fearless defender of truth | Inspiration: Max Keiser
+**Honey Badger:**Fearless defender of truth | Inspiration: Max Keiser
 
 **Purple Fluffy Ostrich**: Speaks freely all of the time | Inspiration: Nostr
 
 **Golden Monkey**, aka Schifty: Dishonest troublemaker |  Inspiration: Peter Schiff
 
-**Rat: **Claims to be everything he is not with an Aussie accent | Inspiration: Craig Wrong
+**Rat:**Claims to be everything he is not with an Aussie accent | Inspiration: Craig Wrong

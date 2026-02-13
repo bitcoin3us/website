@@ -63,6 +63,26 @@
       "contribution": ""
     },
     {
+      "name": "Ben Weeks",
+      "url": "https://njump.me/npub1jutptdc2m8kgjmudtws095qk2tcale0eemvp4j2xnjnl4nh6669slrf04x",
+      "avatar": "https://primal.b-cdn.net/media-cache?s=m&a=1&u=https%3A%2F%2Fnostr.build%2Fi%2Fp%2Fnostr.build_9841ac0b1902a46e9ecae4cd72f9caa2c20216b43838d1fb7c8dcb113ac98258.gif",
+      "isBitcoinKid": false,
+      "nostrUrl": "https://njump.me/npub1jutptdc2m8kgjmudtws095qk2tcale0eemvp4j2xnjnl4nh6669slrf04x",
+      "xUrl": "",
+      "githubUrl": "https://github.com/BenGWeeks",
+      "contribution": "Creator of the cute piggy case and mobile phone app."
+    },
+    {
+      "name": "Bitko Yinowsky",
+      "url": "https://bitko.cc/",
+      "avatar": "https://primal.b-cdn.net/media-cache?s=m&a=1&u=https%3A%2F%2Fnostr.build%2Fi%2F4e32070eeb530473a682a6a33b3a0b2711d161586274d8986b5c1beaac45a425.jpg",
+      "isBitcoinKid": false,
+      "nostrUrl": "https://njump.me/npub1dlhf5h6mgzs3lc7n3e8zenrzaj4kukm05ujwf0gzdgkvy5g6s52stupj4a",
+      "xUrl": "",
+      "githubUrl": "",
+      "contribution": "Creator of the stunning Lightning Piggy logo."
+    },
+    {
       "name": "DJ Valerie",
       "url": "https://twitter.com/djvalerieblove",
       "avatar": "https://unavatar.io/twitter/djvalerieblove",
@@ -171,28 +191,6 @@
       "xUrl": "",
       "githubUrl": "",
       "contribution": ""
-    }
-  ],
-  "specialThanks": [
-    {
-      "name": "Ben Weeks",
-      "url": "https://njump.me/npub1jutptdc2m8kgjmudtws095qk2tcale0eemvp4j2xnjnl4nh6669slrf04x",
-      "avatar": "https://primal.b-cdn.net/media-cache?s=m&a=1&u=https%3A%2F%2Fnostr.build%2Fi%2Fp%2Fnostr.build_9841ac0b1902a46e9ecae4cd72f9caa2c20216b43838d1fb7c8dcb113ac98258.gif",
-      "isBitcoinKid": false,
-      "nostrUrl": "https://njump.me/npub1jutptdc2m8kgjmudtws095qk2tcale0eemvp4j2xnjnl4nh6669slrf04x",
-      "xUrl": "",
-      "githubUrl": "https://github.com/BenGWeeks",
-      "note": "Creator of the incredibly cute piggy case and Lighting Piggy mobile phone app."
-    },
-    {
-      "name": "Bitko Yinowsky",
-      "url": "https://bitko.cc/",
-      "avatar": "https://primal.b-cdn.net/media-cache?s=m&a=1&u=https%3A%2F%2Fnostr.build%2Fi%2F4e32070eeb530473a682a6a33b3a0b2711d161586274d8986b5c1beaac45a425.jpg",
-      "isBitcoinKid": false,
-      "nostrUrl": "https://njump.me/npub1dlhf5h6mgzs3lc7n3e8zenrzaj4kukm05ujwf0gzdgkvy5g6s52stupj4a",
-      "xUrl": "",
-      "githubUrl": "",
-      "note": "Creator of the stunning Lightning Piggy logo."
     },
     {
       "name": "Valentina Picozzi",
@@ -202,7 +200,7 @@
       "nostrUrl": "",
       "xUrl": "https://twitter.com/satoshigallery",
       "githubUrl": "",
-      "note": "For sharing early ideas for how Lightning Piggy could look."
+      "contribution": "Shared early ideas for how Lightning Piggy could look."
     },
     {
       "name": "Adopting Bitcoin",
@@ -212,7 +210,7 @@
       "nostrUrl": "https://njump.me/npub1ad0ptuzte83alpkpqqctvewlaqj5zq23c83m82xw8apg4t6zlyns6xng2c",
       "xUrl": "https://x.com/AdoptingBTC",
       "githubUrl": "",
-      "note": "For being there every step of the way."
+      "contribution": "With us every step of the way."
     },
     {
       "name": "Learning Bitcoin 2024",
@@ -222,7 +220,7 @@
       "nostrUrl": "https://njump.me/npub1ku3r3n4hau650a5cjudhtja2pdfsr7yxjzda9lx2py4knr3ld69s7j4wnw",
       "xUrl": "https://www.learningbitcoin.ca/",
       "githubUrl": "",
-      "note": "For welcoming Lightning Piggy be a part of this pioneering educational event."
+      "contribution": ""
     },
     {
       "name": "Satoshi Summer Camp & BSTEM",
@@ -232,7 +230,7 @@
       "nostrUrl": "",
       "xUrl": "",
       "githubUrl": "",
-      "note": "For having Lightning Piggy be a part of this historic event involving 80 bitcoin kids."
+      "contribution": ""
     },
     {
       "name": "Bitcoin Atlantis",
@@ -242,7 +240,7 @@
       "nostrUrl": "https://njump.me/npub1h493d0qgwhu95s82zd9sxrt3ckn3ttgvaf04z02neckadxw5fkvqte4cwz",
       "xUrl": "https://bitcoinatlantis.com",
       "githubUrl": "",
-      "note": "For embracing the project and providing the perfect family-friendly environment for learning and building."
+      "contribution": "Embracing project and providing the perfect family-friendly environment for learning and building."
     },
     {
       "name": "Ben de Waal",
@@ -252,7 +250,7 @@
       "nostrUrl": "",
       "xUrl": "https://twitter.com/Ben_deWaal",
       "githubUrl": "",
-      "note": "For graciously taking the time to build one of the early prototypes."
+      "contribution": "For graciously taking the time to build one of the early prototypes."
     },
     {
       "name": "Geyser.fund",
@@ -262,7 +260,7 @@
       "nostrUrl": "https://njump.me/npub1kmwdmhuxvafg05dyap3qmy42jpwztrv9p0uvey3a8803ahlwtmnsnhxqk9",
       "xUrl": "",
       "githubUrl": "",
-      "note": "Awesome crowdfunding platform!"
+      "contribution": ""
     },
     {
       "name": "Samatha de Waal",
@@ -272,7 +270,7 @@
       "nostrUrl": "",
       "xUrl": "https://twitter.com/SamTheBTCKid",
       "githubUrl": "",
-      "note": "For her inspirational speech at BTC Prague 2023 where she gave praise to the project."
+      "contribution": "Inspirational speech at BTC Prague 2023."
     },
     {
       "name": "Bolt.fun",
@@ -282,7 +280,8 @@
       "nostrUrl": "https://njump.me/npub1funq0ywh32faz0sf7xt97japu8uk687tsysj8gndj4ehe825sq4s70gs0p",
       "xUrl": "",
       "githubUrl": "",
-      "note": "For providing the impetus to get building."
+      "contribution": "For providing the impetus to get building."
     }
-  ]
+  ],
+  "specialThanks": []
 }

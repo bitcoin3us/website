@@ -8,7 +8,7 @@ tags: ["news"]
 
 Hot on the hoofs of V2.1.1 we’re thrilled to announce another update to the Lightning Piggy code.
 
-## What’s new...
+## What’s new
 
 User Experience Improvements
 

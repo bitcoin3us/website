@@ -17,6 +17,15 @@
       "nostrUrl": "",
       "xUrl": "https://x.com/EconoKidz",
       "githubUrl": ""
+    },
+    {
+      "name": "Amity Age",
+      "description": "",
+      "url": "https://www.amityage.com/",
+      "logo": "https://unavatar.io/twitter/AmityAge",
+      "nostrUrl": "",
+      "xUrl": "https://x.com/AmityAge",
+      "githubUrl": ""
     }
   ],
   "technologyPartners": [

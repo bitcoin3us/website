@@ -8,7 +8,9 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "admin": "cd tools/admin && npm start"
+    "admin": "cd tools/admin && npm start",
+    "lint:md": "markdownlint 'src/content/**/*.md' 'archive/**/*.md' --fix",
+    "prepare": "husky"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.0.0",
@@ -20,6 +22,8 @@
     "@astrojs/tailwind": "^6.0.2",
     "autoprefixer": "^10.4.23",
     "bech32": "^2.0.0",
+    "husky": "^9.1.7",
+    "markdownlint-cli": "^0.47.0",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.19",
     "ws": "^8.19.0"

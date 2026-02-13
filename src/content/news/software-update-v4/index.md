@@ -1,6 +1,6 @@
 ---
 title: Software Update v4.x
-slug: software-upate-v4
+slug: software-update-v4
 pubDate: 2024-04-11
 heroImage: './LightningPiggy-Character-Design-Challenge-page-26-2.jpeg'
 tags: ["news"]
@@ -8,7 +8,7 @@ tags: ["news"]
 
 Trotting in hot we’re thrilled to announce that version 4 of the Lightning Piggy code has just been released. And there’s a beast of a change log…
 
-## What’s new...
+## What’s new
 
 ### User experience improvements
 
