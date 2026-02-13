@@ -46,7 +46,7 @@ If you already have the single board computer, follow these steps:
 
 - [Aliexpress](https://www.aliexpress.com/item/32863844546.html) 1200mAh.
 
-- [MakerFocus](https://www.makerfocus.com/products/4pcs-952540-3-7v-1000mah-battery-with-jst1-25-connector-lithium-rechargeable-battery) 1000mAh. Note: The size of this battery 26 * 44 * 9 mm (1.02 * 1.73 * 0.35 inch) doesn't fit perfectly in the Genesis and Robotechy pig cases.
+- [MakerFocus](https://www.makerfocus.com/products/4pcs-952540-3-7v-1000mah-battery-with-jst1-25-connector-lithium-rechargeable-battery) 1000mAh. Note: The size of this battery 26 *44* 9 mm (1.02 *1.73* 0.35 inch) doesn't fit perfectly in the Genesis and Robotechy pig cases.
 
 **Case:** One homemade case using materials of your choice.
 
@@ -103,6 +103,7 @@ Go to the NWC information page in your chosen wallet (usually found in the setti
 ```
 nostr+walletconnect://f3a192b445cd7e8f2d4a60c578eb932a57b83d9265fa790042bd865937c2e5d9?relay=wss%3A%2F%2Frelay.example.com&secret=11d4fc982746ab5389f75efc3ddaa94761e35fb209ec8d7a4b3d248ac4e6f710&lud16=RandomWallet@domain.com
 ```
+
 Keep a record of your wallet’s Lightning address (which resembles an email address), as it will be used to receive bitcoin payments over the lightning network. This address will be automatically converted into a QR code and displayed on the Piggy's screen for easy scanning.
 
 ### LNbits
@@ -159,6 +160,7 @@ In your browser, navigate to the web address shown on Piggy's screen. Log in usi
 The device should now connect to your Wi-Fi network and display your satoshi balance, QR code to receive lightning payments, and list your recent transactions (if any).
 
 > **Notes:**
+>
 > - Starting from version 5, your Piggy will remember its configuration settings even after a software update. You won't need to re-enter them, as long as you don't choose to erase the device during installation.
 > - If you're powering the Piggy via USB, you can enable the "Always run webserver" option in the settings. This keeps the Wi-Fi access point active, making it easier to reconnect anytime.
 
