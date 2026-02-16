@@ -1,0 +1,25 @@
+{
+  "testimonials": [
+    {
+      "name": "Satoshi Guy",
+      "profilePic": "https://m.primal.net/IzFo.jpg",
+      "quote": "This is exactly what Bitcoin family adoption looks like.\nIf you're a father or family looking for a fun project that teaches your kids about Bitcoin, self-sovereignty, and saving, I can't recommend this enough. It's hands-on STEM learning meets financial education. Build it together, learn together, stack together.",
+      "sourcePlatform": "nostr",
+      "sourceUrl": "https://primal.net/e/nevent1qqspp9x59jut8tjer496cm5y72pcn4jruvjsag0vary7kay8q47l9qqx8c9ks"
+    },
+    {
+      "name": "Edi",
+      "profilePic": "/images/testimonials/e63c1775-7f28-4e6f-86ef-ffc63eb56c29.png",
+      "quote": "Piggy2piggy :) the boys are going crazy everytime something comes in. Best project I ever did, worth every minute and is the building block for our future to educate the youngest",
+      "sourcePlatform": "telegram",
+      "sourceUrl": "https://t.me/LightningPiggy"
+    },
+    {
+      "name": "Eluc",
+      "profilePic": "",
+      "quote": "We had fun building these with the kids, even without a 3D printer, nor a laser cuter, we could figure it out.",
+      "sourcePlatform": "telegram",
+      "sourceUrl": "https://t.me/LightningPiggy"
+    }
+  ]
+}

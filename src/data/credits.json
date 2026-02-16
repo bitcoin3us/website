@@ -84,10 +84,10 @@
     },
     {
       "name": "DJ Valerie",
-      "url": "https://twitter.com/djvalerieblove",
-      "avatar": "https://unavatar.io/twitter/djvalerieblove",
+      "url": "https://njump.me/npub184cwc849sejs5pr566zcg4pqn53zzk85q70gmwqx7qt77h3suansvet30s",
+      "avatar": "https://blossom.primal.net/a93d6f08905e825a495947ccda6237024bd5d873962ad91c37cd81c9d8562869.png",
       "isBitcoinKid": false,
-      "nostrUrl": "",
+      "nostrUrl": "https://njump.me/npub184cwc849sejs5pr566zcg4pqn53zzk85q70gmwqx7qt77h3suansvet30s",
       "xUrl": "https://twitter.com/djvalerieblove",
       "githubUrl": "",
       "contribution": ""
@@ -250,7 +250,7 @@
       "nostrUrl": "",
       "xUrl": "https://twitter.com/Ben_deWaal",
       "githubUrl": "",
-      "contribution": "For graciously taking the time to build one of the early prototypes."
+      "contribution": ""
     },
     {
       "name": "Geyser.fund",
@@ -281,6 +281,16 @@
       "xUrl": "",
       "githubUrl": "",
       "contribution": "For providing the impetus to get building."
+    },
+    {
+      "name": "Sveva Berto",
+      "url": "https://satoshistories.com/",
+      "avatar": "",
+      "isBitcoinKid": false,
+      "nostrUrl": "",
+      "xUrl": "",
+      "githubUrl": "",
+      "contribution": ""
     }
   ],
   "specialThanks": []
