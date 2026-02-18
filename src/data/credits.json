@@ -43,24 +43,14 @@
   ],
   "contributors": [
     {
-      "name": "Marina",
-      "url": "https://twitter.com/LadyM_BTC",
-      "avatar": "https://unavatar.io/twitter/LadyM_BTC",
+      "name": "Bitko Yinowsky",
+      "url": "https://bitko.cc/",
+      "avatar": "https://primal.b-cdn.net/media-cache?s=m&a=1&u=https%3A%2F%2Fnostr.build%2Fi%2F4e32070eeb530473a682a6a33b3a0b2711d161586274d8986b5c1beaac45a425.jpg",
       "isBitcoinKid": false,
-      "nostrUrl": "",
-      "xUrl": "https://twitter.com/LadyM_BTC",
-      "githubUrl": "",
-      "contribution": ""
-    },
-    {
-      "name": "₿arekev",
-      "url": "https://njump.me/npub1s3wrhlcdjjmtp7n4m0y36dnqyljfzsr4xah36gelx6d870un5jvsnqtfhs",
-      "avatar": "https://primal.b-cdn.net/media-cache?s=m&a=1&u=https%3A%2F%2Fblossom.primal.net%2Fa1dbd673df81741914b80db89a662d5568c3ebf121a4eb0ebda3e98974ac5e24.jpg",
-      "isBitcoinKid": false,
-      "nostrUrl": "https://njump.me/npub1s3wrhlcdjjmtp7n4m0y36dnqyljfzsr4xah36gelx6d870un5jvsnqtfhs",
+      "nostrUrl": "https://njump.me/npub1dlhf5h6mgzs3lc7n3e8zenrzaj4kukm05ujwf0gzdgkvy5g6s52stupj4a",
       "xUrl": "",
       "githubUrl": "",
-      "contribution": ""
+      "contribution": "Creator of the stunning Lightning Piggy logo."
     },
     {
       "name": "Ben Weeks",
@@ -73,14 +63,44 @@
       "contribution": "Creator of the cute piggy case and mobile phone app."
     },
     {
-      "name": "Bitko Yinowsky",
-      "url": "https://bitko.cc/",
-      "avatar": "https://primal.b-cdn.net/media-cache?s=m&a=1&u=https%3A%2F%2Fnostr.build%2Fi%2F4e32070eeb530473a682a6a33b3a0b2711d161586274d8986b5c1beaac45a425.jpg",
-      "isBitcoinKid": false,
-      "nostrUrl": "https://njump.me/npub1dlhf5h6mgzs3lc7n3e8zenrzaj4kukm05ujwf0gzdgkvy5g6s52stupj4a",
+      "name": "Isaac Weeks",
+      "url": "https://njump.me/npub17dfg3tynlv39m0e9z8a0t558e7plet96xg9g4uu6q84caykq8jtqwdy09f",
+      "avatar": "https://primal.b-cdn.net/media-cache?s=m&a=1&u=https%3A%2F%2Fpbs.twimg.com%2Fprofile_images%2F1481346550345437186%2F_gwMpWzo_400x400.jpg",
+      "isBitcoinKid": true,
+      "nostrUrl": "https://njump.me/npub17dfg3tynlv39m0e9z8a0t558e7plet96xg9g4uu6q84caykq8jtqwdy09f",
       "xUrl": "",
       "githubUrl": "",
-      "contribution": "Creator of the stunning Lightning Piggy logo."
+      "contribution": "Bitcoin Kid ⭐️"
+    },
+    {
+      "name": "Marina",
+      "url": "https://twitter.com/LadyM_BTC",
+      "avatar": "https://unavatar.io/twitter/LadyM_BTC",
+      "isBitcoinKid": false,
+      "nostrUrl": "",
+      "xUrl": "https://twitter.com/LadyM_BTC",
+      "githubUrl": "",
+      "contribution": ""
+    },
+    {
+      "name": "Jurjen de Vries",
+      "url": "https://twitter.com/jurjendevries",
+      "avatar": "https://unavatar.io/twitter/jurjendevries",
+      "isBitcoinKid": false,
+      "nostrUrl": "",
+      "xUrl": "https://twitter.com/jurjendevries",
+      "githubUrl": "",
+      "contribution": ""
+    },
+    {
+      "name": "₿arekev",
+      "url": "https://njump.me/npub1s3wrhlcdjjmtp7n4m0y36dnqyljfzsr4xah36gelx6d870un5jvsnqtfhs",
+      "avatar": "https://primal.b-cdn.net/media-cache?s=m&a=1&u=https%3A%2F%2Fblossom.primal.net%2Fa1dbd673df81741914b80db89a662d5568c3ebf121a4eb0ebda3e98974ac5e24.jpg",
+      "isBitcoinKid": false,
+      "nostrUrl": "https://njump.me/npub1s3wrhlcdjjmtp7n4m0y36dnqyljfzsr4xah36gelx6d870un5jvsnqtfhs",
+      "xUrl": "",
+      "githubUrl": "",
+      "contribution": ""
     },
     {
       "name": "DJ Valerie",
@@ -103,22 +123,22 @@
       "contribution": ""
     },
     {
-      "name": "Jurjen de Vries",
-      "url": "https://twitter.com/jurjendevries",
-      "avatar": "https://unavatar.io/twitter/jurjendevries",
-      "isBitcoinKid": false,
-      "nostrUrl": "",
-      "xUrl": "https://twitter.com/jurjendevries",
-      "githubUrl": "",
-      "contribution": ""
-    },
-    {
       "name": "Janine",
       "url": "https://twitter.com/JanineGriesser",
       "avatar": "https://unavatar.io/twitter/JanineGriesser",
       "isBitcoinKid": false,
       "nostrUrl": "",
       "xUrl": "https://twitter.com/JanineGriesser",
+      "githubUrl": "",
+      "contribution": ""
+    },
+    {
+      "name": "TheKingRol",
+      "url": "https://twitter.com/TheKingRol",
+      "avatar": "https://unavatar.io/twitter/TheKingRol",
+      "isBitcoinKid": false,
+      "nostrUrl": "",
+      "xUrl": "https://twitter.com/TheKingRol",
       "githubUrl": "",
       "contribution": ""
     },
@@ -131,16 +151,6 @@
       "xUrl": "",
       "githubUrl": "",
       "contribution": ""
-    },
-    {
-      "name": "Isaac Weeks",
-      "url": "https://njump.me/npub17dfg3tynlv39m0e9z8a0t558e7plet96xg9g4uu6q84caykq8jtqwdy09f",
-      "avatar": "https://primal.b-cdn.net/media-cache?s=m&a=1&u=https%3A%2F%2Fpbs.twimg.com%2Fprofile_images%2F1481346550345437186%2F_gwMpWzo_400x400.jpg",
-      "isBitcoinKid": true,
-      "nostrUrl": "https://njump.me/npub17dfg3tynlv39m0e9z8a0t558e7plet96xg9g4uu6q84caykq8jtqwdy09f",
-      "xUrl": "",
-      "githubUrl": "",
-      "contribution": "Bitcoin Kid ⭐️"
     },
     {
       "name": "Orange Surf btc",
@@ -159,16 +169,6 @@
       "isBitcoinKid": false,
       "nostrUrl": "",
       "xUrl": "",
-      "githubUrl": "",
-      "contribution": ""
-    },
-    {
-      "name": "TheKingRol",
-      "url": "https://twitter.com/TheKingRol",
-      "avatar": "https://unavatar.io/twitter/TheKingRol",
-      "isBitcoinKid": false,
-      "nostrUrl": "",
-      "xUrl": "https://twitter.com/TheKingRol",
       "githubUrl": "",
       "contribution": ""
     },
@@ -243,6 +243,16 @@
       "contribution": "Embracing project and providing the perfect family-friendly environment for learning and building."
     },
     {
+      "name": "Sveva Berto",
+      "url": "https://satoshistories.com/",
+      "avatar": "",
+      "isBitcoinKid": false,
+      "nostrUrl": "",
+      "xUrl": "",
+      "githubUrl": "",
+      "contribution": ""
+    },
+    {
       "name": "Ben de Waal",
       "url": "https://twitter.com/Ben_deWaal",
       "avatar": "https://unavatar.io/twitter/Ben_deWaal",
@@ -283,11 +293,11 @@
       "contribution": "For providing the impetus to get building."
     },
     {
-      "name": "Sveva Berto",
-      "url": "https://satoshistories.com/",
-      "avatar": "",
-      "isBitcoinKid": false,
-      "nostrUrl": "",
+      "name": "Boynohat",
+      "url": "https://njump.me/npub1ehtg7a7uk584pa6zll2d65fm3ur5x88r5wrh5hz8z8al38e0f0ksqq9h2v",
+      "avatar": "https://m.primal.net/JPEl.jpg",
+      "isBitcoinKid": true,
+      "nostrUrl": "https://njump.me/npub1ehtg7a7uk584pa6zll2d65fm3ur5x88r5wrh5hz8z8al38e0f0ksqq9h2v",
       "xUrl": "",
       "githubUrl": "",
       "contribution": ""

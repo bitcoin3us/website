@@ -6,14 +6,16 @@ heroImage: ./build2-hero.jpeg
 ---
 
 > For Lightning Piggy v1 click [here](/build/v1).
+
 Making your very own Lightning Piggy is squealy easy. Here are the steps you need to follow:
 
 1. Source the parts.
 2. Create a wallet.
 3. [Flash](https://install.micropythonos.com/) the firmware.
-4. Make a [case](/build/cases) and assemble the parts.
+4. Connect to wifi and configure your piggy.
+5. Make a [case](/build/cases) and assemble the parts.
 
-💡 IMPORTANT: This is not a toy. It contains small parts which could be a choking and ingestion hazard. There are also sharp edges. It should not be handled by children under 4 years of age. Assembly and use of this product is at your own risk. We take no responsibility for any losses that may be incurred.
+> ⚠️ **IMPORTANT:** This is not a toy. It contains small parts which could be a choking and ingestion hazard. There are also sharp edges. It should not be handled by children under 4 years of age. Assembly and use of this product is at your own risk. We take no responsibility for any losses that may be incurred.
 
 ---
 
@@ -90,33 +92,36 @@ Keep a record of your wallet’s Lightning address (which resembles an email add
 
 If you wish to run a LNbits wallet, please refer to our detailed [guide](/build/lnbits) for step-by-step instructions.
 
-### 3. Flash the firmware
+### 3. Flash the Firmware
 
 You'll need a Wi-Fi enabled laptop/desktop computer, a browser that supports the Web Serial API (such as Google Chrome, Brave, Opera, or Microsoft Edge), and your configuration details ready.
-
-| Connection | Required Credentials |
-|------------|---------------------|
-| **WiFi** | SSID, Password |
-| **NWC** | NWC link (e.g., `nostr+walletconnect://...`), Lightning address |
-| **or LNBits** | Server name (e.g., `https://demo.lnpiggy.com`), Invoice/read key |
 
 The **Lightning Piggy v2 app** runs on [MicroPythonOS](https://micropythonos.com/) — a lightweight, fast, and versatile operating system designed for both microcontrollers and desktop systems.
 
 > MicroPythonOS was created by [Thomas](https://github.com/ThomasFarstrike), our lead developer, during the development of Lightning Piggy. It grew out of a need for a fast, flexible, learner-friendly OS tailored to microcontrollers.
 
-To get started:
-
-1. **Flash MicroPythonOS** to your device using this [web installer](https://install.micropythonos.com/).
-2. Connect your device to a **Wi-Fi network**.
-3. Open the **AppStore** and install the **Lightning Piggy app**.
-4. In the app, tap the **Settings** button and select **Nostr Wallet Connect (NWC)** as your wallet type.
-5. Enter your NWC credentials manually or scan the relevant QR code using the built-in camera module.
-
+**Flash MicroPythonOS** to your device using this [web installer](https://install.micropythonos.com/).
 > 💡 *Tip:* To improve QR code detection, zoom in on the code in your browser to make it as large and clear as possible.
 
 ---
 
-### 4. Make a case and assemble the parts
+### 4. Connect to Wi-Fi and Configure Your Piggy
+
+Connect your device to a 2.4 GHz Wi-Fi network using the Wi-Fi app, then open the App Store and install the Lightning Piggy app.
+Next, you'll need your wallet's NWC or LNbits credentials — ideally as a QR code for quick entry via the onboard camera.
+
+| Connection | Required Credentials |
+|------------|---------------------|
+| **NWC** | NWC link (e.g., `nostr+walletconnect://...`), Lightning address |
+| **or LNbits** | Server name (e.g., `https://demo.lnpiggy.com`), Invoice/read key |
+<br>
+Now to configure your wallet. In the Lightning Piggy app, tap the settings cog and select your wallet type (NWC or LNbits), then scan your credentials QR code using the built-in camera — or enter them manually via the keyboard if you prefer (though this requires some patience).
+
+Once saved, your device will connect to your wallet and update the screen to show your balance, recent transactions, and payment QR code. This typically takes about a minute.
+
+---
+
+### 5. Make a Case and Assemble the Parts
 
 Time to get creative! Build your very own Lightning Piggy case out of any material you wish to use, and assemble the parts.
 

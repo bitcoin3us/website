@@ -1,4 +1,24 @@
 {
+  "communitySponsors": [
+    {
+      "name": "Bitcoin Runners",
+      "description": "",
+      "url": "https://www.bitcoinrunners.org/",
+      "logo": "https://blossom.primal.net/f789c385dafbb6bdb7c3b81336d5b8c6c0cf5693bccedb6c5350af0ad282daae.png",
+      "nostrUrl": "https://njump.me/npub1ylwh3snzv3hw9k3lum0kxx5h7v04xd76uqccnney8fmpqehluevqge7jxa",
+      "xUrl": "https://x.com/bitcoinrunners",
+      "githubUrl": ""
+    },
+    {
+      "name": "ENOGTYVE",
+      "description": "",
+      "url": "https://enogtyve.org/",
+      "logo": "https://blossom.primal.net/8c34d6405dea937b6c575f234ece3da8e1af974a3ffd728bc70fd01108cbe049.png",
+      "nostrUrl": "https://njump.me/npub1h5gc62mhzak97z9y9mznc9jcwv0re8nx9eqt35ta9d4kyvjqt9csnzjx0m",
+      "xUrl": "",
+      "githubUrl": ""
+    }
+  ],
   "educationPartners": [
     {
       "name": "Bitcoin Junior Club",
@@ -51,8 +71,8 @@
       "name": "Nostr Wallet Connect",
       "description": "",
       "url": "https://nwc.dev/",
-      "logo": "https://blossom.primal.net/c5de735ac64b3e7256f8d92274b0f5921df47f33b0961fb971457566aac2590e.png",
-      "nostrUrl": "https://njump.me/npub1getal6ykt05fsz5nqu4uld09nfj3y3qxmv8crys4aeut53unfvlqr80nfm",
+      "logo": "https://image.nostr.build/af7c53ba49eeefbbf43ec0b7dd62e1d02ea81254669263ef7afcd82818cc939f.png",
+      "nostrUrl": "https://njump.me/npub19hg5pj5qmd3teumh6ld7drfz49d65sw3n3d5jud8sgz27avkq5dqm7yv9p",
       "xUrl": "https://x.com/nwc_dev",
       "githubUrl": ""
     },

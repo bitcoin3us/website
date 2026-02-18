@@ -1,0 +1,41 @@
+{
+  "vendors": [
+    {
+      "name": "Danish Bacon",
+      "country": "Denmark",
+      "shippingRegions": [
+        "Worldwide"
+      ],
+      "shopType": "online",
+      "description": "Get your Lightning Piggy directly from the project team. Bitcoin over Lightning accepted! ⚡",
+      "url": "/market/danish-bacon",
+      "logo": "/images/logos/danish-bacon.png",
+      "nostrUrl": "",
+      "xUrl": ""
+    },
+    {
+      "name": "Robotechy",
+      "country": "United Kingdom",
+      "shippingRegions": [
+        "Worldwide"
+      ],
+      "shopType": "online",
+      "description": "3D printing Bitcoin store with cases for Bitcoin Seed Signers and other accessories.",
+      "url": "https://robotechy.com",
+      "logo": "https://m.primal.net/JdnO.jpg",
+      "nostrUrl": "https://njump.me/npub1yy0nyk6nj6tg4sx8nd7q5qcdw6pqd5e2cc0e8u2rmcgjhpvm63hsk67xe5",
+      "xUrl": "https://x.com/IsaacWeeks"
+    },
+    {
+      "name": "The Bitcoin Hardware Store",
+      "country": "El Salvador",
+      "shippingRegions": [],
+      "shopType": "physical",
+      "description": "Physical stores located in Bitcoin Beach, El Zonte and Bitcoin Berlín, Usulután.",
+      "url": "https://tbhs.sv/",
+      "logo": "https://unavatar.io/twitter/tbhs_sv",
+      "nostrUrl": "",
+      "xUrl": "https://x.com/tbhs_sv"
+    }
+  ]
+}
