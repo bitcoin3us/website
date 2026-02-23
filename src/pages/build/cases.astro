@@ -4,11 +4,21 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 const cases = [
   {
     name: 'ZapBox!',
-    tag: 'LightningPiggy v2',
+    tag: 'ESP32-S3',
     description: "The 'ZapBox!' pocket-size edition is engineered to be ultra-compact. Made from a single part and held together with four screws, it's perfect for travel. In fact, the team carries these very piggies on the road — an entire sounder of them fits neatly into a single backpack for workshops.",
-    images: ['/images/cases/zapbox-lcd-01.png'],
+    images: [
+      '/images/cases/zapbox-lcd-01.png',
+      '/images/cases/zapbox-lcd-02.png',
+      '/images/cases/zapbox-lcd-03.png',
+      '/images/cases/zapbox-lcd-04.png',
+      '/images/cases/zapbox-lcd-05.png',
+      '/images/cases/zapbox-lcd-06.png',
+      '/images/cases/zapbox-lcd-07.png',
+    ],
     specs: {
-      board: 'S3 2inch',
+      board: 'Waveshare ESP32-S3 Touch',
+      displaySize: '2 inch',
+      os: 'MicroPythonOS',
       material: 'PLA or PETG',
       printing: 'Camera face down. Add rafts to secure the two buttons to the printer bed.',
       screws: 'M2x8mm qty4',
@@ -21,7 +31,7 @@ const cases = [
   },
   {
     name: 'ROBOTECHY',
-    tag: 'LightningPiggy v1',
+    tag: 'T5 V2.3.1',
     description: "Free range, grass fed, and wholesome, this little piggy is the most beautiful we've ever seen. Designed, printed, assembled and sold by enterprising young bitcoiners with a little help from mum & dad.",
     images: [
       '/images/cases/robotechy-01.jpeg',
@@ -32,7 +42,9 @@ const cases = [
       '/images/cases/robotechy-06.jpeg',
     ],
     specs: {
-      board: '2.13 inch',
+      board: 'LILYGO T5 V2.3.1 e-paper',
+      displaySize: '2.13 inch',
+      os: 'Embedded',
       material: 'PLA or PETG',
       printing: 'TBC',
     },
@@ -44,7 +56,7 @@ const cases = [
   },
   {
     name: 'GenesisPiggy',
-    tag: 'LightningPiggy v1',
+    tag: 'T5 V2.3.1',
     description: "BlackCoffee's original cardboard pig has been reimagined in filament and can now be printed as easily, and cheaply, as fiat money. This is a draft design so expect some tweaks and please do share any ideas you may have to improve it.",
     images: [
       '/images/cases/genesispiggy-01.png',
@@ -53,7 +65,9 @@ const cases = [
       '/images/cases/genesispiggy-04.png',
     ],
     specs: {
-      board: '2.13 inch',
+      board: 'LILYGO T5 V2.3.1 e-paper',
+      displaySize: '2.13 inch',
+      os: 'Embedded',
       material: 'PLA or PETG',
       printing: 'Print back down (trotters up). Add supports for everything except the tail. Remove all support materials from around where the board sits.',
     },
@@ -65,7 +79,7 @@ const cases = [
   },
   {
     name: 'ZapBox!',
-    tag: 'LightningPiggy v1',
+    tag: 'T5 V2.3.1',
     description: "The \"ZapBox!\" edition has been created to be as compact as possible, while maintaining easy access to the charging port and buttons. It's constructed from two parts, the main case and lid. No screws are necessary, everything fits together nice and snug, like a pig in a blanket.",
     images: [
       '/images/cases/zapbox-epaper-01.jpeg',
@@ -73,7 +87,9 @@ const cases = [
       '/images/cases/zapbox-epaper-03.jpeg',
     ],
     specs: {
-      board: '2.13 inch',
+      board: 'LILYGO T5 V2.3.1 e-paper',
+      displaySize: '2.13 inch',
+      os: 'Embedded',
       material: 'PLA or PETG',
       printing: 'Add supports to the charging port and buttons slot. Ensure no supports interfere with the four lid/case fixing points.',
     },
@@ -85,7 +101,7 @@ const cases = [
   },
   {
     name: 'MineLightningPiggy',
-    tag: 'LightningPiggy v1',
+    tag: 'T5 V2.3.1',
     description: 'This amazing piggy has been designed by super talented 11-year old "Mixter the Boyster" who loves Minecraft and 3D printing.',
     images: [
       '/images/cases/minepiggy-01.jpg',
@@ -93,7 +109,9 @@ const cases = [
       '/images/cases/minepiggy-03.jpg',
     ],
     specs: {
-      board: '2.13 inch',
+      board: 'LILYGO T5 V2.3.1 e-paper',
+      displaySize: '2.13 inch',
+      os: 'Embedded',
       material: 'PLA or PETG',
       printing: '10% infill. Tree supports. Adhesion enabled.',
       paint: 'Gold Rub\'n\'buff paint.',
@@ -108,14 +126,16 @@ const cases = [
   },
   {
     name: 'LightningPiggy Block Lamp',
-    tag: 'LightningPiggy v1',
+    tag: 'T5 V2.3.1',
     description: "Shining a light on sound money: This Minecraft-inspired savings lamp, a first of its kind, was ingeniously crafted by Silexperience and his son. The project was sparked by a curious question: \"Can bitcoin be in a piggy bank?\" This led to integrating a Lightning Piggy device inside a block shaped lamp.",
     images: [
       '/images/cases/blocklamp-01.jpg',
       '/images/cases/blocklamp-02.jpg',
     ],
     specs: {
-      board: '2.13 inch',
+      board: 'LILYGO T5 V2.3.1 e-paper',
+      displaySize: '2.13 inch',
+      os: 'Embedded',
       material: 'PLA or PETG',
       printing: 'No support needed except for the main cube. 20% filling, supports 5% (cube only).',
       notes: 'Power is provided using a 1,800 mAh lithium battery connected directly to the T5\'s USB port. The LED strip and the Lilygo are independent.',
@@ -133,14 +153,16 @@ const cases = [
   },
   {
     name: 'LegoBlock',
-    tag: 'LightningPiggy v1',
+    tag: 'T5 V2.3.1',
     description: 'A compact Lego-inspired block case for the Lightning Piggy.',
     images: [
       '/images/cases/legoblock-01.jpeg',
       '/images/cases/legoblock-02.jpeg',
     ],
     specs: {
-      board: '2.13 and 2.66 inch',
+      board: 'LILYGO T5 V2.3.1 e-paper',
+      displaySize: '2.13 and 2.66 inch',
+      os: 'Embedded',
       material: 'PLA or PETG',
       printing: 'Add supports to the charging port and buttons slot.',
     },
@@ -153,14 +175,16 @@ const cases = [
   },
   {
     name: 'LaserEngraved Piggy',
-    tag: 'LightningPiggy v1',
+    tag: 'T5 V2.3.1',
     description: 'A laser-cut plywood piggy designed and built with the help of two 11-year-old makers.',
     images: [
       '/images/cases/laserengraved-01.png',
       '/images/cases/laserengraved-02.jpeg',
     ],
     specs: {
-      board: '2.13 inch',
+      board: 'LILYGO T5 V2.3.1 e-paper',
+      displaySize: '2.13 inch',
+      os: 'Embedded',
       material: 'Plywood',
       software: 'Lightburn',
     },
@@ -224,7 +248,7 @@ let imgCounter = 0;
               <div class="p-6">
                 <div class="flex items-center gap-3 mb-3">
                   <h2 class="text-xl font-bold text-gray-900">{c.name}</h2>
-                  <span class={`px-2 py-0.5 text-xs font-medium rounded-full ${c.tag === 'LightningPiggy v2' ? 'bg-yellow text-gray-900' : 'bg-gray-100 text-gray-600'}`}>
+                  <span class={`px-2 py-0.5 text-xs font-medium rounded-full ${c.tag === 'ESP32-S3' ? 'bg-yellow text-gray-900' : 'bg-gray-100 text-gray-600'}`}>
                     {c.tag}
                   </span>
                 </div>
@@ -233,10 +257,12 @@ let imgCounter = 0;
 
                 {/* Specs */}
                 <div class="grid grid-cols-2 gap-x-6 gap-y-2 text-sm mb-4">
-                  <div><span class="font-medium text-gray-900">Display:</span> <span class="text-gray-600">{c.specs.board}</span></div>
+                  <div><span class="font-medium text-gray-900">Board:</span> <span class="text-gray-600">{c.specs.board}</span></div>
+                  <div><span class="font-medium text-gray-900">Display size:</span> <span class="text-gray-600">{c.specs.displaySize}</span></div>
+                  <div><span class="font-medium text-gray-900">Operating System:</span> <span class={c.specs.os === 'Embedded' ? 'text-gray-400 italic' : 'text-gray-600'}>{c.specs.os}</span></div>
                   <div><span class="font-medium text-gray-900">Material:</span> <span class="text-gray-600">{c.specs.material}</span></div>
                   {c.specs.printing && (
-                    <div class="col-span-2"><span class="font-medium text-gray-900">Printing:</span> <span class="text-gray-600">{c.specs.printing}</span></div>
+                    <div class="col-span-2"><span class="font-medium text-gray-900">Printing advice:</span> <span class="text-gray-600">{c.specs.printing}</span></div>
                   )}
                   {c.specs.paint && (
                     <div class="col-span-2"><span class="font-medium text-gray-900">Paint:</span> <span class="text-gray-600">{c.specs.paint}</span></div>

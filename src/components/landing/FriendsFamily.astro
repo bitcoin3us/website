@@ -38,7 +38,7 @@ const renderCard = (partner: any) => partner;
     {communitySponsors.length > 0 && (
       <div class="mt-12">
         <h3 class="text-xl font-bold text-gray-900 mb-2 text-center">Community Sponsors ❤️</h3>
-        <p class="text-gray-600 mb-6 text-center">Generous supporters helping bring Bitcoin education to the next generation.<br>Donate 210 USD to support the project and receive a  nostr verification nip05 &lt;YourName&gt;@LightningPiggy.com address and your logo here.</p>
+        <p class="text-gray-600 mb-6 text-center">Generous supporters helping bring Bitcoin education to the next generation.*</p>
         <div class="flex flex-wrap justify-center gap-4">
           {communitySponsors.map((partner) => (
             <a
@@ -438,6 +438,11 @@ const renderCard = (partner: any) => partner;
         </div>
       </div>
     )}
+
+    <p class="text-sm text-gray-400 text-center mt-16">* Donate 210,000 Sats to support the project and receive a nostr verification NIP-05 &lt;YourName&gt;@LightningPiggy.com address and your logo in our Community Sponsors section.</p>
+    <div class="text-center mt-4">
+      <iframe src="https://btcpay.ideasarelikeflames.org/apps/42fPhRsn3MkuRgR3CdWDGpRazmGC/pos" sandbox="allow-scripts allow-same-origin allow-forms allow-popups" style="max-width: 100%; border: 0;"></iframe>
+    </div>
 
   </div>
 </section>

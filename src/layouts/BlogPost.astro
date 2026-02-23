@@ -12,6 +12,29 @@ interface Props {
 
 const { title, description, pubDate, updatedDate, heroImage, tags } = Astro.props;
 
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": title,
+  "datePublished": pubDate.toISOString(),
+  ...(updatedDate && { "dateModified": updatedDate.toISOString() }),
+  ...(description && { "description": description }),
+  ...(heroImage && { "image": heroImage.startsWith('http') ? heroImage : `https://lightningpiggy.com${heroImage}` }),
+  "author": {
+    "@type": "Organization",
+    "name": "LightningPiggy",
+    "url": "https://lightningpiggy.com"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "LightningPiggy",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://lightningpiggy.com/images/mascot.png"
+    }
+  }
+};
+
 const formattedPubDate = pubDate.toLocaleDateString('en-us', {
   year: 'numeric',
   month: 'long',
@@ -26,6 +49,7 @@ const formattedUpdatedDate = updatedDate?.toLocaleDateString('en-us', {
 ---
 
 <BaseLayout title={title} description={description} image={heroImage}>
+  <script type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
   <article class="py-12 md:py-16">
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
       {heroImage && (

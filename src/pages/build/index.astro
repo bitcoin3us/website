@@ -1,16 +1,27 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Button from '../../components/ui/Button.astro';
-import SectionHeading from '../../components/ui/SectionHeading.astro';
 ---
 
 <BaseLayout title="Build" description="Build your own Lightning Piggy - choose between the E-paper or LCD edition">
   <section class="py-16 md:py-24">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-      <SectionHeading
-        title="Build Your Own"
-        subtitle="Choose the version that's right for you. Both are fully open source with step-by-step guides."
-      />
+      <div class="text-center">
+        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          Build Your Own
+        </h2>
+        <div class="max-w-2xl mx-auto text-left mb-6">
+          <p class="text-gray-600 mb-4">
+            LightningPiggy began with a simple idea and a C++ codebase running on LILYGO hardware via the Arduino development environment. After months of iteration, we shipped something we were proud of — but one thing nagged at us. The code wasn't as accessible as we wanted. If we were serious about helping kids develop real STEMM skills by tinkering with their own piggy banks, we needed a codebase they could actually read, understand, and make their own.
+          </p>
+          <p class="text-gray-600 mb-4">
+            So we started over. Our lead developer Thomas built an entirely new lightweight operating system from scratch using MicroPython, designed to run on any ESP32-based board. That foundation became the launchpad for the first MicroPythonOS app — and the beginning of the LightningPiggy 'p' series. P for Python, or P for Piggy? We'll let you decide.
+          </p>
+        </div>
+        <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+          Choose the version that's right for you. Both are fully open source with step-by-step guides.
+        </p>
+      </div>
 
       <div class="mt-16 grid md:grid-cols-2 gap-8">
         <!-- LightningPiggy v1 -->
@@ -26,11 +37,10 @@ import SectionHeading from '../../components/ui/SectionHeading.astro';
             <div class="flex items-center gap-3 mb-4">
               <span class="px-3 py-1 bg-gray-100 text-gray-600 text-sm font-medium rounded-full">Classic</span>
             </div>
-            <h3 class="text-2xl font-bold text-gray-900 mb-2">Lightning Piggy v1</h3>
-            <p class="text-gray-500 mb-2">E-Paper Edition</p>
+            <h3 class="text-2xl font-bold text-gray-900 mb-2">Lightning Piggy Classic</h3>
+            <p class="text-gray-500 mb-2">Arduino-based</p>
             <p class="text-gray-600 mb-6">
-              The original design using a LILYGO T5 e-paper display. Great battery life and
-              easy-to-read display that works in direct sunlight.
+              The original Lightning Piggy — Arduino-based firmware designed for LILYGO T5 boards, supporting both 2.13” and 2.66” e-paper displays.
             </p>
             <ul class="space-y-2 text-sm text-gray-600 mb-6">
               <li class="flex items-center gap-2">
@@ -53,7 +63,7 @@ import SectionHeading from '../../components/ui/SectionHeading.astro';
               </li>
             </ul>
             <Button href="/build/v1" variant="outline" class="w-full">
-              View v1 Build Guide
+              Classic Build Guide
             </Button>
           </div>
         </div>
@@ -74,34 +84,33 @@ import SectionHeading from '../../components/ui/SectionHeading.astro';
             <div class="flex items-center gap-3 mb-4">
               <span class="px-3 py-1 bg-yellow text-gray-900 text-sm font-medium rounded-full">Latest</span>
             </div>
-            <h3 class="text-2xl font-bold text-gray-900 mb-2">Lightning Piggy v2</h3>
-            <p class="text-gray-500 mb-2">LCD Touch Edition</p>
+            <h3 class="text-2xl font-bold text-gray-900 mb-2">Lightning Piggy p1</h3>
+            <p class="text-gray-500 mb-2">Runs on MicroPythonOS</p>
             <p class="text-gray-600 mb-6">
-              The latest design using WaveShare ESP32-S3 with touchscreen display. Runs MicroPythonOS
-              for easy customization.
+              Our first piggy running on MicroPythonOS. Using the latest WaveShare ESP32-S3 board with a 2 inch colour touchscreen display.
             </p>
             <ul class="space-y-2 text-sm text-gray-600 mb-6">
               <li class="flex items-center gap-2">
                 <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                 </svg>
-                Color LCD touchscreen
+                Colour LCD touchscreen
               </li>
               <li class="flex items-center gap-2">
                 <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                 </svg>
-                WaveShare ESP32-S3-Touch board
+                Onboard camera for easy setup 
               </li>
               <li class="flex items-center gap-2">
                 <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                 </svg>
-                MicroPythonOS (easy to modify)
+                MicroPythonOS (learner friendly)
               </li>
             </ul>
             <Button href="/build/v2" variant="primary" class="w-full">
-              View v2 Build Guide
+              p1 Build Guide
             </Button>
           </div>
         </div>
@@ -174,7 +183,7 @@ import SectionHeading from '../../components/ui/SectionHeading.astro';
             </div>
             <div class="flex-1">
               <h3 class="text-xl font-bold text-gray-900 group-hover:text-pink transition-colors">
-                ZapRewards! - QR Code Generator
+                LNbits ZapRewards! - QR Code Generator
               </h3>
               <p class="text-gray-600 mt-1">Generate scannable QR codes for your LNbits LNURL pay links.</p>
             </div>

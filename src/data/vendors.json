@@ -1,8 +1,8 @@
 {
   "vendors": [
     {
-      "name": "Danish Bacon",
-      "country": "Denmark",
+      "name": "Danish Bacon 🇩🇰",
+      "country": "Denmark 🇩🇰",
       "shippingRegions": [
         "Worldwide"
       ],
@@ -15,7 +15,7 @@
     },
     {
       "name": "Robotechy",
-      "country": "United Kingdom",
+      "country": "United Kingdom 🇬🇧",
       "shippingRegions": [
         "Worldwide"
       ],
@@ -28,7 +28,7 @@
     },
     {
       "name": "The Bitcoin Hardware Store",
-      "country": "El Salvador",
+      "country": "El Salvador 🇸🇻",
       "shippingRegions": [],
       "shopType": "physical",
       "description": "Physical stores located in Bitcoin Beach, El Zonte and Bitcoin Berlín, Usulután.",

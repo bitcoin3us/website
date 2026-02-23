@@ -92,7 +92,29 @@ const { merchantNpub, plebeianMarketUrl = 'https://plebeian.market' } = Astro.pr
     stallId?: string;
   }
 
-  function parseProductEvent(event: any): Product | null {
+  interface NostrEvent {
+    id: string;
+    content: string;
+    tags: string[][];
+    pubkey: string;
+    kind: number;
+  }
+
+  function escapeHtml(str: string): string {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function sanitizeUrl(url: string): string {
+    try {
+      const parsed = new URL(url);
+      if (parsed.protocol === 'http:' || parsed.protocol === 'https:') return url;
+    } catch {}
+    return '';
+  }
+
+  function parseProductEvent(event: NostrEvent): Product | null {
     try {
       // NIP-15 products have data in content as JSON
       const content = JSON.parse(event.content);
@@ -124,8 +146,6 @@ const { merchantNpub, plebeianMarketUrl = 'https://plebeian.market' } = Astro.pr
         const imgUrls = tags.t.filter(t => t && (t.startsWith('http') || t.startsWith('//')));
         if (imgUrls.length > 0) images = imgUrls;
       }
-
-      console.log('Product parsed:', content.name, 'Images:', images);
 
       return {
         id: content.id || (tags.d ? tags.d[0] : '') || event.id,
@@ -197,7 +217,6 @@ const { merchantNpub, plebeianMarketUrl = 'https://plebeian.market' } = Astro.pr
           const msg = JSON.parse(e.data);
           const eventKind = msg[2]?.kind;
           if (msg[0] === 'EVENT' && msg[1] === subId && (eventKind === 30018 || eventKind === 30402)) {
-            console.log('Raw product event:', msg[2]);
             const product = parseProductEvent(msg[2]);
             if (product) {
               products.push(product);
@@ -257,7 +276,11 @@ const { merchantNpub, plebeianMarketUrl = 'https://plebeian.market' } = Astro.pr
     if (!grid) return;
 
     grid.innerHTML = products.map(product => {
-      const productUrl = `${marketUrl}/products/${product.id}`;
+      const safeId = encodeURIComponent(product.id);
+      const productUrl = `${marketUrl}/products/${safeId}`;
+      const safeTitle = escapeHtml(product.title);
+      const safeDesc = escapeHtml(product.description);
+      const safeImgSrc = product.images[0] ? sanitizeUrl(product.images[0]) : '';
       return `
         <a
           href="${productUrl}"
@@ -266,14 +289,14 @@ const { merchantNpub, plebeianMarketUrl = 'https://plebeian.market' } = Astro.pr
           class="block bg-white rounded-xl border border-gray-200 hover:border-pink hover:shadow-lg transition-all overflow-hidden"
         >
           <div class="aspect-square bg-gray-100 flex items-center justify-center">
-            ${product.images[0]
-              ? `<img src="${product.images[0]}" alt="${product.title}" class="w-full h-full object-cover" referrerpolicy="no-referrer" onerror="this.parentElement.innerHTML='<span class=\\'text-4xl\\'>🐷</span>'">`
+            ${safeImgSrc
+              ? `<img src="${safeImgSrc}" alt="${safeTitle}" class="w-full h-full object-cover" referrerpolicy="no-referrer" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline'"><span class="text-4xl" style="display:none">🐷</span>`
               : `<span class="text-4xl">🐷</span>`
             }
           </div>
           <div class="p-4">
-            <h3 class="font-bold text-gray-900 mb-1">${product.title}</h3>
-            <p class="text-sm text-gray-500 mb-2 line-clamp-2">${product.description}</p>
+            <h3 class="font-bold text-gray-900 mb-1">${safeTitle}</h3>
+            <p class="text-sm text-gray-500 mb-2 line-clamp-2">${safeDesc}</p>
             <div class="flex items-center justify-between">
               <span class="text-lg font-bold text-pink">${formatPrice(product.price, product.currency)}</span>
               <span class="text-sm text-gray-400">⚡ Lightning</span>

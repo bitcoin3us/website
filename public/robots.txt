@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://lightningpiggy.com/sitemap-index.xml
