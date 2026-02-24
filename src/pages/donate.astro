@@ -1,0 +1,357 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Button from '../components/ui/Button.astro';
+---
+
+<BaseLayout title="Donate" description="Support Lightning Piggy - an open source Bitcoin piggy bank for kids. Donate with Bitcoin on-chain or over Lightning.">
+
+  <!-- Hero -->
+  <div class="relative overflow-hidden bg-gradient-to-b from-gray-900 to-gray-800 text-white">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 text-center">
+      <img
+        src="/images/mascot.png"
+        alt="LightningPiggy mascot"
+        class="w-20 h-20 mx-auto mb-6 rounded-2xl"
+      />
+      <h1 class="text-4xl md:text-5xl font-bold mb-6">Support Lightning Piggy</h1>
+      <p class="text-xl text-gray-300 leading-relaxed max-w-2xl mx-auto">
+        Lightning Piggy is free, open source, and community funded. Your donation helps the
+        <a href="/about" class="text-pink hover:underline">Lightning Piggy Foundation</a>
+        keep building sound money tools for the next generation.
+      </p>
+    </div>
+  </div>
+
+  <!-- Bitcoin Donation Form -->
+  <section class="py-16 md:py-24 bg-white">
+    <div class="max-w-xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-8">
+        <h2 class="text-3xl font-bold text-gray-900 mb-4">Donate with Bitcoin</h2>
+        <p class="text-lg text-gray-600 max-w-xl mx-auto">
+          On-chain or Lightning — choose your preferred payment method. Any amount is appreciated.
+        </p>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-gray-200 p-6 md:p-8">
+        <form id="donate-form" class="space-y-6">
+
+          <!-- Amount selection -->
+          <div>
+            <label class="block text-sm font-semibold text-gray-900 mb-3">Donation amount (USD)</label>
+            <div class="grid grid-cols-4 gap-2 mb-3" id="preset-amounts">
+              <button type="button" data-amount="5"
+                class="preset-btn py-2.5 rounded-xl border-2 border-gray-200 text-gray-700 font-semibold text-sm hover:border-pink hover:text-pink transition-all">$5</button>
+              <button type="button" data-amount="21"
+                class="preset-btn py-2.5 rounded-xl border-2 border-gray-200 text-gray-700 font-semibold text-sm hover:border-pink hover:text-pink transition-all">$21</button>
+              <button type="button" data-amount="50"
+                class="preset-btn py-2.5 rounded-xl border-2 border-pink bg-pink/5 text-pink font-semibold text-sm transition-all">$50</button>
+              <button type="button" data-amount="121"
+                class="preset-btn py-2.5 rounded-xl border-2 border-gray-200 text-gray-700 font-semibold text-sm hover:border-pink hover:text-pink transition-all">$121</button>
+            </div>
+            <div class="relative">
+              <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">$</span>
+              <input
+                type="number"
+                id="donate-amount"
+                name="amount"
+                min="1"
+                step="any"
+                value="50"
+                required
+                placeholder="Enter amount"
+                class="w-full pl-8 pr-4 py-3 rounded-xl border border-gray-200 focus:border-pink focus:ring-2 focus:ring-pink/20 outline-none transition-all text-gray-900 placeholder-gray-400"
+              />
+            </div>
+          </div>
+
+          <!-- Optional donor info (shown for donations of $50+) -->
+          <div id="donor-info-fields" class="space-y-6">
+            <!-- Optional: Nostr npub -->
+            <div>
+              <label for="donate-npub" class="block text-sm font-semibold text-gray-900 mb-1.5">
+                Nostr npub <span class="font-normal text-gray-400">(optional)</span>
+              </label>
+              <input
+                type="text"
+                id="donate-npub"
+                name="npub"
+                placeholder="npub1..."
+                class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-pink focus:ring-2 focus:ring-pink/20 outline-none transition-all text-gray-900 placeholder-gray-400"
+              />
+            </div>
+
+            <!-- Optional: X/Twitter handle -->
+            <div>
+              <label for="donate-xhandle" class="block text-sm font-semibold text-gray-900 mb-1.5">
+                X / Twitter handle <span class="font-normal text-gray-400">(optional)</span>
+              </label>
+              <div class="relative">
+                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">@</span>
+                <input
+                  type="text"
+                  id="donate-xhandle"
+                  name="xhandle"
+                  placeholder="yourhandle"
+                  class="w-full pl-8 pr-4 py-3 rounded-xl border border-gray-200 focus:border-pink focus:ring-2 focus:ring-pink/20 outline-none transition-all text-gray-900 placeholder-gray-400"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Submit button -->
+          <button
+            type="submit"
+            id="donate-submit"
+            class="w-full py-3 px-6 bg-pink text-white font-semibold rounded-xl hover:bg-pink/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <span class="btn-text">Donate with Bitcoin</span>
+            <span class="btn-loading hidden">
+              <svg class="animate-spin h-5 w-5 mx-auto" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+            </span>
+          </button>
+
+          <!-- Error message -->
+          <p id="donate-error" class="text-sm text-red-500 text-center hidden"></p>
+
+        </form>
+      </div>
+
+      <p class="text-sm text-gray-400 mt-6 text-center">
+        Payments are processed through our self-hosted BTCPay Server to protect your privacy.
+      </p>
+    </div>
+  </section>
+
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', function () {
+      var INVOICE_ENDPOINT = '/.netlify/functions/create-invoice';
+
+      var form = document.getElementById('donate-form');
+      var amountInput = document.getElementById('donate-amount');
+      var npubInput = document.getElementById('donate-npub');
+      var xHandleInput = document.getElementById('donate-xhandle');
+      var submitBtn = document.getElementById('donate-submit');
+      var btnText = submitBtn.querySelector('.btn-text');
+      var btnLoading = submitBtn.querySelector('.btn-loading');
+      var errorEl = document.getElementById('donate-error');
+      var presetBtns = document.querySelectorAll('.preset-btn');
+      var donorFields = document.getElementById('donor-info-fields');
+
+      function toggleDonorFields() {
+        var amount = parseFloat(amountInput.value) || 0;
+        var enabled = amount >= 50;
+        npubInput.disabled = !enabled;
+        xHandleInput.disabled = !enabled;
+        if (enabled) {
+          donorFields.classList.remove('opacity-40');
+        } else {
+          donorFields.classList.add('opacity-40');
+          npubInput.value = '';
+          xHandleInput.value = '';
+        }
+      }
+
+      function setActivePreset(activeBtn) {
+        presetBtns.forEach(function (btn) {
+          btn.classList.remove('border-pink', 'bg-pink/5', 'text-pink');
+          btn.classList.add('border-gray-200', 'text-gray-700');
+        });
+        if (activeBtn) {
+          activeBtn.classList.remove('border-gray-200', 'text-gray-700');
+          activeBtn.classList.add('border-pink', 'bg-pink/5', 'text-pink');
+        }
+      }
+
+      presetBtns.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          amountInput.value = btn.getAttribute('data-amount');
+          setActivePreset(btn);
+          toggleDonorFields();
+          errorEl.classList.add('hidden');
+        });
+      });
+
+      amountInput.addEventListener('input', function () {
+        var val = amountInput.value;
+        var matched = null;
+        presetBtns.forEach(function (btn) {
+          if (btn.getAttribute('data-amount') === val) matched = btn;
+        });
+        setActivePreset(matched);
+        toggleDonorFields();
+      });
+
+      function showError(msg) {
+        errorEl.textContent = msg;
+        errorEl.classList.remove('hidden');
+      }
+
+      function setLoading(loading) {
+        submitBtn.disabled = loading;
+        if (loading) {
+          btnText.classList.add('hidden');
+          btnLoading.classList.remove('hidden');
+        } else {
+          btnText.classList.remove('hidden');
+          btnLoading.classList.add('hidden');
+        }
+      }
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        errorEl.classList.add('hidden');
+
+        var amount = parseFloat(amountInput.value);
+        if (!amount || amount <= 0) {
+          showError('Please enter a valid donation amount.');
+          return;
+        }
+
+        var metadata = {};
+        var npub = npubInput.value.trim();
+        var xHandle = xHandleInput.value.trim().replace(/^@/, '');
+
+        if (npub) metadata.nostrNpub = npub;
+        if (xHandle) metadata.xHandle = xHandle;
+
+        var body = {
+          amount: String(amount),
+          currency: 'USD',
+          metadata: metadata
+        };
+
+        setLoading(true);
+
+        fetch(INVOICE_ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        })
+          .then(function (response) {
+            if (!response.ok) {
+              return response.text().then(function (text) {
+                throw new Error('BTCPay returned status ' + response.status + ': ' + text);
+              });
+            }
+            return response.json();
+          })
+          .then(function (data) {
+            if (data.checkoutLink) {
+              window.location.href = data.checkoutLink;
+            } else {
+              throw new Error('No checkout link in response.');
+            }
+          })
+          .catch(function (err) {
+            console.error('Donation error:', err);
+            showError('Something went wrong creating the invoice. Please try again or use one of the alternative methods below.');
+            setLoading(false);
+          });
+      });
+    });
+  </script>
+
+  <!-- Alternative ways to donate -->
+  <section class="py-16 md:py-24 bg-gray-50">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-gray-900 mb-8 text-center">Other ways to donate</h2>
+      <div class="grid sm:grid-cols-2 gap-6">
+
+        <!-- Lightning Address -->
+        <div class="bg-white rounded-2xl p-6 border border-gray-200 text-center">
+          <div class="w-12 h-12 mx-auto mb-4 bg-yellow/20 rounded-full flex items-center justify-center">
+            <svg class="w-6 h-6 text-yellow-600" fill="currentColor" viewBox="0 0 24 24"><path d="M13 0L3 14h7v10l10-14h-7V0z"/></svg>
+          </div>
+          <h3 class="font-bold text-gray-900 mb-2">Lightning Address</h3>
+          <p class="text-sm text-gray-600 mb-4">Send sats directly from any Lightning wallet.</p>
+          <a
+            href="lightning:oink@getalby.com"
+            class="inline-flex items-center gap-2 px-5 py-2.5 bg-gray-900 text-white rounded-full text-sm font-semibold hover:bg-gray-800 transition-colors"
+          >
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M13 0L3 14h7v10l10-14h-7V0z"/></svg>
+            oink@getalby.com
+          </a>
+        </div>
+
+        <!-- Geyser.fund -->
+        <div class="bg-white rounded-2xl p-6 border border-gray-200 text-center">
+          <div class="w-12 h-12 mx-auto mb-4 bg-pink/10 rounded-full flex items-center justify-center">
+            <svg class="w-6 h-6 text-pink" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+          </div>
+          <h3 class="font-bold text-gray-900 mb-2">Geyser.fund</h3>
+          <p class="text-sm text-gray-600 mb-4">Support us through the Bitcoin crowdfunding platform.</p>
+          <a
+            href="https://geyser.fund/project/lightningpiggy"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-2 px-5 py-2.5 bg-pink text-white rounded-full text-sm font-semibold hover:bg-pink/90 transition-colors"
+          >
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+            Donate on Geyser
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Where your sats go -->
+  <section class="py-16 md:py-24 bg-white">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-gray-900 mb-8 text-center">Where your sats go</h2>
+      <div class="grid sm:grid-cols-2 gap-6">
+        <div class="flex items-start gap-4">
+          <span class="text-pink font-bold text-xl mt-0.5">→</span>
+          <div>
+            <h3 class="font-bold text-gray-900 mb-1">Development</h3>
+            <p class="text-gray-600 text-sm">Building and maintaining the open-source firmware, MicroPythonOS, and web tools.</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-4">
+          <span class="text-pink font-bold text-xl mt-0.5">→</span>
+          <div>
+            <h3 class="font-bold text-gray-900 mb-1">Education</h3>
+            <p class="text-gray-600 text-sm">Creating guides, workshop kits, and resources for teachers and families.</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-4">
+          <span class="text-pink font-bold text-xl mt-0.5">→</span>
+          <div>
+            <h3 class="font-bold text-gray-900 mb-1">Community events</h3>
+            <p class="text-gray-600 text-sm">Attending and sponsoring Bitcoin conferences, meetups, and workshops worldwide.</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-4">
+          <span class="text-pink font-bold text-xl mt-0.5">→</span>
+          <div>
+            <h3 class="font-bold text-gray-900 mb-1">Keeping it free</h3>
+            <p class="text-gray-600 text-sm">Server costs, infrastructure, and ensuring Lightning Piggy stays free for everyone.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Closing CTA -->
+  <section class="py-16 md:py-24 bg-gray-50">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-2xl font-bold text-gray-900 mb-4">Every sat counts</h2>
+      <p class="text-gray-600 mb-8 max-w-xl mx-auto">
+        Lightning Piggy is built by volunteers who believe every child deserves sound money.
+        Your support helps us reach more families around the world.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <Button href="/community" variant="outline">
+          Join the Community
+        </Button>
+        <Button href="/community/credits" variant="outline">
+          Meet the Team
+        </Button>
+      </div>
+    </div>
+  </section>
+
+</BaseLayout>

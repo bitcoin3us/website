@@ -144,3 +144,6 @@ vite.config.ts.timestamp-*
 # macOS
 .DS_Store
 tools/admin/
+
+# Local Netlify folder
+.netlify
