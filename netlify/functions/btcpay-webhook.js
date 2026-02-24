@@ -1,19 +1,15 @@
 // Netlify serverless function: receives BTCPay Server webhook on invoice settlement
-// and sends an email notification with donation details via SMTP.
+// and sends an email notification with donation details via Resend.
 //
 // Environment variables required in Netlify:
 //   BTCPAY_WEBHOOK_SECRET — webhook secret configured in BTCPay Server
-//   SMTP_HOST             — SMTP server hostname
-//   SMTP_PORT             — SMTP port (587 for STARTTLS, 465 for SSL)
-//   SMTP_USER             — SMTP username
-//   SMTP_PASS             — SMTP password
-//   SMTP_FROM             — sender email address (e.g. donations@lightningpiggy.com)
+//   RESEND_API_KEY        — API key from resend.com
 
 const crypto = require('crypto');
-const nodemailer = require('nodemailer');
 
 const BTCPAY_URL = 'https://btcpay.lightningpiggy.com';
 const NOTIFICATION_EMAIL = 'oink@lightningpiggy.com';
+const FROM_EMAIL = 'Lightning Piggy <donations@lightningpiggy.com>';
 
 function verifySignature(payload, secret, signatureHeader) {
   if (!signatureHeader) return false;
@@ -61,9 +57,10 @@ exports.handler = async function (event) {
     return { statusCode: 500, body: JSON.stringify({ error: 'Server configuration error' }) };
   }
 
-  // Verify SMTP is configured
-  if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS) {
-    console.error('SMTP environment variables are not fully configured');
+  // Verify Resend API key is configured
+  const resendApiKey = process.env.RESEND_API_KEY;
+  if (!resendApiKey) {
+    console.error('RESEND_API_KEY environment variable is not set');
     return { statusCode: 500, body: JSON.stringify({ error: 'Server configuration error' }) };
   }
 
@@ -91,28 +88,31 @@ exports.handler = async function (event) {
     return { statusCode: 200, body: JSON.stringify({ status: 'ignored', eventType: eventType }) };
   }
 
-  // Build and send email
+  // Build and send email via Resend
   const emailText = buildEmailText(payload);
   const amount = payload.amount || '?';
   const currency = payload.currency || 'USD';
 
   try {
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: parseInt(process.env.SMTP_PORT || '587', 10),
-      secure: process.env.SMTP_PORT === '465',
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS
-      }
+    const response = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + resendApiKey
+      },
+      body: JSON.stringify({
+        from: FROM_EMAIL,
+        to: NOTIFICATION_EMAIL,
+        subject: '\uD83D\uDCB0 New Lightning Piggy Donation \u2014 $' + amount + ' ' + currency,
+        text: emailText
+      })
     });
 
-    await transporter.sendMail({
-      from: process.env.SMTP_FROM || process.env.SMTP_USER,
-      to: NOTIFICATION_EMAIL,
-      subject: '\uD83D\uDCB0 New Lightning Piggy Donation \u2014 $' + amount + ' ' + currency,
-      text: emailText
-    });
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Resend API error:', response.status, errorText);
+      return { statusCode: 500, body: JSON.stringify({ error: 'Failed to send notification' }) };
+    }
 
     console.log('Donation notification email sent for invoice:', payload.invoiceId || payload.id);
     return { statusCode: 200, body: JSON.stringify({ status: 'ok' }) };
