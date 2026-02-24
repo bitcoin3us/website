@@ -2,6 +2,9 @@
   command = "npm run build"
   publish = "dist"
 
+[functions]
+  directory = "netlify/functions"
+
 # Enable branch deploys for testing
 [context.branch-deploy]
   command = "npm run build"
