@@ -12,7 +12,13 @@ const navItems = [
       { label: 'Tools', href: '/build#tools' },
     ]
   },
-  { label: 'Market', href: '/market' },
+  {
+    label: 'Market',
+    href: '/market',
+    children: [
+      { label: 'NIP-05 Handles', href: '/market/nip05' },
+    ]
+  },
   {
     label: 'Community',
     href: '/community',

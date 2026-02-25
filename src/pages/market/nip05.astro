@@ -75,6 +75,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
               spellcheck="false"
               class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-pink focus:ring-2 focus:ring-pink/20 outline-none transition-all text-gray-900 placeholder-gray-400"
             />
+            <p id="npub-status" class="text-sm mt-1.5 h-5"></p>
           </div>
 
           <!-- Amount selection -->
@@ -147,6 +148,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
       var btnLoading = submitBtn.querySelector('.btn-loading');
       var errorEl = document.getElementById('nip05-error');
       var statusEl = document.getElementById('handle-status');
+      var npubStatusEl = document.getElementById('npub-status');
       var presetBtns = document.querySelectorAll('.preset-btn');
 
       var debounceTimer;
@@ -178,6 +180,23 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
           if (btn.getAttribute('data-amount') === val) matched = btn;
         });
         setActivePreset(matched);
+      });
+
+      npubInput.addEventListener('input', function () {
+        var val = npubInput.value.trim();
+        npubStatusEl.className = 'text-sm mt-1.5 h-5';
+        if (!val) {
+          npubStatusEl.textContent = '';
+        } else if (!val.startsWith('npub')) {
+          npubStatusEl.classList.add('text-red-500');
+          npubStatusEl.textContent = '✗ Must start with npub';
+        } else if (/^npub1[a-z0-9]{58}$/.test(val)) {
+          npubStatusEl.classList.add('text-green-600');
+          npubStatusEl.textContent = '✓ Valid npub';
+        } else {
+          npubStatusEl.classList.add('text-gray-400');
+          npubStatusEl.textContent = 'Keep typing…';
+        }
       });
 
       function showStatus(type, message) {
@@ -226,9 +245,9 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
               handleAvailable = true;
               showStatus('available', 'Available!');
             } else if (data.reason === 'taken') {
-              showStatus('taken', 'Already taken');
+              showStatus('taken', 'Already taken — please choose a different name');
             } else if (data.reason === 'reserved') {
-              showStatus('reserved', 'Reserved');
+              showStatus('reserved', 'Reserved — please choose a different name');
             } else {
               showStatus('invalid', 'Invalid format');
             }
