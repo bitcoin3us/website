@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Button from '../components/ui/Button.astro';
+import supporters from '../data/supporters.json';
 ---
 
 <BaseLayout title="Donate" description="Support Lightning Piggy - an open source Bitcoin piggy bank for kids. Donate with Bitcoin on-chain or over Lightning.">
@@ -21,6 +22,28 @@ import Button from '../components/ui/Button.astro';
       </p>
     </div>
   </div>
+
+  <!-- Generous Supporters -->
+  {supporters.length > 0 && (
+    <section class="py-12 bg-white">
+      <div class="max-w-3xl mx-auto px-4 text-center">
+        <h2 class="text-xl font-bold text-gray-900 mb-6">Generous Supporters <svg class="w-5 h-5 text-pink inline-block align-middle" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></h2>
+        <div class="flex flex-wrap justify-center gap-3">
+          {supporters.map((s) => (
+            <div class="w-12 h-12 rounded-full bg-gray-100 overflow-hidden">
+              <img src={s.avatarUrl} alt="Supporter" class="w-full h-full object-cover" loading="lazy"
+                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+              <div class="w-full h-full bg-pink/10 flex items-center justify-center" style="display: none;">
+                <svg class="w-5 h-5 text-pink" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
 
   <!-- Bitcoin Donation Form -->
   <section class="py-16 md:py-24 bg-white">
@@ -200,30 +223,12 @@ import Button from '../components/ui/Button.astro';
         }
       }
 
-      form.addEventListener('submit', function (e) {
-        e.preventDefault();
-        errorEl.classList.add('hidden');
-
-        var amount = parseFloat(amountInput.value);
-        if (!amount || amount <= 0) {
-          showError('Please enter a valid donation amount.');
-          return;
-        }
-
-        var metadata = {};
-        var npub = npubInput.value.trim();
-        var xHandle = xHandleInput.value.trim().replace(/^@/, '');
-
-        if (npub) metadata.nostrNpub = npub;
-        if (xHandle) metadata.xHandle = xHandle;
-
+      function createInvoice(amount, metadata) {
         var body = {
           amount: String(amount),
           currency: 'USD',
           metadata: metadata
         };
-
-        setLoading(true);
 
         fetch(INVOICE_ENDPOINT, {
           method: 'POST',
@@ -250,6 +255,60 @@ import Button from '../components/ui/Button.astro';
             showError('Something went wrong creating the invoice. Please try again or use one of the alternative methods below.');
             setLoading(false);
           });
+      }
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        errorEl.classList.add('hidden');
+
+        var amount = parseFloat(amountInput.value);
+        if (!amount || amount <= 0) {
+          showError('Please enter a valid donation amount.');
+          return;
+        }
+
+        var metadata = {};
+        var npub = npubInput.value.trim();
+        var xHandle = xHandleInput.value.trim().replace(/^@/, '');
+
+        if (npub) metadata.nostrNpub = npub;
+        if (xHandle) metadata.xHandle = xHandle;
+
+        setLoading(true);
+
+        // Validate profile before creating invoice (for $50+ with a handle)
+        if (amount >= 50 && (npub || xHandle)) {
+          btnText.textContent = 'Validating profile…';
+          btnText.classList.remove('hidden');
+          btnLoading.classList.add('hidden');
+
+          fetch('/.netlify/functions/validate-profile', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ npub: npub, xHandle: xHandle })
+          })
+            .then(function (res) { return res.json(); })
+            .then(function (data) {
+              btnText.textContent = 'Donate with Bitcoin';
+              if (data.valid) {
+                metadata.avatarUrl = data.avatarUrl;
+                setLoading(true);
+                createInvoice(amount, metadata);
+              } else {
+                showError(data.error || "We couldn't find a profile for that npub/handle. Please check and try again, or clear the fields to donate without recognition.");
+                setLoading(false);
+              }
+            })
+            .catch(function (err) {
+              console.error('Profile validation error:', err);
+              btnText.textContent = 'Donate with Bitcoin';
+              // Proceed without avatar on validation failure
+              setLoading(true);
+              createInvoice(amount, metadata);
+            });
+        } else {
+          createInvoice(amount, metadata);
+        }
       });
     });
   </script>
@@ -268,11 +327,11 @@ import Button from '../components/ui/Button.astro';
           <h3 class="font-bold text-gray-900 mb-2">Lightning Address</h3>
           <p class="text-sm text-gray-600 mb-4">Send sats directly from any Lightning wallet.</p>
           <a
-            href="lightning:oink@getalby.com"
+            href="lightning:oink@lightningpiggy.com"
             class="inline-flex items-center gap-2 px-5 py-2.5 bg-gray-900 text-white rounded-full text-sm font-semibold hover:bg-gray-800 transition-colors"
           >
             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M13 0L3 14h7v10l10-14h-7V0z"/></svg>
-            oink@getalby.com
+            oink@lightningpiggy.com
           </a>
         </div>
 

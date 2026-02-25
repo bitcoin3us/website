@@ -74,7 +74,7 @@ Data files (`src/data/`) store structured content (credits, partners, testimonia
 
 ## Integrations
 
-- **Lightning Network** — Lightning Address redirect via Alby (`/.well-known/lnurlp/oink`)
+- **Lightning Network** — Lightning Address redirect via LNbits (`/.well-known/lnurlp/oink`)
 - **Nostr** — NIP-05 verification (`/.well-known/nostr.json`), NIP-15 marketplace products from Plebeian Market
 - **Newsletter** — Buttondown signup form
 - **RSS** — Auto-generated feed via `@astrojs/rss`

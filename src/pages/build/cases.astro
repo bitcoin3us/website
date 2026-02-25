@@ -22,6 +22,8 @@ const cases = [
       material: 'PLA or PETG',
       printing: 'Camera face down. Add rafts to secure the two buttons to the printer bed.',
       screws: 'M2x8mm qty4',
+      extraHardware: 'M2 x8mm screws (Qty 4)',
+      extraHardwareUrl: 'https://www.amazon.de/-/en/Zuyya-Socket-Screws-Stainless-Threaded/dp/B0FKTFTB44/ref=sr_1_13?crid=V9WPP9OBW8T1&dib=eyJ2IjoiMSJ9.hiOMppWWVisJNm-sykazzQNjlQnODIaJFXbatHZDt7H44B0I6KnYag6x53z_8iw4GBb10KJEYUyBuczN8Y2ohZMbFMJ2W8kMq4zK9D58Exkdx7J7mPUZ7xoubJhfL9KRDpbTk4VeaRzCGXRhOR-UT75VeytXZ_VBrZr_Bgbfc4QVaZDGUyvkrv1NmykZeEeMRwaHI8iJ2ZQZFd0bbEGG34bxaMs7eroGZZRvqh9NH-GyeqFmvKOovBgZZ3-BS1DQWHnaqA047eg2t3I5rSalzVp9c94XObIHwgGMwHocwb4.3fOcyS3i-WUlpVSGeXmgIP0WWdZdxRcjm2xu7zKHSVw&dib_tag=se&keywords=m2%2B8mm&qid=1772018362&sprefix=M2%2B8mm%2Caps%2C145&sr=8-13&th=1',
     },
     creator: { name: 'Richard', url: 'https://njump.me/npub1dwekunm9w9agazkwcq88ymxmj0j3qgxcu4mwfqnjqvyusa9cuxrs0wsqel' },
     licence: { name: 'CC0', url: 'https://creativecommons.org/publicdomain/zero/1.0/' },
@@ -272,6 +274,9 @@ let imgCounter = 0;
                   )}
                   {c.specs.notes && (
                     <div class="col-span-2"><span class="font-medium text-gray-900">Notes:</span> <span class="text-gray-600">{c.specs.notes}</span></div>
+                  )}
+                  {c.specs.extraHardware && (
+                    <div class="col-span-2"><span class="font-medium text-gray-900">Extra Hardware:</span> <span class="text-gray-600">{c.specs.extraHardware}</span>{c.specs.extraHardwareUrl && (<a href={c.specs.extraHardwareUrl} target="_blank" rel="noopener noreferrer" class="text-pink hover:underline ml-1">(amazon.de)</a>)}</div>
                   )}
                 </div>
 

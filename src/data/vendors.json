@@ -36,6 +36,17 @@
       "logo": "https://unavatar.io/twitter/tbhs_sv",
       "nostrUrl": "",
       "xUrl": "https://x.com/tbhs_sv"
+    },
+    {
+      "name": "NIP-05 Handles ⚡",
+      "country": "Global 🌍",
+      "shippingRegions": [],
+      "shopType": "online",
+      "description": "Get yourname@lightningpiggy.com as your Nostr identity. Pay what you want with Bitcoin!",
+      "url": "/market/nip05",
+      "logo": "",
+      "nostrUrl": "",
+      "xUrl": ""
     }
   ]
 }

@@ -47,6 +47,13 @@ exports.handler = async function (event) {
     if (body.metadata.xHandle && typeof body.metadata.xHandle === 'string') {
       invoicePayload.metadata.xHandle = body.metadata.xHandle.trim().slice(0, 100);
     }
+    // Pass through validated avatar URL (only from trusted CDN sources)
+    if (body.metadata.avatarUrl && typeof body.metadata.avatarUrl === 'string') {
+      const url = body.metadata.avatarUrl.trim();
+      if (url.startsWith('https://primal.b-cdn.net/') || url.startsWith('https://unavatar.io/')) {
+        invoicePayload.metadata.avatarUrl = url.slice(0, 500);
+      }
+    }
   }
 
   try {
