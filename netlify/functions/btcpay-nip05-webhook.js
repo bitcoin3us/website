@@ -114,6 +114,10 @@ async function addNip05Handle(handle, hex) {
   }
 }
 
+function escapeHtml(str) {
+  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
 // Send email notification via Resend
 async function sendEmailNotification(handle, npub, amount, currency) {
   var apiKey = process.env.RESEND_API_KEY;
@@ -125,9 +129,9 @@ async function sendEmailNotification(handle, npub, amount, currency) {
   var html = [
     '<div style="font-family:sans-serif;max-width:480px;">',
     '  <h2 style="color:#e91e8c;">New NIP-05 Handle Purchased!</h2>',
-    '  <p style="font-size:18px;font-weight:bold;">' + handle + '@lightningpiggy.com</p>',
-    '  <p style="color:#666;">Amount: $' + amount + ' ' + currency + '</p>',
-    '  <p style="color:#666;">npub: ' + (npub || 'N/A') + '</p>',
+    '  <p style="font-size:18px;font-weight:bold;">' + escapeHtml(handle) + '@lightningpiggy.com</p>',
+    '  <p style="color:#666;">Amount: $' + escapeHtml(amount) + ' ' + escapeHtml(currency) + '</p>',
+    '  <p style="color:#666;">npub: ' + escapeHtml(npub || 'N/A') + '</p>',
     '  <hr style="border:none;border-top:1px solid #eee;margin:16px 0;">',
     '  <p style="color:#999;font-size:12px;">Lightning Piggy NIP-05 Service</p>',
     '</div>'
@@ -233,6 +237,16 @@ exports.handler = async function (event) {
   if (!handle || !hex) {
     console.error('NIP-05 invoice missing handle or hex in metadata:', metadata);
     return { statusCode: 200, body: 'Missing NIP-05 metadata' };
+  }
+
+  // Re-validate handle and hex to prevent injection via direct BTCPay API access
+  if (!/^[a-z0-9][a-z0-9_-]{0,30}[a-z0-9]$|^[a-z0-9]$/.test(handle)) {
+    console.error('Invalid handle format in invoice metadata:', handle);
+    return { statusCode: 200, body: 'Invalid handle format' };
+  }
+  if (!/^[0-9a-f]{64}$/.test(hex)) {
+    console.error('Invalid hex format in invoice metadata:', hex);
+    return { statusCode: 200, body: 'Invalid hex format' };
   }
 
   // Add handle to nostr.json (don't fail the webhook if this errors)

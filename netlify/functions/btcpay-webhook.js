@@ -4,6 +4,7 @@
 //
 // Environment variables required in Netlify:
 //   BTCPAY_WEBHOOK_SECRET — webhook secret configured in BTCPay Server
+//   BTCPAY_STORE_ID       — store ID from BTCPay Server
 //   RESEND_API_KEY        — API key from resend.com
 //   GITHUB_TOKEN          — fine-grained PAT with contents:write on this repo
 
@@ -16,7 +17,7 @@ const FROM_EMAIL = 'Lightning Piggy <donations@lightningpiggy.com>';
 const GITHUB_REPO = 'LightningPiggy/website';
 const SUPPORTERS_PATH = 'src/data/supporters.json';
 
-const STORE_ID = 'BhQL81NnJJwzP1zoyfYBGcHcXhCmKZTfrHNTva3Wks4h';
+const STORE_ID = process.env.BTCPAY_STORE_ID;
 
 function verifySignature(payload, secret, signatureHeader) {
   if (!signatureHeader) return false;
@@ -28,6 +29,10 @@ function verifySignature(payload, secret, signatureHeader) {
   }
 }
 
+function escapeHtml(str) {
+  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
 // Send email notification via Resend
 async function sendEmailNotification(amount, currency, metadata) {
   const apiKey = process.env.RESEND_API_KEY;
@@ -37,8 +42,8 @@ async function sendEmailNotification(amount, currency, metadata) {
   }
 
   const details = [];
-  if (metadata.nostrNpub) details.push('Nostr: ' + metadata.nostrNpub);
-  if (metadata.xHandle) details.push('X: @' + metadata.xHandle);
+  if (metadata.nostrNpub) details.push('Nostr: ' + escapeHtml(metadata.nostrNpub));
+  if (metadata.xHandle) details.push('X: @' + escapeHtml(metadata.xHandle));
   const detailsHtml = details.length > 0
     ? '<p style="color:#666;margin-top:8px;">' + details.join('<br>') + '</p>'
     : '';
@@ -46,7 +51,7 @@ async function sendEmailNotification(amount, currency, metadata) {
   const html = [
     '<div style="font-family:sans-serif;max-width:480px;">',
     '  <h2 style="color:#e91e8c;">New Donation Received!</h2>',
-    '  <p style="font-size:24px;font-weight:bold;">$' + amount + ' ' + currency + '</p>',
+    '  <p style="font-size:24px;font-weight:bold;">$' + escapeHtml(amount) + ' ' + escapeHtml(currency) + '</p>',
     detailsHtml,
     '  <hr style="border:none;border-top:1px solid #eee;margin:16px 0;">',
     '  <p style="color:#999;font-size:12px;">Lightning Piggy Donation System</p>',

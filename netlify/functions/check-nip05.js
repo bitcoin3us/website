@@ -46,9 +46,24 @@ async function fetchNostrJson() {
   return JSON.parse(content);
 }
 
+var ALLOWED_ORIGIN = 'https://lightningpiggy.com';
+
+function corsHeaders(event) {
+  var origin = (event.headers || {}).origin || '';
+  var allowed = (origin === ALLOWED_ORIGIN || origin.endsWith('.netlify.app')) ? origin : ALLOWED_ORIGIN;
+  return {
+    'Access-Control-Allow-Origin': allowed,
+    'Access-Control-Allow-Methods': 'GET, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type'
+  };
+}
+
 exports.handler = async function (event) {
+  if (event.httpMethod === 'OPTIONS') {
+    return { statusCode: 204, headers: corsHeaders(event), body: '' };
+  }
   if (event.httpMethod !== 'GET') {
-    return { statusCode: 405, body: JSON.stringify({ error: 'Method not allowed' }) };
+    return { statusCode: 405, headers: corsHeaders(event), body: JSON.stringify({ error: 'Method not allowed' }) };
   }
 
   var handle = (event.queryStringParameters.handle || '').trim().toLowerCase();
@@ -57,7 +72,7 @@ exports.handler = async function (event) {
   if (!handle || !HANDLE_REGEX.test(handle)) {
     return {
       statusCode: 200,
-      headers: { 'Content-Type': 'application/json' },
+      headers: Object.assign({ 'Content-Type': 'application/json' }, corsHeaders(event)),
       body: JSON.stringify({ available: false, reason: 'invalid' })
     };
   }
@@ -66,7 +81,7 @@ exports.handler = async function (event) {
   if (RESERVED_HANDLES.includes(handle)) {
     return {
       statusCode: 200,
-      headers: { 'Content-Type': 'application/json' },
+      headers: Object.assign({ 'Content-Type': 'application/json' }, corsHeaders(event)),
       body: JSON.stringify({ available: false, reason: 'reserved' })
     };
   }
@@ -77,7 +92,7 @@ exports.handler = async function (event) {
     if (nostrData.names && nostrData.names[handle]) {
       return {
         statusCode: 200,
-        headers: { 'Content-Type': 'application/json' },
+        headers: Object.assign({ 'Content-Type': 'application/json' }, corsHeaders(event)),
         body: JSON.stringify({ available: false, reason: 'taken' })
       };
     }
@@ -85,13 +100,14 @@ exports.handler = async function (event) {
     console.error('Failed to check handle availability:', err);
     return {
       statusCode: 500,
+      headers: corsHeaders(event),
       body: JSON.stringify({ error: 'Could not check availability. Please try again.' })
     };
   }
 
   return {
     statusCode: 200,
-    headers: { 'Content-Type': 'application/json' },
+    headers: Object.assign({ 'Content-Type': 'application/json' }, corsHeaders(event)),
     body: JSON.stringify({ available: true })
   };
 };

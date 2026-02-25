@@ -159,6 +159,20 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     return 'npub1' + encoded;
   }
 
+  function escapeHtml(str: string): string {
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function sanitizeUrl(url: string): string {
+    try {
+      const parsed = new URL(url);
+      if (parsed.protocol === 'https:' || parsed.protocol === 'http:') {
+        return url.replace(/"/g, '%22').replace(/</g, '%3C').replace(/>/g, '%3E');
+      }
+    } catch {}
+    return '';
+  }
+
   function formatContent(content: string): { text: string; images: string[] } {
     // Extract image URLs before escaping
     const imageExtensions = /\.(jpg|jpeg|png|gif|webp|svg)(\?[^\s]*)?$/i;
@@ -175,7 +189,8 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
           cleanUrl.includes('imgur.com') ||
           cleanUrl.includes('primal.net/media') ||
           cleanUrl.includes('image.nostr.build')) {
-        images.push(cleanUrl);
+        const safeUrl = sanitizeUrl(cleanUrl);
+        if (safeUrl) images.push(safeUrl);
       }
     });
 
@@ -219,14 +234,18 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 
   function getDisplayName(pubkey: string): string {
     const profile = profiles.get(pubkey);
-    if (profile?.display_name) return profile.display_name;
-    if (profile?.name) return profile.name;
+    if (profile?.display_name) return escapeHtml(profile.display_name);
+    if (profile?.name) return escapeHtml(profile.name);
     return pubkey.slice(0, 8) + '...' + pubkey.slice(-4);
   }
 
   function getProfilePicture(pubkey: string): string {
     const profile = profiles.get(pubkey);
-    return profile?.picture || `https://robohash.org/${pubkey}?set=set4&size=48x48`;
+    if (profile?.picture) {
+      const safe = sanitizeUrl(profile.picture);
+      if (safe) return safe;
+    }
+    return `https://robohash.org/${pubkey}?set=set4&size=48x48`;
   }
 
   function renderNotes() {
