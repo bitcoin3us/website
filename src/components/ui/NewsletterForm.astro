@@ -8,7 +8,7 @@ const { variant = 'light', class: className = '' } = Astro.props;
 const isDark = variant === 'dark';
 ---
 
-<form class:list={['newsletter-form', className]} data-buttondown-username="satoshi">
+<form class:list={['newsletter-form', className]} data-variant={variant}>
   <div class="flex flex-col sm:flex-row gap-2">
     <input
       type="email"
@@ -22,7 +22,6 @@ const isDark = variant === 'dark';
           : 'bg-white border border-gray-300 text-gray-900 placeholder-gray-500 focus:ring-pink/30 focus:border-pink'
       ]}
     />
-    <input type="hidden" name="embed" value="1" />
     <button
       type="submit"
       class:list={[
@@ -50,21 +49,14 @@ const isDark = variant === 'dark';
 <script>
   document.querySelectorAll('.newsletter-form').forEach((form) => {
     const formEl = form as HTMLFormElement;
-    const username = formEl.dataset.buttondownUsername;
 
-    // Create hidden iframe for form submission
-    const iframeName = `buttondown-iframe-${Math.random().toString(36).slice(2)}`;
-    const iframe = document.createElement('iframe');
-    iframe.name = iframeName;
-    iframe.style.display = 'none';
-    document.body.appendChild(iframe);
+    const isDark = formEl.dataset.variant === 'dark';
+    const successClass = isDark ? 'text-green-400' : 'text-green-600';
+    const errorClass = isDark ? 'text-red-400' : 'text-red-500';
 
-    // Set form to submit to iframe
-    formEl.action = `https://buttondown.com/api/emails/embed-subscribe/${username}`;
-    formEl.method = 'POST';
-    formEl.target = iframeName;
+    formEl.addEventListener('submit', async (e) => {
+      e.preventDefault();
 
-    formEl.addEventListener('submit', (e) => {
       const emailInput = formEl.querySelector('input[name="email"]') as HTMLInputElement;
       const submitBtn = formEl.querySelector('button[type="submit"]') as HTMLButtonElement;
       const btnText = submitBtn.querySelector('.btn-text') as HTMLElement;
@@ -72,10 +64,7 @@ const isDark = variant === 'dark';
       const message = formEl.querySelector('.newsletter-message') as HTMLElement;
 
       const email = emailInput.value.trim();
-      if (!email) {
-        e.preventDefault();
-        return;
-      }
+      if (!email) return;
 
       // Show loading state
       submitBtn.disabled = true;
@@ -83,18 +72,34 @@ const isDark = variant === 'dark';
       btnLoading.classList.remove('hidden');
       message.classList.add('hidden');
 
-      // Show success after a brief delay (form submits to hidden iframe)
-      setTimeout(() => {
-        message.textContent = 'Thanks for subscribing! Please check your email to confirm.';
-        message.classList.remove('hidden', 'text-red-500');
-        message.classList.add('text-green-500');
-        emailInput.value = '';
+      try {
+        const res = await fetch('/.netlify/functions/newsletter-subscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
 
-        // Reset button state
+        const data = await res.json();
+
+        if (res.ok) {
+          message.textContent = "You're subscribed! Welcome to the herd.";
+          message.classList.remove('hidden', errorClass);
+          message.classList.add(successClass);
+          emailInput.value = '';
+        } else {
+          message.textContent = data.error || 'Something went wrong. Please try again.';
+          message.classList.remove('hidden', successClass);
+          message.classList.add(errorClass);
+        }
+      } catch (err) {
+        message.textContent = 'Network error. Please check your connection and try again.';
+        message.classList.remove('hidden', successClass);
+        message.classList.add(errorClass);
+      } finally {
         submitBtn.disabled = false;
         btnText.classList.remove('hidden');
         btnLoading.classList.add('hidden');
-      }, 1000);
+      }
     });
   });
 </script>

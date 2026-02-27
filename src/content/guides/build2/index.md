@@ -5,7 +5,7 @@ pubDate: 2025-06-14
 heroImage: ./build2-hero.jpeg
 ---
 
-> For Lightning Piggy v1 click [here](/build/v1).
+> For Lightning Piggy Classic click [here](/build/classic).
 
 Making your very own Lightning Piggy is squealy easy. Here are the steps you need to follow:
 
@@ -31,7 +31,7 @@ If you already have the single board computer, follow these steps:
 
 2. Flash the firmware using the [MicroPythonOS web installer](https://install.micropythonos.com/). You'll need a Wi-Fi enabled computer with Chrome, Brave, Opera, or Edge browser.
 
-3. Connect to Wi-Fi, install the Lightning Piggy app from the AppStore, then configure your NWC credentials in Settings.
+3. Connect to Wi-Fi, install the Lightning Piggy app from the MicroPytonOS AppStore, then configure your NWC credentials in Settings.
 
 > 💡 *Tip:* To improve QR code detection when scanning, zoom in on the code in your browser to make it as large and clear as possible.
 

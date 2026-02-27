@@ -51,7 +51,7 @@ tools/
 |---------|--------|-------------|
 | Home | `/` | Landing page with hero, features, testimonials |
 | About | `/about`, `/about/origin-story` | Project info & history |
-| Build | `/build`, `/build/v1`, `/build/v2`, `/build/lnbits`, `/build/cases`, `/build/wifi-qr`, `/build/lnurl-qr` | Build guides & documentation |
+| Build | `/build`, `/build/classic`, `/build/p1`, `/build/lnbits`, `/build/cases`, `/build/wifi-qr`, `/build/lnurl-qr` | Build guides & documentation |
 | Community | `/community`, `/community/bitcoinkids`, `/community/credits`, `/community/educators`, `/community/wild`, `/community/branding`, `/community/zapmypiggy` | Community hub & programs |
 | Help | `/help`, `/help/troubleshooting`, `/help/faqs` | Support & troubleshooting |
 | News | `/news`, `/news/[slug]` | News hub & articles |

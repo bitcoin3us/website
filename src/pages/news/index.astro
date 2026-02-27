@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import NewsletterForm from '../../components/ui/NewsletterForm.astro';
 
 const sections = [
   {
@@ -44,7 +45,7 @@ const sections = [
 ---
 
 <BaseLayout title="Freedom Farm News" description="News, updates, appearances, and community challenges from the Lightning Piggy project.">
-  <section class="py-16 md:py-24">
+  <section class="py-10 md:py-16">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
       <header class="text-center mb-16">
         <img
@@ -150,6 +151,15 @@ const sections = [
             })()}
           </div>
         ))}
+      </div>
+
+      <!-- Newsletter signup -->
+      <div class="mt-10 bg-gray-50 rounded-2xl border border-gray-200 p-6 md:p-8 text-center">
+        <h2 class="text-xl font-bold text-gray-900 mb-2">Never miss an update</h2>
+        <p class="text-gray-600 text-sm mb-4">Get firmware releases, project news, and community highlights delivered to your inbox.</p>
+        <div class="max-w-md mx-auto">
+          <NewsletterForm variant="light" />
+        </div>
       </div>
     </div>
   </section>

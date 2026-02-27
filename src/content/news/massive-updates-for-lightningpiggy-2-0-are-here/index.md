@@ -5,7 +5,7 @@ pubDate: 2025-11-19
 heroImage: './228bfad66cc9fb046608dab5ae9b24e21b648587dc75a3b94a5d686d25b4408c.png'
 ---
 
-[MicroPythonOS](https://micropythonos.com/) v0.3.2 and [Lightning Piggy](/build/v2) App v0.0.17 are now live.
+[MicroPythonOS](https://micropythonos.com/) v0.3.2 and [Lightning Piggy](/build/p1) App v0.0.17 are now live.
 
 App v0.0.17–0.0.15 highlights:
 

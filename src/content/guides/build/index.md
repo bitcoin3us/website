@@ -5,7 +5,7 @@ pubDate: 2023-01-30
 heroImage: ./build-hero.jpeg
 ---
 
-> For Lightning Piggy v2 click [here](/build/v2)!
+> For Lightning Piggy p1 click [here](/build/p1)!
 Making your very own Lightning Piggy is squealy easy. Here are the steps you need to follow:
 
 1. Source the parts.

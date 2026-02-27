@@ -5,7 +5,7 @@ pubDate: 2025-11-19
 heroImage: './05F49068-65DA-401F-8119-C566D586BAA2.png'
 ---
 
-🥁 Word on the farm: [MicroPythonOS](https://micropythonos.com/) 0.4.0 is out and running! [Lightning Piggy v2](/build/v2) owners, you’ll want to grab this one by the tail ⚡️🐽
+🥁 Word on the farm: [MicroPythonOS](https://micropythonos.com/) 0.4.0 is out and running! [Lightning Piggy p1](/build/p1) owners, you’ll want to grab this one by the tail ⚡️🐽
 
 Here’s the change log:
 

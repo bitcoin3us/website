@@ -46,7 +46,7 @@ Our vision is to make bitcoin the savings’ standard for every child, while cre
 
 Web installer: [https://lightningpiggy.github.io/](https://lightningpiggy.github.io/)
 
-Build your own: [https://www.lightningpiggy.com/build/](/build/v1)
+Build your own: [https://www.lightningpiggy.com/build/](/build/classic)
 
 Chat with our community: [https://t.me/LightningPiggy](https://t.me/LightningPiggy)
 

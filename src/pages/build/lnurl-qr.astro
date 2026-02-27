@@ -3,7 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 ---
 
 <BaseLayout title="LNURL Pay QR Code Generator" description="Generate QR codes for your LNbits LNURL pay links">
-  <section class="py-16 md:py-24">
+  <section class="py-10 md:py-16">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
       <header class="text-center mb-12">
         <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">LNbits Zap Rewards!</h1>
@@ -120,13 +120,37 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
             '</div>' +
             '<div>' +
               '<label class="block text-sm font-semibold text-gray-900 mb-1.5">LNURL Pay Link</label>' +
-              '<input type="text" class="entry-lnurl w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-pink focus:ring-2 focus:ring-pink/20 outline-none transition-all text-gray-900 placeholder-gray-400" placeholder="e.g. LNURL1DP68GURN8GHJ7ER9D4HJ..." required />' +
+              '<input type="text" class="entry-lnurl w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-pink focus:ring-2 focus:ring-pink/20 outline-none transition-all text-gray-900 placeholder-gray-400" placeholder="e.g. LNURL1DP68GURN8GHJ7ER9D4HJ..." autocapitalize="none" autocomplete="off" spellcheck="false" required />' +
+              '<span class="lnurl-status block text-xs mt-1.5 h-4"></span>' +
             '</div>' +
           '</div>';
 
         card.querySelector('.remove-entry-btn').addEventListener('click', function () {
           card.remove();
           renumber();
+        });
+
+        var lnurlInput = card.querySelector('.entry-lnurl');
+        var lnurlStatus = card.querySelector('.lnurl-status');
+        lnurlInput.addEventListener('input', function () {
+          var val = lnurlInput.value.trim();
+          if (!val) {
+            lnurlStatus.textContent = '';
+            lnurlInput.classList.remove('border-red-300', 'border-green-300');
+            lnurlInput.classList.add('border-gray-200');
+            return;
+          }
+          if (val.toUpperCase().startsWith('LNURL')) {
+            lnurlStatus.textContent = 'Valid LNURL';
+            lnurlStatus.className = 'lnurl-status block text-xs mt-1.5 h-4 text-green-600';
+            lnurlInput.classList.remove('border-gray-200', 'border-red-300');
+            lnurlInput.classList.add('border-green-300');
+          } else {
+            lnurlStatus.textContent = 'Must start with LNURL';
+            lnurlStatus.className = 'lnurl-status block text-xs mt-1.5 h-4 text-red-500';
+            lnurlInput.classList.remove('border-gray-200', 'border-green-300');
+            lnurlInput.classList.add('border-red-300');
+          }
         });
 
         container.appendChild(card);
@@ -237,6 +261,25 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
         e.preventDefault();
         var entries = getEntries();
         if (entries.length === 0) return;
+
+        // Validate all LNURL values start with LNURL
+        var invalid = false;
+        container.querySelectorAll('.entry-card').forEach(function (card) {
+          var lnurlInput = card.querySelector('.entry-lnurl');
+          var lnurlStatus = card.querySelector('.lnurl-status');
+          var val = lnurlInput.value.trim();
+          if (val && !val.toUpperCase().startsWith('LNURL')) {
+            lnurlStatus.textContent = 'Must start with LNURL';
+            lnurlStatus.className = 'lnurl-status block text-xs mt-1.5 h-4 text-red-500';
+            lnurlInput.classList.remove('border-gray-200', 'border-green-300');
+            lnurlInput.classList.add('border-red-300');
+            invalid = true;
+          }
+        });
+        if (invalid) {
+          container.querySelector('.border-red-300').focus();
+          return;
+        }
 
         qrGrid.innerHTML = '';
 

@@ -45,7 +45,7 @@ LightingPiggy is an electronic cash piggy bank for children, that accepts bitcoi
 
 Our vision is to make bitcoin the savings’ standard for every child, while creating an educational platform to inspire future generations, not only to save in bitcoin, but also to learn to code and build in a free and open source way.
 
-[Build](/build/v1) your own  
+[Build](/build/classic) your own
 
 Chat with our [community](https://t.me/LightningPiggy)  
 
