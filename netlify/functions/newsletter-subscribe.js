@@ -18,7 +18,7 @@ function corsHeaders(event) {
 }
 
 var NOTIFICATION_EMAIL = 'oink@lightningpiggy.com';
-var FROM_EMAIL = 'Lightning Piggy <newsletter@lightningpiggy.com>';
+var FROM_EMAIL = 'Lightning Piggy <newsletter@mail.lightningpiggy.com>';
 
 var EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 

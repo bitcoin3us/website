@@ -12,7 +12,7 @@ const crypto = require('crypto');
 
 const BTCPAY_URL = 'https://btcpay.lightningpiggy.com';
 const NOTIFICATION_EMAIL = 'oink@lightningpiggy.com';
-const FROM_EMAIL = 'Lightning Piggy <donations@lightningpiggy.com>';
+const FROM_EMAIL = 'Lightning Piggy <donations@mail.lightningpiggy.com>';
 
 const GITHUB_REPO = 'LightningPiggy/website';
 const SUPPORTERS_PATH = 'src/data/supporters.json';
