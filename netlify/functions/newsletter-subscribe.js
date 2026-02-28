@@ -172,7 +172,7 @@ exports.handler = async function (event) {
     }
 
     console.error('Resend API error:', status, JSON.stringify(errBody));
-    return { statusCode: 502, headers: corsHeaders(event), body: JSON.stringify({ error: 'Subscription failed. Please try again.' }) };
+    return { statusCode: 502, headers: corsHeaders(event), body: JSON.stringify({ error: 'Subscription failed. Please try again.', debug: errBody }) };
 
   } catch (err) {
     console.error('Resend API fetch error:', err.message);
