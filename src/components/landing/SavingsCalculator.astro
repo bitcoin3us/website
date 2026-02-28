@@ -1,0 +1,242 @@
+---
+import SectionHeading from '../ui/SectionHeading.astro';
+---
+
+<section class="py-14">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <SectionHeading
+      title="Savings Calculator"
+      subtitle="See how much Bitcoin your child could have saved with weekly zaps!"
+    />
+
+    <div class="mt-12 max-w-2xl mx-auto">
+      <!-- Inputs -->
+      <div class="grid sm:grid-cols-2 gap-6 mb-8">
+
+        <!-- Weekly Amount -->
+        <div>
+          <label for="calc-amount" class="block text-sm font-semibold text-gray-900 mb-3">
+            Weekly pocket money (USD)
+          </label>
+          <div class="flex flex-wrap gap-2 mb-3" id="amount-presets">
+            <button type="button" data-amount="5"
+              class="amount-preset px-4 py-2 rounded-full border-2 border-gray-200 text-gray-700 font-semibold text-sm hover:border-pink hover:text-pink transition-all cursor-pointer">$5</button>
+            <button type="button" data-amount="10"
+              class="amount-preset px-4 py-2 rounded-full border-2 border-pink bg-pink/5 text-pink font-semibold text-sm transition-all cursor-pointer">$10</button>
+            <button type="button" data-amount="21"
+              class="amount-preset px-4 py-2 rounded-full border-2 border-gray-200 text-gray-700 font-semibold text-sm hover:border-pink hover:text-pink transition-all cursor-pointer">$21</button>
+            <button type="button" data-amount="50"
+              class="amount-preset px-4 py-2 rounded-full border-2 border-gray-200 text-gray-700 font-semibold text-sm hover:border-pink hover:text-pink transition-all cursor-pointer">$50</button>
+          </div>
+          <div class="relative">
+            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">$</span>
+            <input
+              type="number"
+              id="calc-amount"
+              min="1"
+              step="1"
+              value="10"
+              class="w-full pl-8 pr-4 py-3 rounded-xl border border-gray-200 focus:border-pink focus:ring-2 focus:ring-pink/20 outline-none transition-all text-gray-900"
+            />
+          </div>
+        </div>
+
+        <!-- Years -->
+        <div>
+          <label for="calc-years" class="block text-sm font-semibold text-gray-900 mb-3">
+            Saving for the previous (years)
+          </label>
+          <div class="flex flex-wrap gap-2 mb-3" id="years-presets">
+            <button type="button" data-years="1"
+              class="years-preset px-4 py-2 rounded-full border-2 border-gray-200 text-gray-700 font-semibold text-sm hover:border-pink hover:text-pink transition-all cursor-pointer">1</button>
+            <button type="button" data-years="3"
+              class="years-preset px-4 py-2 rounded-full border-2 border-gray-200 text-gray-700 font-semibold text-sm hover:border-pink hover:text-pink transition-all cursor-pointer">3</button>
+            <button type="button" data-years="5"
+              class="years-preset px-4 py-2 rounded-full border-2 border-gray-200 text-gray-700 font-semibold text-sm hover:border-pink hover:text-pink transition-all cursor-pointer">5</button>
+            <button type="button" data-years="10"
+              class="years-preset px-4 py-2 rounded-full border-2 border-pink bg-pink/5 text-pink font-semibold text-sm transition-all cursor-pointer">10</button>
+          </div>
+          <input
+            type="number"
+            id="calc-years"
+            min="1"
+            max="15"
+            step="1"
+            value="10"
+            class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-pink focus:ring-2 focus:ring-pink/20 outline-none transition-all text-gray-900"
+          />
+        </div>
+      </div>
+
+      <!-- Results Card -->
+      <div class="bg-gray-50 rounded-2xl p-6 md:p-8 border border-gray-200">
+        <div class="grid sm:grid-cols-2 gap-6">
+          <!-- Total Sats -->
+          <div>
+            <p class="text-sm font-medium text-gray-500 mb-1">Total sats saved</p>
+            <p id="calc-sats" class="text-3xl font-bold text-gray-900">—</p>
+          </div>
+          <!-- Current Value -->
+          <div>
+            <p class="text-sm font-medium text-gray-500 mb-1">Current USD value</p>
+            <p id="calc-value" class="text-3xl font-bold text-gray-900">—</p>
+          </div>
+          <!-- Total Invested -->
+          <div>
+            <p class="text-sm font-medium text-gray-500 mb-1">Total invested</p>
+            <p id="calc-invested" class="text-2xl font-bold text-gray-600">—</p>
+          </div>
+          <!-- Gain -->
+          <div>
+            <p class="text-sm font-medium text-gray-500 mb-1">Gain</p>
+            <p id="calc-gain" class="text-2xl font-bold text-gray-600">—</p>
+          </div>
+        </div>
+
+        <!-- Live indicator (hidden until API succeeds) -->
+        <div id="calc-live" class="mt-4 flex items-center gap-1.5 hidden">
+          <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
+          <span class="text-xs text-gray-400">Live via mempool.space</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script is:inline>
+document.addEventListener('DOMContentLoaded', function () {
+  var amountInput = document.getElementById('calc-amount');
+  var yearsInput = document.getElementById('calc-years');
+  var amountPresets = document.querySelectorAll('.amount-preset');
+  var yearsPresets = document.querySelectorAll('.years-preset');
+
+  var satsEl = document.getElementById('calc-sats');
+  var valueEl = document.getElementById('calc-value');
+  var investedEl = document.getElementById('calc-invested');
+  var gainEl = document.getElementById('calc-gain');
+  var liveEl = document.getElementById('calc-live');
+
+  var weeklyPrices = null;
+  var currentPrice = null;
+
+  // --- Preset button logic ---
+  function setActivePreset(buttons, activeBtn) {
+    buttons.forEach(function (btn) {
+      btn.classList.remove('border-pink', 'bg-pink/5', 'text-pink');
+      btn.classList.add('border-gray-200', 'text-gray-700');
+    });
+    if (activeBtn) {
+      activeBtn.classList.remove('border-gray-200', 'text-gray-700');
+      activeBtn.classList.add('border-pink', 'bg-pink/5', 'text-pink');
+    }
+  }
+
+  amountPresets.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      amountInput.value = btn.getAttribute('data-amount');
+      setActivePreset(amountPresets, btn);
+      recalculate();
+    });
+  });
+
+  yearsPresets.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      yearsInput.value = btn.getAttribute('data-years');
+      setActivePreset(yearsPresets, btn);
+      recalculate();
+    });
+  });
+
+  amountInput.addEventListener('input', function () {
+    var val = amountInput.value;
+    var matched = null;
+    amountPresets.forEach(function (btn) {
+      if (btn.getAttribute('data-amount') === val) matched = btn;
+    });
+    setActivePreset(amountPresets, matched);
+    recalculate();
+  });
+
+  yearsInput.addEventListener('input', function () {
+    var val = yearsInput.value;
+    var matched = null;
+    yearsPresets.forEach(function (btn) {
+      if (btn.getAttribute('data-years') === val) matched = btn;
+    });
+    setActivePreset(yearsPresets, matched);
+    recalculate();
+  });
+
+  // --- Number formatting ---
+  function formatNumber(n) {
+    return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+
+  // --- Core DCA calculation ---
+  function recalculate() {
+    if (!weeklyPrices || !currentPrice) return;
+
+    var amount = parseFloat(amountInput.value) || 0;
+    var years = parseInt(yearsInput.value) || 0;
+
+    if (amount <= 0 || years <= 0) {
+      satsEl.textContent = '—';
+      valueEl.textContent = '—';
+      investedEl.textContent = '—';
+      gainEl.textContent = '—';
+      gainEl.className = 'text-2xl font-bold text-gray-600';
+      return;
+    }
+
+    // Find weeks within the time range
+    var now = Math.floor(Date.now() / 1000);
+    var startTime = now - (years * 365.25 * 24 * 60 * 60);
+
+    var totalSats = 0;
+    var weeksCount = 0;
+
+    for (var i = 0; i < weeklyPrices.length; i++) {
+      if (weeklyPrices[i].time >= startTime && weeklyPrices[i].time <= now) {
+        totalSats += (amount / weeklyPrices[i].price) * 100000000;
+        weeksCount++;
+      }
+    }
+
+    var totalInvested = amount * weeksCount;
+    var currentValue = (totalSats / 100000000) * currentPrice;
+    var gain = currentValue - totalInvested;
+    var gainPct = totalInvested > 0 ? ((gain / totalInvested) * 100) : 0;
+
+    totalSats = Math.round(totalSats);
+
+    // Update display
+    satsEl.innerHTML = formatNumber(totalSats) + ' <span class="text-lg font-semibold text-gray-500">sats</span>';
+    valueEl.textContent = '$' + formatNumber(Math.round(currentValue));
+    investedEl.textContent = '$' + formatNumber(Math.round(totalInvested));
+
+    if (gain >= 0) {
+      gainEl.textContent = '+' + Math.round(gainPct) + '% (+$' + formatNumber(Math.round(gain)) + ')';
+      gainEl.className = 'text-2xl font-bold text-green-600';
+    } else {
+      gainEl.textContent = Math.round(gainPct) + '% (-$' + formatNumber(Math.round(Math.abs(gain))) + ')';
+      gainEl.className = 'text-2xl font-bold text-red-500';
+    }
+  }
+
+  // --- Fetch weekly price data ---
+  fetch('/.netlify/functions/btc-weekly-prices')
+    .then(function (res) {
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return res.json();
+    })
+    .then(function (data) {
+      weeklyPrices = data.weeks;
+      currentPrice = data.currentPrice;
+      recalculate();
+      if (liveEl) liveEl.classList.remove('hidden');
+    })
+    .catch(function (err) {
+      console.warn('Savings calculator fetch failed:', err);
+    });
+});
+</script>

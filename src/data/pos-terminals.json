@@ -1,0 +1,44 @@
+[
+  {
+    "id": "usd",
+    "currency": "USD",
+    "label": "US Dollar",
+    "flag": "🇺🇸",
+    "appId": "B9vXfVBbtHPeH6PUNbdBwonpHwP7U4vTZDxS5ri9SpLU"
+  },
+  {
+    "id": "eur",
+    "currency": "EUR",
+    "label": "Euro",
+    "flag": "🇪🇺",
+    "appId": "3EHhUEY9VKtaviN8JTH1tcubeG3KhhuD8od6CZH2kFYj"
+  },
+  {
+    "id": "gbp",
+    "currency": "GBP",
+    "label": "British Pound",
+    "flag": "🇬🇧",
+    "appId": "68o4B2MGtuZTSTZGqaXm2egLpHw7T8qySptf8HMd4BTF"
+  },
+  {
+    "id": "dkk",
+    "currency": "DKK",
+    "label": "Danish Krone",
+    "flag": "🇩🇰",
+    "appId": "3zTVE5F87wbH1du58nQpcC8qdndTSj3ZkLaH7fAcZ4HF"
+  },
+  {
+    "id": "chf",
+    "currency": "CHF",
+    "label": "Swiss Franc",
+    "flag": "🇨🇭",
+    "appId": "47gFWtr4Nra8DY88WGKXu9T9gPxqGb4XJdSxWF2S7Woa"
+  },
+  {
+    "id": "pln",
+    "currency": "PLN",
+    "label": "Polish Złoty",
+    "flag": "🇵🇱",
+    "appId": "7JfJW73oVUQgeeWNSqLVkRzDUxfPNVSCehniLSjXXfvY"
+  }
+]

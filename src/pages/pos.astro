@@ -1,0 +1,147 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import terminals from '../data/pos-terminals.json';
+
+const defaultTerminal = terminals[0];
+const BASE_URL = 'https://btcpay.lightningpiggy.com/apps/';
+---
+
+<BaseLayout
+  title="Point of Sale"
+  description="Accept Bitcoin payments over Lightning in your local currency."
+>
+  <!-- Hero -->
+  <section class="py-8 md:py-12 text-center">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-3 tracking-tight">Point of Sale</h1>
+      <p class="text-lg text-gray-600 max-w-xl mx-auto leading-relaxed">
+        Accept Bitcoin over Lightning in your local currency. Select a currency below to get started.
+      </p>
+    </div>
+  </section>
+
+  <!-- Currency Selector -->
+  <section class="border-t border-gray-100">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div id="currency-tabs" class="flex flex-wrap justify-center gap-3" role="tablist" aria-label="Select currency">
+        {terminals.map((terminal, index) => (
+          <button
+            role="tab"
+            aria-selected={index === 0 ? "true" : "false"}
+            aria-controls="pos-iframe-container"
+            data-app-id={terminal.appId}
+            data-currency={terminal.currency}
+            data-label={terminal.label}
+            class:list={[
+              "currency-tab px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 border-2 cursor-pointer",
+              index === 0
+                ? "border-pink bg-pink/5 text-pink"
+                : "border-gray-200 text-gray-700 hover:border-pink hover:text-pink"
+            ]}
+          >
+            <span class="mr-1.5">{terminal.flag}</span>
+            {terminal.currency}
+          </button>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- BTCPay iframe -->
+  <section id="pos-iframe-container" class="border-t border-gray-100 w-full" role="tabpanel">
+    <iframe
+      id="pos-iframe"
+      src={`${BASE_URL}${defaultTerminal.appId}/pos`}
+      sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+      allow="payment"
+      loading="lazy"
+      title={`BTCPay Point of Sale - ${defaultTerminal.label}`}
+      class="pos-iframe"
+    ></iframe>
+  </section>
+
+  <!-- Fallback (shown if iframe fails to load) -->
+  <section id="iframe-fallback" class="hidden py-8">
+    <div class="max-w-xl mx-auto px-4 text-center">
+      <p class="text-gray-600 mb-4">The embedded terminal could not load. You can open it directly instead:</p>
+      <a
+        id="fallback-link"
+        href={`${BASE_URL}${defaultTerminal.appId}/pos`}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center gap-2 px-6 py-3 bg-pink text-white font-semibold rounded-full hover:bg-gray-900 transition-colors"
+      >
+        Open POS Terminal
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+        </svg>
+      </a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .pos-iframe {
+    display: block;
+    width: 100%;
+    min-height: calc(100vh - 280px);
+    border: none;
+  }
+</style>
+
+<script is:inline>
+document.addEventListener('DOMContentLoaded', function () {
+  var tabs = document.querySelectorAll('.currency-tab');
+  var iframe = document.getElementById('pos-iframe');
+  var fallbackLink = document.getElementById('fallback-link');
+  var fallbackSection = document.getElementById('iframe-fallback');
+  var BASE_URL = 'https://btcpay.lightningpiggy.com/apps/';
+
+  // Tab switching
+  tabs.forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      var appId = tab.getAttribute('data-app-id');
+      var label = tab.getAttribute('data-label');
+
+      // Update iframe
+      iframe.src = BASE_URL + appId + '/pos';
+      iframe.title = 'BTCPay Point of Sale - ' + label;
+
+      // Update fallback link
+      if (fallbackLink) {
+        fallbackLink.href = BASE_URL + appId + '/pos';
+      }
+
+      // Reset iframe load detection
+      iframeLoaded = false;
+      if (fallbackSection) fallbackSection.classList.add('hidden');
+      clearTimeout(fallbackTimer);
+      fallbackTimer = setTimeout(function () {
+        if (!iframeLoaded && fallbackSection) {
+          fallbackSection.classList.remove('hidden');
+        }
+      }, 5000);
+
+      // Update active tab styling
+      tabs.forEach(function (t) {
+        t.classList.remove('border-pink', 'bg-pink/5', 'text-pink');
+        t.classList.add('border-gray-200', 'text-gray-700');
+        t.setAttribute('aria-selected', 'false');
+      });
+      tab.classList.remove('border-gray-200', 'text-gray-700');
+      tab.classList.add('border-pink', 'bg-pink/5', 'text-pink');
+      tab.setAttribute('aria-selected', 'true');
+    });
+  });
+
+  // Detect iframe load failure via timeout
+  var iframeLoaded = false;
+  var fallbackTimer;
+  iframe.addEventListener('load', function () { iframeLoaded = true; });
+  fallbackTimer = setTimeout(function () {
+    if (!iframeLoaded && fallbackSection) {
+      fallbackSection.classList.remove('hidden');
+    }
+  }, 5000);
+});
+</script>
