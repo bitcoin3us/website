@@ -15,7 +15,7 @@
   <!-- Hero stat -->
   <div class="flex items-baseline gap-0.5 mb-0.5">
     <span class="text-xs text-gray-400 self-start mt-2">~</span>
-    <span id="power-loss-pct" class="text-5xl font-bold text-gray-900">99</span>
+    <span id="power-loss-pct" class="text-4xl font-bold text-gray-900">99.4</span>
     <span class="text-xl font-bold text-gray-900">%</span>
   </div>
   <p class="text-gray-500 text-sm font-medium mb-3">purchasing power lost in 10 years</p>
@@ -41,10 +41,10 @@ document.addEventListener('DOMContentLoaded', function () {
       return res.json();
     })
     .then(function (data) {
-      // Update percentage (rounded to whole number)
+      // Update percentage (one decimal place)
       var pctEl = document.getElementById('power-loss-pct');
       if (pctEl && data.percentage) {
-        pctEl.textContent = Math.round(data.percentage);
+        pctEl.textContent = data.percentage.toFixed(1);
       }
 
       // Update price details
