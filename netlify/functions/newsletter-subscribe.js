@@ -101,7 +101,7 @@ exports.handler = async function (event) {
   }
 
   var apiKey = process.env.RESEND_API_KEY;
-  var audienceId = process.env.RESEND_AUDIENCE_ID;
+  var audienceId = process.env.RESEND_AUDIENCE_ID || process.env.RESEND_NEWSLETTER_SEGMENT_ID;
 
   if (!apiKey || !audienceId) {
     console.error('RESEND_API_KEY or RESEND_AUDIENCE_ID environment variable is not set');
