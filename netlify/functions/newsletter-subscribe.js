@@ -1,9 +1,9 @@
-// Netlify serverless function: adds an email to Resend and tags it with the
-// Newsletter segment so new subscribers are easy to find and target.
+// Netlify serverless function: adds an email to the Resend newsletter audience,
+// sends a welcome email to the subscriber, and notifies the site owner.
 //
 // Environment variables required in Netlify:
-//   RESEND_API_KEY              — API key from resend.com (shared with webhook functions)
-//   RESEND_NEWSLETTER_SEGMENT_ID — segment ID from the Resend dashboard (Audiences → Segments)
+//   RESEND_API_KEY     — API key from resend.com (shared with webhook functions)
+//   RESEND_AUDIENCE_ID — audience ID from the Resend dashboard
 
 var ALLOWED_ORIGIN = 'https://lightningpiggy.com';
 
@@ -101,10 +101,10 @@ exports.handler = async function (event) {
   }
 
   var apiKey = process.env.RESEND_API_KEY;
-  var segmentId = process.env.RESEND_NEWSLETTER_SEGMENT_ID;
+  var audienceId = process.env.RESEND_AUDIENCE_ID;
 
-  if (!apiKey || !segmentId) {
-    console.error('RESEND_API_KEY or RESEND_NEWSLETTER_SEGMENT_ID environment variable is not set');
+  if (!apiKey || !audienceId) {
+    console.error('RESEND_API_KEY or RESEND_AUDIENCE_ID environment variable is not set');
     return { statusCode: 500, headers: corsHeaders(event), body: JSON.stringify({ error: 'Server configuration error' }) };
   }
 
@@ -130,21 +130,18 @@ exports.handler = async function (event) {
     return { statusCode: 400, headers: corsHeaders(event), body: JSON.stringify({ error: 'Please enter a valid email address.' }) };
   }
 
-  // Create contact in Resend and add to Newsletter segment
+  // Add contact to Resend audience
   try {
-    var contactBody = {
-      email: email,
-      unsubscribed: false,
-      segments: [segmentId]
-    };
-
-    var res = await fetch('https://api.resend.com/contacts', {
+    var res = await fetch('https://api.resend.com/audiences/' + audienceId + '/contacts', {
       method: 'POST',
       headers: {
         'Authorization': 'Bearer ' + apiKey,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(contactBody)
+      body: JSON.stringify({
+        email: email,
+        unsubscribed: false
+      })
     });
 
     if (res.ok) {
