@@ -22,6 +22,23 @@ var FROM_EMAIL = 'Lightning Piggy <newsletter@mail.lightningpiggy.com>';
 
 var EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+// Fetch with exponential backoff on 429 rate limits
+// Retries up to 3 times with delays of 600ms, 1200ms, 2400ms
+async function fetchWithRetry(url, options, maxRetries) {
+  maxRetries = maxRetries || 3;
+  var delay = 600;
+  for (var attempt = 0; attempt <= maxRetries; attempt++) {
+    var res = await fetch(url, options);
+    if (res.status !== 429 || attempt === maxRetries) return res;
+    console.log('Rate limited, retrying in ' + delay + 'ms (attempt ' + (attempt + 1) + ')');
+    await new Promise(function (r) { setTimeout(r, delay); });
+    delay *= 2;
+  }
+  return res;
+}
+
+function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+
 // Send welcome email to new subscriber
 async function sendWelcomeEmail(apiKey, subscriberEmail) {
   var html = [
@@ -35,7 +52,7 @@ async function sendWelcomeEmail(apiKey, subscriberEmail) {
   ].join('\n');
 
   try {
-    var res = await fetch('https://api.resend.com/emails', {
+    var res = await fetchWithRetry('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -69,7 +86,7 @@ async function sendOwnerNotification(apiKey, subscriberEmail) {
   ].join('\n');
 
   try {
-    var res = await fetch('https://api.resend.com/emails', {
+    var res = await fetchWithRetry('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -145,11 +162,11 @@ exports.handler = async function (event) {
     });
 
     if (res.ok) {
-      // Send emails in parallel (don't block the response if they fail)
-      await Promise.allSettled([
-        sendWelcomeEmail(apiKey, email),
-        sendOwnerNotification(apiKey, email)
-      ]);
+      // Send emails sequentially with a gap to stay under 2 req/s rate limit.
+      // Each function has its own retry with exponential backoff on 429.
+      await sendWelcomeEmail(apiKey, email);
+      await sleep(600);
+      await sendOwnerNotification(apiKey, email);
 
       return {
         statusCode: 200,
