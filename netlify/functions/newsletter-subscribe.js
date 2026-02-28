@@ -17,7 +17,79 @@ function corsHeaders(event) {
   };
 }
 
+var NOTIFICATION_EMAIL = 'oink@lightningpiggy.com';
+var FROM_EMAIL = 'Lightning Piggy <newsletter@lightningpiggy.com>';
+
 var EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// Send welcome email to new subscriber
+async function sendWelcomeEmail(apiKey, subscriberEmail) {
+  var html = [
+    '<div style="font-family:sans-serif;max-width:480px;">',
+    '  <h2 style="color:#e91e8c;">Welcome to the herd! 🐷</h2>',
+    '  <p>Thanks for subscribing to the Lightning Piggy newsletter.</p>',
+    '  <p>You\'ll receive updates on new features, build guides, and project news — no spam, just oinks.</p>',
+    '  <hr style="border:none;border-top:1px solid #eee;margin:16px 0;">',
+    '  <p style="color:#999;font-size:12px;">Lightning Piggy — The Bitcoin piggy bank for everyone</p>',
+    '</div>'
+  ].join('\n');
+
+  try {
+    var res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + apiKey
+      },
+      body: JSON.stringify({
+        from: FROM_EMAIL,
+        to: [subscriberEmail],
+        subject: 'Welcome to Lightning Piggy! 🐷',
+        html: html
+      })
+    });
+    if (!res.ok) {
+      var text = await res.text();
+      console.error('Welcome email error:', res.status, text);
+    }
+  } catch (err) {
+    console.error('Failed to send welcome email:', err.message);
+  }
+}
+
+// Notify site owner of new subscriber
+async function sendOwnerNotification(apiKey, subscriberEmail) {
+  var html = [
+    '<div style="font-family:sans-serif;max-width:480px;">',
+    '  <h2 style="color:#e91e8c;">New Newsletter Subscriber!</h2>',
+    '  <p style="font-size:18px;font-weight:bold;">' + subscriberEmail + '</p>',
+    '  <hr style="border:none;border-top:1px solid #eee;margin:16px 0;">',
+    '  <p style="color:#999;font-size:12px;">Lightning Piggy Newsletter</p>',
+    '</div>'
+  ].join('\n');
+
+  try {
+    var res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + apiKey
+      },
+      body: JSON.stringify({
+        from: FROM_EMAIL,
+        to: [NOTIFICATION_EMAIL],
+        subject: 'New subscriber: ' + subscriberEmail,
+        html: html
+      })
+    });
+    if (!res.ok) {
+      var text = await res.text();
+      console.error('Owner notification error:', res.status, text);
+    }
+  } catch (err) {
+    console.error('Failed to send owner notification:', err.message);
+  }
+}
 
 exports.handler = async function (event) {
   if (event.httpMethod === 'OPTIONS') {
@@ -76,6 +148,12 @@ exports.handler = async function (event) {
     });
 
     if (res.ok) {
+      // Send emails in parallel (don't block the response if they fail)
+      await Promise.allSettled([
+        sendWelcomeEmail(apiKey, email),
+        sendOwnerNotification(apiKey, email)
+      ]);
+
       return {
         statusCode: 200,
         headers: corsHeaders(event),
