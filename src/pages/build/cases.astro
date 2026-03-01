@@ -3,6 +3,32 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 
 const cases = [
   {
+    name: 'Genesis Piggy',
+    tag: 'ESP32-S3',
+    description: "Genesis Piggy is back with a fresh redesign, purpose-built for the Waveshare 2-inch touch LCD board. Same classic proportions, but with some key upgrades: a fully rotating head that can be positioned at any angle, a cleaner look with the cable routed behind the scenes, and easy button access from the piggy's rear.",
+    images: [
+      '/images/cases/genesispiggy-lcd-01.png',
+      '/images/cases/genesispiggy-lcd-02.png',
+      '/images/cases/genesispiggy-lcd-03.png',
+      '/images/cases/genesispiggy-lcd-04.png',
+      '/images/cases/genesispiggy-lcd-05.png',
+    ],
+    specs: {
+      board: 'Waveshare ESP32-S3 2inch Touch Display',
+      displaySize: '2 inch',
+      os: 'MicroPythonOS',
+      material: 'PLA or PETG',
+      printing: "Camera face down. Pig's head face up. Add organic supports and rafts to secure the two buttons to the printer bed.",
+      extraHardware: 'M2 x8mm screws (Qty 4)',
+      extraHardwareUrl: 'https://www.amazon.de/-/en/Zuyya-Socket-Screws-Stainless-Threaded/dp/B0FKTFTB44/ref=sr_1_13?crid=V9WPP9OBW8T1&dib=eyJ2IjoiMSJ9.hiOMppWWVisJNm-sykazzQNjlQnODIaJFXbatHZDt7H44B0I6KnYag6x53z_8iw4GBb10KJEYUyBuczN8Y2ohZMbFMJ2W8kMq4zK9D58Exkdx7J7mPUZ7xoubJhfL9KRDpbTk4VeaRzCGXRhOR-UT75VeytXZ_VBrZr_Bgbfc4QVaZDGUyvkrv1NmykZeEeMRwaHI8iJ2ZQZFd0bbEGG34bxaMs7eroGZZRvqh9NH-GyeqFmvKOovBgZZ3-BS1DQWHnaqA047eg2t3I5rSalzVp9c94XObIHwgGMwHocwb4.3fOcyS3i-WUlpVSGeXmgIP0WWdZdxRcjm2xu7zKHSVw&dib_tag=se&keywords=m2%2B8mm&qid=1772018362&sprefix=M2%2B8mm%2Caps%2C145&sr=8-13&th=1',
+    },
+    creator: { name: 'Richard', url: 'https://njump.me/npub1dwekunm9w9agazkwcq88ymxmj0j3qgxcu4mwfqnjqvyusa9cuxrs0wsqel' },
+    licence: { name: 'CC BY-SA 4.0', url: 'https://creativecommons.org/licenses/by-sa/4.0/' },
+    downloads: [
+      { label: 'Download Model File', url: '/downloads/cases/lightningpiggy-v2-genesis.3mf' },
+    ],
+  },
+  {
     name: 'ZapBox!',
     tag: 'ESP32-S3',
     description: "The 'ZapBox!' pocket-size edition is engineered to be ultra-compact. Made from a single part and held together with four screws, it's perfect for travel. In fact, the team carries these very piggies on the road — an entire sounder of them fits neatly into a single backpack for workshops.",
@@ -16,7 +42,7 @@ const cases = [
       '/images/cases/zapbox-lcd-07.png',
     ],
     specs: {
-      board: 'Waveshare ESP32-S3 Touch',
+      board: 'Waveshare ESP32-S3 2inch Touch Display',
       displaySize: '2 inch',
       os: 'MicroPythonOS',
       material: 'PLA or PETG',
@@ -26,7 +52,7 @@ const cases = [
       extraHardwareUrl: 'https://www.amazon.de/-/en/Zuyya-Socket-Screws-Stainless-Threaded/dp/B0FKTFTB44/ref=sr_1_13?crid=V9WPP9OBW8T1&dib=eyJ2IjoiMSJ9.hiOMppWWVisJNm-sykazzQNjlQnODIaJFXbatHZDt7H44B0I6KnYag6x53z_8iw4GBb10KJEYUyBuczN8Y2ohZMbFMJ2W8kMq4zK9D58Exkdx7J7mPUZ7xoubJhfL9KRDpbTk4VeaRzCGXRhOR-UT75VeytXZ_VBrZr_Bgbfc4QVaZDGUyvkrv1NmykZeEeMRwaHI8iJ2ZQZFd0bbEGG34bxaMs7eroGZZRvqh9NH-GyeqFmvKOovBgZZ3-BS1DQWHnaqA047eg2t3I5rSalzVp9c94XObIHwgGMwHocwb4.3fOcyS3i-WUlpVSGeXmgIP0WWdZdxRcjm2xu7zKHSVw&dib_tag=se&keywords=m2%2B8mm&qid=1772018362&sprefix=M2%2B8mm%2Caps%2C145&sr=8-13&th=1',
     },
     creator: { name: 'Richard', url: 'https://njump.me/npub1dwekunm9w9agazkwcq88ymxmj0j3qgxcu4mwfqnjqvyusa9cuxrs0wsqel' },
-    licence: { name: 'CC0', url: 'https://creativecommons.org/publicdomain/zero/1.0/' },
+    licence: { name: 'CC BY-SA 4.0', url: 'https://creativecommons.org/licenses/by-sa/4.0/' },
     downloads: [
       { label: 'Download Model File', url: '/downloads/cases/lightningpiggy-v2-zapbox.3mf' },
     ],
