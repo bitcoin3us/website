@@ -53,12 +53,12 @@ async function sendWelcomeEmail(apiKey, subscriberEmail) {
     '    <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="background-color:#ffffff;border-radius:16px;overflow:hidden;">',
     '      <tr><td style="background-color:#EC008C;height:4px;font-size:0;line-height:0;">&nbsp;</td></tr>',
     '      <tr><td style="padding:40px 40px 24px 40px;">',
-    '        <h1 style="margin:0;font-size:28px;font-weight:700;line-height:34px;color:#111827;">Welcome to the herd! 🐷</h1>',
+    '        <h1 style="margin:0;font-size:28px;font-weight:700;line-height:34px;color:#111827;">Welcome to the herd! ⚡️🐽</h1>',
     '      </td></tr>',
     '      <tr><td style="padding:0 40px;"><table role="presentation" cellpadding="0" cellspacing="0" width="100%"><tr><td style="border-bottom:1px solid #f0f0f0;height:1px;font-size:0;line-height:0;">&nbsp;</td></tr></table></td></tr>',
     '      <tr><td style="padding:24px 40px 32px 40px;font-size:16px;line-height:26px;color:#525252;">',
     '        <p style="margin:0 0 16px 0;">Thanks for subscribing to the Lightning Piggy newsletter.</p>',
-    '        <p style="margin:0 0 16px 0;">You\'ll receive updates on new features, build guides, and project news — no spam, just oinks.</p>',
+    '        <p style="margin:0 0 16px 0;">You\'ll receive updates on new features, build guides, and project news — no hogwash, just oinks.</p>',
     '        <p style="margin:0;">In the meantime, explore what Lightning Piggy can do:</p>',
     '      </td></tr>',
     '      <tr><td style="padding:0 40px 40px 40px;" align="center">',
@@ -108,7 +108,7 @@ async function sendWelcomeEmail(apiKey, subscriberEmail) {
       body: JSON.stringify({
         from: FROM_EMAIL,
         to: [subscriberEmail],
-        subject: 'Welcome to Lightning Piggy! 🐷',
+        subject: 'Welcome to Freedom Farm News!',
         html: html
       })
     });
