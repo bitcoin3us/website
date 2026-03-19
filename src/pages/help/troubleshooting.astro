@@ -1,20 +1,312 @@
 ---
 import ContentLayout from '../../layouts/ContentLayout.astro';
-import { getCollection, render } from 'astro:content';
+import piggyConfigLogin from '../../content/guides/troubleshooting/piggy-config-login.jpg';
+import t5Buttons from '../../content/guides/troubleshooting/T5-2.13-Buttons.jpeg';
+import { Image } from 'astro:assets';
 
-const posts = await getCollection('guides');
-const troublePost = posts.find(p => p.data.slug === 'troubleshooting');
+const classic = ['classic'];
+const mpos = ['mpos'];
+const both = ['classic', 'mpos'];
 
-let Content = null;
-if (troublePost) {
-  const rendered = await render(troublePost);
-  Content = rendered.Content;
-}
+const sections = [
+  {
+    title: 'Getting Started',
+    slug: 'getting-started',
+    items: [
+      {
+        title: 'Creating an LNbits Wallet',
+        problem: null,
+        solution: 'We recommend setting up LNbits on your own node such as a <a href="https://raspiblitz.org" target="_blank" rel="noopener noreferrer" class="text-pink hover:underline">Raspiblitz</a>, <a href="https://start9.com" target="_blank" rel="noopener noreferrer" class="text-pink hover:underline">Start 9</a> or an <a href="https://umbrel.com" target="_blank" rel="noopener noreferrer" class="text-pink hover:underline">Umbrel</a>. Please follow the set-up instructions provided by the node provider.',
+      },
+      {
+        title: 'Connecting your device',
+        problem: 'Nothing happens when I plug the device into the computer.',
+        solution: 'Ensure you are using a USB cable that can transmit data. Many micro USB cables only supply power and lack data transmission capabilities. Often, these cables have no distinguishing markings, so the simplest method to determine if your cable supports data transfer is to connect a memory device (like a data drive) to the computer using the cable and check if the computer recognizes the data drive.',
+      },
+      {
+        title: 'Sourcing Parts',
+        tags: mpos,
+        problem: null,
+        solution: 'WaveShare ESP32-S3-Touch (2 inch screen) — including the optional camera makes setup a breeze: <a href="https://www.waveshare.com/esp32-s3-touch-lcd-2.htm" target="_blank" rel="noopener noreferrer" class="text-pink hover:underline">Waveshare</a>',
+      },
+      {
+        title: 'Flashing the Firmware',
+        tags: mpos,
+        problem: null,
+        solution: 'Flash <a href="https://install.micropythonos.com/" target="_blank" rel="noopener noreferrer" class="text-pink hover:underline">MicroPythonOS</a> to your compatible device and then install the Lightning Piggy app via the built-in app store.',
+      },
+      {
+        title: 'Sourcing Parts',
+        tags: classic,
+        problem: null,
+        solution: 'LILYGO T5 V2.3.1 (2.13 inch screen) e-paper device: <a href="https://www.lilygo.cc/lightningpiggy" target="_blank" rel="noopener noreferrer" class="text-pink hover:underline">AliExpress</a>',
+      },
+      {
+        title: 'Flashing the Firmware',
+        tags: classic,
+        problem: null,
+        solution: 'Use our custom built <a href="https://lightningpiggy.github.io/" target="_blank" rel="noopener noreferrer" class="text-pink hover:underline">web installer</a> to flash the firmware to the device.',
+      },
+      {
+        title: 'Serial port access errors',
+        tags: classic,
+        problem: '<code>Failed to open serial port</code> error when trying to flash firmware.',
+        solution: 'This indicates a permission restriction. On Linux/macOS, run <code>sudo chmod 777 /dev/ttyUSB*</code> to grant access. On Windows/macOS, install drivers if prompted — Linux systems typically include the necessary drivers by default.',
+      },
+      {
+        title: 'Browser extension conflicts during flashing',
+        tags: classic,
+        problem: 'JavaScript errors like "Trying to access beyond buffer length" appear during firmware installation.',
+        solution: 'Ad blockers or browser extensions can interfere with the <a href="https://lightningpiggy.github.io/" target="_blank" rel="noopener noreferrer" class="text-pink hover:underline">web installer</a>. Disable extensions for the installer page, or use an incognito/private window. The installer is tested on Google Chrome (Linux, macOS, Windows).',
+      },
+      {
+        title: 'LILYGO TTGO T5 2.66 inch E-paper device',
+        tags: classic,
+        problem: 'The device does not turn on (device leds stay dark) when connected to my computer.',
+        solution: '<ol class="list-decimal pl-5 space-y-1"><li>Check you have a USB to TTL (T-U2T) connector connected between the device and your USB cable.</li><li>Check the device is not faulty by connecting it to a power supply, instead of the computer. The red power led should light up.</li></ol>',
+      },
+    ],
+  },
+  {
+    title: 'Connectivity & Configuration',
+    slug: 'connectivity',
+    items: [
+      {
+        title: 'Wallet connection issues with Coinos',
+        problem: 'The device shows "null" or fails to connect when using Coinos wallet.',
+        solution: 'This issue was resolved in firmware version 6.1.0. Update your device to the latest firmware via the <a href="https://lightningpiggy.github.io/" target="_blank" rel="noopener noreferrer" class="text-pink hover:underline">web installer</a>. See <a href="https://github.com/LightningPiggy/lightning-piggy/issues/30" target="_blank" rel="noopener noreferrer" class="text-pink hover:underline">GitHub #30</a>',
+      },
+      {
+        title: 'Connection errors when fetching balance',
+        tags: mpos,
+        problem: 'The device shows errors such as <code>-202</code>, <code>29312</code>, or <code>ECONNRESET</code> when trying to connect to your LNbits server.',
+        solution: 'The ESP32\'s TLS library (mbedTLS) does not support ECDSA certificates, which some servers issue by default. If your LNbits server uses a reverse proxy like Caddy, you may need to force RSA certificates. In your Caddyfile, add a <code>tls</code> block with <code>key_type rsa2048</code> to the relevant site:',
+        code: `your-lnbits-domain.com {\n    tls {\n        key_type rsa2048\n    }\n    reverse_proxy ...\n}`,
+        solutionAfterCode: 'After updating, restart Caddy and delete any cached ECDSA certificates so a new RSA certificate is obtained. You can verify the fix by checking that <code>openssl s_client -connect your-server:443</code> shows "Server public key is 2048 bit" and the issuer contains "R" (RSA) rather than "E" (ECDSA).',
+      },
+      {
+        title: 'WiFi connection issues after waking from sleep',
+        tags: classic,
+        problem: 'The device fails to reconnect to WiFi after waking from sleep mode.',
+        solution: 'Ensure your WiFi access point is stable and within range. If the device shows connection errors after waking, press the reset button to force a fresh connection attempt. You can also try positioning the Piggy closer to your router. See <a href="https://github.com/LightningPiggy/lightning-piggy/issues/34" target="_blank" rel="noopener noreferrer" class="text-pink hover:underline">GitHub #34</a>',
+      },
+      {
+        title: 'Default configuration login credentials',
+        tags: classic,
+        problem: "I'm trying to connect to my Lightning Piggy and I don't know the default credentials.",
+        solution: 'The web address and login credentials are displayed on the Piggy\'s screen. The default username is <code>piggy</code> and the default password is <code>oinkoink</code>.',
+        image: { src: piggyConfigLogin, alt: 'Lightning Piggy Configuration Login' },
+      },
+      {
+        title: 'Configuration common mistakes',
+        tags: classic,
+        problem: 'Device won\'t connect to wallet after configuration.',
+        solution: 'When configuring your Piggy, enter only the hostname (not the full URL with <code>https://</code>). Note: For MicroPythonOS piggies the full <code>https://</code> URL is used. Settings are case-sensitive — use <code>YES</code> not <code>Yes</code>. Apply case sensitivity to timezone and currency fields too.',
+      },
+    ],
+  },
+  {
+    title: 'Display & QR Codes',
+    slug: 'display',
+    items: [
+      {
+        title: 'Device Display Information',
+        tags: classic,
+        problem: 'The screen only displays "0 sats" i.e. there is no QR code on the screen to scan.',
+        solution: 'If using LNbits, check that you enabled and configured the LNURLp extension during the wallet set-up.',
+        extra: {
+          problem: '"NOBAT" is displayed on the screen, even though a charged battery is connected.',
+          solution: 'The system\'s battery detection relies on heuristics and is not always 100% accurate. Rapid voltage fluctuations lead to an assumption that the device is not on battery power, while very stable voltage suggests that it is running on the battery. If the battery is charged and you have a power cable connected, try disconnecting the power cable. Alternatively, if you wish to power the device by an external source (USB power), disconnect the device battery.',
+        },
+      },
+      {
+        title: 'LNBits QR code does not change to Lightning Address',
+        tags: classic,
+        problem: 'After configuring NWC with a Lightning Address, the display still shows the old LNBits QR code.',
+        solution: 'This can occur when both LNBits and NWC credentials are configured. To display your Lightning Address QR code, ensure only NWC credentials are set. Access the Piggy Config interface (connect to the device\'s WiFi access point) and clear the LNBits server URL and invoice key fields, then save and restart. See <a href="https://github.com/LightningPiggy/LightningPiggyApp/issues/1" target="_blank" rel="noopener noreferrer" class="text-pink hover:underline">GitHub #1</a>',
+      },
+      {
+        title: 'QR Code Scanner shows white screen (app)',
+        tags: classic,
+        problem: 'The QR scanner in the companion app displays a blank white screen instead of the camera view.',
+        solution: 'This issue may be related to camera permissions or app initialization. Ensure the app has camera permissions enabled in your device settings. Try force-closing and reopening the app. If the problem persists, try reinstalling the app. See <a href="https://github.com/LightningPiggy/LightningPiggyApp/issues/2" target="_blank" rel="noopener noreferrer" class="text-pink hover:underline">GitHub #2</a>',
+      },
+      {
+        title: 'Battery',
+        tags: classic,
+        problem: 'Unsure if the battery is working correctly?',
+        solution: 'To check that the battery is working correctly, unplug any connected USB power source and press the reboot button so that the device boots while on battery power.',
+        image: { src: t5Buttons, alt: 'Lilygo T5 2.13 inch Controls' },
+      },
+    ],
+  },
+  {
+    title: 'App & Firmware',
+    slug: 'app-firmware',
+    items: [
+      {
+        title: 'MicroPythonOS app store fails to install Lightning Piggy',
+        tags: mpos,
+        problem: 'The Lightning Piggy app cannot be installed from the MicroPythonOS app store.',
+        solution: 'This issue was resolved in app version 0.0.11. Ensure you are running the latest version of the MicroPythonOS app store. If the problem persists, try manual installation via the <a href="https://lightningpiggy.github.io/" target="_blank" rel="noopener noreferrer" class="text-pink hover:underline">web installer</a>. See <a href="https://github.com/LightningPiggy/lightning-piggy/issues/38" target="_blank" rel="noopener noreferrer" class="text-pink hover:underline">GitHub #38</a>',
+      },
+      {
+        title: 'Balance Bias setting not showing on restart',
+        tags: mpos,
+        problem: 'The Balance Bias configuration option disappears or resets after restarting the device.',
+        solution: 'This bug has been fixed. Update to the latest firmware version via the <a href="https://lightningpiggy.github.io/" target="_blank" rel="noopener noreferrer" class="text-pink hover:underline">web installer</a> to resolve this issue. See <a href="https://github.com/LightningPiggy/lightning-piggy/issues/19" target="_blank" rel="noopener noreferrer" class="text-pink hover:underline">GitHub #19</a>',
+      },
+      {
+        title: 'Diagnostics and logging',
+        tags: classic,
+        problem: 'Need to debug device behaviour.',
+        solution: 'Use the "Logs and Console" option in the <a href="https://lightningpiggy.github.io/" target="_blank" rel="noopener noreferrer" class="text-pink hover:underline">web installer</a> to monitor device operations. Press F12 or CTRL+SHIFT+I in your browser for developer tools. Note: "Improv Wi-Fi Serial" errors in the console are normal and can be safely ignored.',
+      },
+      {
+        title: 'Building From Source',
+        tags: classic,
+        problem: 'MacOS iCloud and Arduino library conflicts',
+        solution: 'Arduino library folder Conflicts: It has been noted in Arduino version 1.8.16 that conflicts can occur due to the iCloud upload status of files in the Arduino library folder that can prevent successful builds. One solution is wait until all folders and files have synchronised with iCloud before building.',
+      },
+    ],
+  },
+  {
+    title: 'Community Q&A',
+    slug: 'community',
+    items: [],
+  },
+];
 ---
 
 <ContentLayout
   title="Troubleshooting"
   description="Common issues and solutions for Lightning Piggy"
 >
-  {Content && <Content />}
+  <div class="text-sm text-gray-500 mb-6">
+    <p><span class="inline-block bg-gray-200 text-gray-700 text-xs px-2 py-0.5 rounded-full font-medium align-middle">Classic</span> refers to the original e-paper Lightning Piggy running C++ firmware.</p>
+    <p class="mt-1"><span class="inline-block bg-yellow-100 text-yellow-800 text-xs px-2 py-0.5 rounded-full font-medium align-middle">MicroPythonOS</span> refers to the newer touchscreen version running MicroPythonOS.</p>
+  </div>
+  <div class="flex gap-2 mb-8 flex-wrap" id="ts-filters">
+    <button data-filter="all" class="ts-filter-btn px-4 py-1.5 rounded-full text-sm font-medium border border-gray-300 bg-gray-900 text-white">All</button>
+    <button data-filter="classic" class="ts-filter-btn px-4 py-1.5 rounded-full text-sm font-medium border border-gray-300 text-gray-600 hover:bg-gray-100">Classic</button>
+    <button data-filter="mpos" class="ts-filter-btn px-4 py-1.5 rounded-full text-sm font-medium border border-gray-300 text-gray-600 hover:bg-gray-100">MicroPythonOS</button>
+    <span class="w-px bg-gray-300 mx-1 self-stretch"></span>
+    <button data-filter="section:getting-started" class="ts-filter-btn px-4 py-1.5 rounded-full text-sm font-medium border border-gray-300 text-gray-600 hover:bg-gray-100">Getting Started</button>
+    <button data-filter="section:connectivity" class="ts-filter-btn px-4 py-1.5 rounded-full text-sm font-medium border border-gray-300 text-gray-600 hover:bg-gray-100">Connectivity</button>
+    <button data-filter="section:display" class="ts-filter-btn px-4 py-1.5 rounded-full text-sm font-medium border border-gray-300 text-gray-600 hover:bg-gray-100">Display & QR</button>
+    <button data-filter="section:app-firmware" class="ts-filter-btn px-4 py-1.5 rounded-full text-sm font-medium border border-gray-300 text-gray-600 hover:bg-gray-100">App & Firmware</button>
+  </div>
+
+  <div id="ts-content" class="prose max-w-none">
+    {sections.map((section) => (
+      <>
+        <h2 data-ts-section={section.slug}>{section.title}</h2>
+        {section.title === 'Community Q&A' ? (
+          <>
+            <p data-ts-section={section.slug}><em>Have a question not answered here? Join our <a href="https://t.me/+Y2zSiQELdXxhZDlk" target="_blank" rel="noopener noreferrer">Telegram group</a> for live support from other Lightning Piggy builders.</em></p>
+            <p data-ts-section={section.slug}><em>If you've discovered a solution to a common problem, please share it with the community or email <a href="mailto:oink@lightningpiggy.com">oink@lightningpiggy.com</a> so we can add it here.</em></p>
+          </>
+        ) : (
+          <>
+            {section.items.map((item) => {
+              const tags = (item as any).tags || [];
+              const cats = tags.length > 0 ? tags.join(',') : 'general';
+              return (
+                <>
+                  <h3 data-ts-cats={cats} data-ts-section={section.slug}>
+                    {item.title}
+                    {tags.includes('classic') && (
+                      <span class="inline-block bg-gray-200 text-gray-700 text-[0.55em] px-2.5 py-0.5 rounded-full font-medium align-middle ml-2">Classic</span>
+                    )}
+                    {tags.includes('mpos') && (
+                      <span class="inline-block bg-yellow-100 text-yellow-800 text-[0.55em] px-2.5 py-0.5 rounded-full font-medium align-middle ml-2">MicroPythonOS</span>
+                    )}
+                  </h3>
+                  {item.problem && <p data-ts-cats={cats} data-ts-section={section.slug} set:html={item.problem} />}
+                  <div data-ts-cats={cats} data-ts-section={section.slug}><em set:html={item.solution} /></div>
+                  {(item as any).code && (
+                    <pre data-ts-cats={cats} data-ts-section={section.slug}><code>{(item as any).code}</code></pre>
+                  )}
+                  {(item as any).solutionAfterCode && (
+                    <p data-ts-cats={cats} data-ts-section={section.slug}><em set:html={(item as any).solutionAfterCode} /></p>
+                  )}
+                  {(item as any).extra && (
+                    <>
+                      <p data-ts-cats={cats} data-ts-section={section.slug} set:html={(item as any).extra.problem} />
+                      <p data-ts-cats={cats} data-ts-section={section.slug}><em set:html={(item as any).extra.solution} /></p>
+                    </>
+                  )}
+                  {(item as any).image && (
+                    <figure data-ts-cats={cats} data-ts-section={section.slug}>
+                      <Image src={(item as any).image.src} alt={(item as any).image.alt} class="rounded-xl" />
+                      <figcaption><em>{(item as any).image.alt}</em></figcaption>
+                    </figure>
+                  )}
+                </>
+              );
+            })}
+            <hr data-ts-section={section.slug} />
+          </>
+        )}
+      </>
+    ))}
+  </div>
+
+  <script>
+    function initFilters() {
+      const content = document.getElementById('ts-content');
+      const buttons = document.querySelectorAll('.ts-filter-btn');
+      if (!content) return;
+
+      function applyFilter(filter: string) {
+        buttons.forEach(btn => {
+          if (btn.getAttribute('data-filter') === filter) {
+            btn.classList.add('bg-gray-900', 'text-white');
+            btn.classList.remove('text-gray-600', 'hover:bg-gray-100');
+          } else {
+            btn.classList.remove('bg-gray-900', 'text-white');
+            btn.classList.add('text-gray-600', 'hover:bg-gray-100');
+          }
+        });
+
+        const allEls = content!.querySelectorAll('[data-ts-section]');
+
+        if (filter === 'all') {
+          allEls.forEach(el => (el as HTMLElement).style.display = '');
+        } else if (filter.startsWith('section:')) {
+          const sectionSlug = filter.replace('section:', '');
+          allEls.forEach(el => {
+            const elSection = el.getAttribute('data-ts-section') || '';
+            (el as HTMLElement).style.display = elSection === sectionSlug ? '' : 'none';
+          });
+        } else {
+          // Tag filter (classic/mpos)
+          allEls.forEach(el => {
+            const cats = el.getAttribute('data-ts-cats');
+            if (!cats) {
+              // h2 headings and hrs without cats — show if any item in their section matches
+              const section = el.getAttribute('data-ts-section') || '';
+              const sectionItems = content!.querySelectorAll(`[data-ts-section="${section}"][data-ts-cats]`);
+              let hasMatch = false;
+              sectionItems.forEach(item => {
+                if ((item.getAttribute('data-ts-cats') || '').split(',').includes(filter)) hasMatch = true;
+              });
+              (el as HTMLElement).style.display = hasMatch ? '' : 'none';
+            } else {
+              (el as HTMLElement).style.display = cats.split(',').includes(filter) ? '' : 'none';
+            }
+          });
+        }
+      }
+
+      buttons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          applyFilter(btn.getAttribute('data-filter') || 'all');
+        });
+      });
+    }
+
+    document.addEventListener('astro:page-load', initFilters);
+    initFilters();
+  </script>
 </ContentLayout>

@@ -1,5 +1,5 @@
 ---
-title: Build a Lightning Piggy v2 (LCD edition)
+title: Build a Lightning Piggy MPOS (LCD edition)
 slug: build2
 pubDate: 2025-06-14
 heroImage: ./build2-hero.jpeg
@@ -41,7 +41,7 @@ If you already have the single board computer, follow these steps:
 
 ### 1. Source the parts
 
-**Single Board Computer (SBC):** WaveShare ESP32-S3-Touch with a 2inch screen. Available direct from [WaveShare](https://www.waveshare.com/esp32-s3-touch-lcd-2.htm) or from resellers.
+**Single Board Computer (SBC):** WaveShare ESP32-S3-Touch with a 2inch screen — including the optional camera makes setup a breeze. Available direct from [WaveShare](https://www.waveshare.com/esp32-s3-touch-lcd-2.htm) or from resellers.
 
 **Case:** One homemade case using materials of your choice.
 
@@ -96,7 +96,7 @@ If you wish to run a LNbits wallet, please refer to our detailed [guide](/build/
 
 You'll need a Wi-Fi enabled laptop/desktop computer, a browser that supports the Web Serial API (such as Google Chrome, Brave, Opera, or Microsoft Edge), and your configuration details ready.
 
-The **Lightning Piggy v2 app** runs on [MicroPythonOS](https://micropythonos.com/) — a lightweight, fast, and versatile operating system designed for both microcontrollers and desktop systems.
+The **Lightning Piggy MPOS app** runs on [MicroPythonOS](https://micropythonos.com/) — a lightweight, fast, and versatile operating system designed for both microcontrollers and desktop systems.
 
 > MicroPythonOS was created by [Thomas](https://github.com/ThomasFarstrike), our lead developer, during the development of Lightning Piggy. It grew out of a need for a fast, flexible, learner-friendly OS tailored to microcontrollers.
 

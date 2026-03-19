@@ -81,9 +81,9 @@ Under the *Wallets* header should be *Extensions* (4). Click this and find the *
 
 Next we need to flash the piggy with the latest software. Click the pertinent link below to proceed.
 
-👉 [LightingPiggy v1](https://lightningpiggy.github.io/)
+👉 [LightingPiggy Classic](https://lightningpiggy.github.io/)
 
-👉 [LightingPiggy v2](https://install.micropythonos.com/)
+👉 [LightingPiggy MPOS](https://install.micropythonos.com/)
 
 > Return to this window when you have installed the firmware.
 Now the piggy firmware is installed, click on your wallet name (13) and expand the API docs list on the righthand side of the page (14).

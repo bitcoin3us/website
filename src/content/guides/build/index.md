@@ -1,5 +1,5 @@
 ---
-title: Build a Lightning Piggy v1 (e-paper edition)
+title: Build a Lightning Piggy Classic (e-paper edition)
 slug: build
 pubDate: 2023-01-30
 heroImage: ./build-hero.jpeg
