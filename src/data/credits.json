@@ -301,6 +301,26 @@
       "xUrl": "",
       "githubUrl": "",
       "contribution": ""
+    },
+    {
+      "name": "Esther",
+      "url": "https://njump.me/npub150exgyavnu2ktrldvm99ywxgvph7lrc538jwlch2gjhk34nl04zq3xcapx",
+      "avatar": "https://image.nostr.build/52e478cdc314bd97560aace6e9026af876b9ab4db76c0a22aa0a136c4d0d467b.jpg",
+      "isBitcoinKid": false,
+      "nostrUrl": "https://njump.me/npub150exgyavnu2ktrldvm99ywxgvph7lrc538jwlch2gjhk34nl04zq3xcapx",
+      "xUrl": "",
+      "githubUrl": "",
+      "contribution": ""
+    },
+    {
+      "name": "Vitus Zeller",
+      "url": "https://njump.me/npub1vunp55fsh6ytdk2ah54f2z3fms4p5gl5x9d4uslxljlgd35ethjsya6grv",
+      "avatar": "https://i.imgur.com/5EsFQY5.gif",
+      "isBitcoinKid": false,
+      "nostrUrl": "https://njump.me/npub1vunp55fsh6ytdk2ah54f2z3fms4p5gl5x9d4uslxljlgd35ethjsya6grv",
+      "xUrl": "https://x.com/Vitus_Ze",
+      "githubUrl": "",
+      "contribution": ""
     }
   ],
   "specialThanks": []

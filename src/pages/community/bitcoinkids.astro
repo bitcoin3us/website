@@ -1,11 +1,60 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const sections = [
+  {
+    title: 'Education Hubs',
+    subtitle: 'Structured learning resources that make Bitcoin and economics accessible for young minds.',
+    items: [
+      {
+        name: 'Bitcoin Junior Club',
+        url: 'https://x.com/BTCJuniorClub',
+        description: 'Education-fun zone for kids, teens and parents alike. All things Bitcoin + Creative Thinking: collected for you, created with you, or/and handmade by us.',
+      },
+      {
+        name: 'EconoKidz',
+        url: 'https://www.bitcoin4youth.com',
+        description: 'An animated course introducing children to essential economic concepts, money, and Bitcoin. Designed for ages 8+, narrated by two young Bitcoiners aged 8 and 9. Free for homeschool or classroom use.',
+      },
+    ],
+  },
+  {
+    title: 'Entrepreneurial Inspiration',
+    subtitle: 'Young people turning passion into purpose — real stories of kids building businesses.',
+    items: [
+      {
+        name: 'Bee Happy Farm',
+        url: 'https://beehappyfarm.co.uk',
+        description: 'Run by 9-year-old Nineveh, Bee Happy Farm offers child-friendly experience days where visitors meet goats, chickens, ducks, and ~50,000 bees. An aspiring vet, Nineveh shares tours and fascinating facts about all the animals.',
+      },
+    ],
+  },
+  {
+    title: 'Games',
+    subtitle: 'Learn by playing — Bitcoin-themed games built by kids and the community.',
+    items: [
+      {
+        name: 'Gamertron',
+        url: 'https://sites.google.com/nathanday.net/gamertron/',
+        descriptionHtml: 'Awesome Bitcoin Games by <a href="https://x.com/sambonzuki" target="_blank" rel="noopener noreferrer" class="text-pink hover:underline">Sam</a> & <a href="https://nostr.com/nprofile1qqsvfa085adgecmg84ffelcxx6zrn3ffu5jrc6cjtwng0zge3ptv43c82kf5d" target="_blank" rel="noopener noreferrer" class="text-pink hover:underline">Nathan</a>.',
+      },
+      {
+        name: 'ZapNotify',
+        url: 'https://github.com/LightningPiggy/ZapNotify',
+        descriptionHtml: '<a href="https://oink.lightningpiggy.com" class="text-pink hover:underline font-semibold">Give us an Oink!</a> A web app by <a href="https://github.com/ThomasFarstrike" target="_blank" rel="noopener noreferrer" class="text-pink hover:underline">Thomas Farstrike</a> that triggers sound alerts and pop-ups each time a contribution is zapped via the lightning network. Give it a try and hear the difference your support makes, in real-time.',
+      },
+    ],
+  },
+];
 ---
 
 <BaseLayout title="Bitcoin Kids" description="Educational projects for children of all ages focused on Bitcoin, economics, and freedom technology.">
+  <div class="w-full max-h-80 overflow-hidden flex justify-center bg-gray-100">
+    <img src="/images/community/bitcoinkids-hero.jpeg" alt="Bitcoin Kids" class="h-80 object-contain" />
+  </div>
   <section class="py-10 md:py-16">
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-      <header class="mb-12">
+      <header class="mb-14">
         <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Bitcoin Kids</h1>
         <p class="text-lg text-gray-600 leading-relaxed">
           A collection of fantastic educational projects for children of all ages designed to supercharge their skills in science, technology, engineering, maths, and money.
@@ -15,60 +64,30 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
         </p>
       </header>
 
-      <!-- Education Hubs -->
-      <div class="mb-12">
-        <h2 class="text-2xl font-bold text-gray-900 mb-6">Education Hubs</h2>
-        <div class="space-y-6">
-          <div class="p-6 bg-white rounded-2xl border border-gray-200">
-            <h3 class="text-xl font-bold text-gray-900 mb-2">
-              <a href="https://x.com/BTCJuniorClub" target="_blank" rel="noopener noreferrer" class="hover:text-pink transition-colors">Bitcoin Junior Club →</a>
-            </h3>
-            <p class="text-gray-600">Education-fun zone for kids, teens and parents alike. All things Bitcoin + Creative Thinking: collected for you, created with you, or/and handmade by us.</p>
+      {sections.map((section, i) => (
+        <div class={i < sections.length - 1 ? 'mb-14' : ''}>
+          <div class="mb-6">
+            <h2 class="text-2xl font-bold text-gray-900">{section.title}</h2>
+            <p class="text-gray-500 mt-1">{section.subtitle}</p>
           </div>
-          <div class="p-6 bg-white rounded-2xl border border-gray-200">
-            <h3 class="text-xl font-bold text-gray-900 mb-2">
-              <a href="https://www.bitcoin4youth.com" target="_blank" rel="noopener noreferrer" class="hover:text-pink transition-colors">EconoKidz →</a>
-            </h3>
-            <p class="text-gray-600">An animated course that introduces children to essential economic concepts, money, and Bitcoin. Perfect as a supplement to any homeschool or traditional school curriculum, EconoKidz is designed for kids aged 8 and up, parents, teachers, or anyone interested in these fascinating topics. Narrated by two young Bitcoiners aged 8 and 9, this free resource is both engaging and educational.</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Entrepreneurial Inspiration -->
-      <div class="mb-12">
-        <h2 class="text-2xl font-bold text-gray-900 mb-6">Entrepreneurial Inspiration</h2>
-        <div class="space-y-6">
-          <div class="p-6 bg-white rounded-2xl border border-gray-200">
-            <h3 class="text-xl font-bold text-gray-900 mb-2">
-              <a href="https://beehappyfarm.co.uk" target="_blank" rel="noopener noreferrer" class="hover:text-pink transition-colors">Bee Happy Farm →</a>
-            </h3>
-            <p class="text-gray-600">Nineveh is a 9-year-old who is home-educated and lives in a lovely house with a spacious garden full of animals. She cares for three cats, two goats, 18 chickens, two ducks, and about 50,000 bees! With a deep passion for animals, Nineveh aspires to become a veterinarian. At Bee Happy Farm, she and her helpers offer child-friendly experience days where they provide tours and share fascinating information about all the animals.</p>
+          <div class="space-y-4">
+            {section.items.map((item) => (
+              <div class="p-6 bg-white rounded-2xl border border-gray-200 hover:shadow-lg hover:border-pink/30 transition-all group">
+                <div class="flex items-center justify-between mb-2">
+                  <h3 class="text-lg font-bold text-gray-900">
+                    <a href={item.url} target="_blank" rel="noopener noreferrer" class="hover:text-pink transition-colors">{item.name} →</a>
+                  </h3>
+                </div>
+                {item.descriptionHtml ? (
+                  <p class="text-gray-600 text-sm leading-relaxed" set:html={item.descriptionHtml} />
+                ) : (
+                  <p class="text-gray-600 text-sm leading-relaxed">{item.description}</p>
+                )}
+              </div>
+            ))}
           </div>
         </div>
-      </div>
-
-      <!-- Games -->
-      <div class="mb-12">
-        <h2 class="text-2xl font-bold text-gray-900 mb-6">Games</h2>
-        <div class="space-y-6">
-          <div class="p-6 bg-white rounded-2xl border border-gray-200">
-            <h3 class="text-xl font-bold text-gray-900 mb-2">
-              <a href="https://sites.google.com/nathanday.net/gamertron/" target="_blank" rel="noopener noreferrer" class="hover:text-pink transition-colors">Gamertron →</a>
-            </h3>
-            <p class="text-gray-600">
-              Awesome Bitcoin Games by <a href="https://x.com/sambonzuki" target="_blank" rel="noopener noreferrer" class="text-pink hover:underline">Sam</a> & <a href="https://nostr.com/nprofile1qqsvfa085adgecmg84ffelcxx6zrn3ffu5jrc6cjtwng0zge3ptv43c82kf5d" target="_blank" rel="noopener noreferrer" class="text-pink hover:underline">Nathan</a>.
-            </p>
-          </div>
-          <div class="p-6 bg-white rounded-2xl border border-gray-200">
-            <h3 class="text-xl font-bold text-gray-900 mb-2">
-              <a href="https://github.com/LightningPiggy/ZapNotify" target="_blank" rel="noopener noreferrer" class="hover:text-pink transition-colors">ZapNotify →</a>
-            </h3>
-            <p class="text-gray-600">
-              <a href="https://oink.lightningpiggy.com" class="text-pink hover:underline font-semibold">Give us an Oink!</a> Experience a new and engaging way to fuel our FOSS project, brought to life by <a href="https://github.com/ThomasFarstrike" target="_blank" rel="noopener noreferrer" class="text-pink hover:underline">Thomas Farstrike</a>. This web app triggers sound alerts, pop-ups, and more each time a contribution is zapped via the lightning network. Give it a try and hear the difference your support makes, in real-time.
-            </p>
-          </div>
-        </div>
-      </div>
+      ))}
     </div>
   </section>
 </BaseLayout>

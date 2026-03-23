@@ -1,57 +1,216 @@
 ---
-import ContentLayout from '../../layouts/ContentLayout.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const activities = [
+  {
+    title: 'Group Build Workshop',
+    image: '/images/educators/group-build-workshop.jpeg',
+    duration: '1 hour',
+    difficulty: 'Easy',
+    venue: 'Schools, community groups, meet-ups, and conferences.',
+    audience: 'Adults building for the next generation and young bitcoiners.',
+    description: 'A guided, hands-on session where participants build and configure their own Lightning Piggy from scratch.',
+    equipment: 'A build space with a screen for everyone to follow along, wifi, and USB-C power supplies. Development boards and USB-C data cables. Optional 3D printed cases — we recommend the <a href="/build/cases" class="text-pink hover:underline">ZapBox</a> because it\'s compact and easy to print.',
+    materials: [
+      { label: 'Workshop Presentation', formats: [
+        { ext: '.pptx', href: '/files/lightning-piggy-workshop-p1-v1.pptx' },
+        { ext: '.pdf', href: '/files/lightning-piggy-workshop-p1-v1.pdf' },
+      ]},
+    ],
+    link: { label: 'Build Guide', href: '/build' },
+  },
+  {
+    title: 'Informal Open-Source Project Build Area',
+    image: '/images/educators/informal-build-area.jpeg',
+    duration: 'Flexible',
+    difficulty: 'Easy',
+    venue: 'Hackerspaces, maker fares, and conference side events.',
+    audience: 'Curious builders and tinkerers of all ages.',
+    description: 'Set up a drop-in build station where people can explore Lightning Piggy at their own pace — no formal schedule needed.',
+    equipment: 'A room or build area, laptop, wifi, USB-C power, development boards and optional additional hardware as required.',
+    materials: [],
+    link: { label: 'Build Guide', href: '/build' },
+  },
+  {
+    title: 'Character Design Challenge',
+    image: '/images/educators/character-design-challenge.jpeg',
+    duration: '30–60 minutes',
+    difficulty: 'Easy',
+    venue: 'Schools, community groups, conferences with kids\' activities, and family fun.',
+    audience: 'Kids (ages 5+).',
+    description: 'Draw, paint, or colour a character inspired by Lightning Piggy\'s <a href="/about/origin-story" class="text-pink hover:underline">origin story</a> — his incredible journey to freedom down a rabbit hole.',
+    equipment: 'Paper, pencils, markers, and paints.',
+    materials: [
+      { label: 'Challenge Brief', formats: [
+        { ext: '.docx', href: '/files/character-design-challenge-v1.docx' },
+        { ext: '.pdf', href: '/files/character-design-challenge-v1.pdf' },
+      ]},
+      { label: 'Colouring Page', ext: '.png', href: '/files/character-design-challenge-colouring-a5.png' },
+    ],
+  },
+  {
+    title: 'Piggy Build Challenge',
+    image: '/images/educators/piggy-build-challenge.jpeg',
+    duration: '1–2 hours',
+    difficulty: 'Medium',
+    venue: 'Schools, community groups, conferences with kids\' activities, and family fun.',
+    audience: 'Kids (ages 8+).',
+    description: 'Design and build a piggy bank enclosure from any materials — cardboard, clay, recycled items — that houses a Lightning Piggy device.',
+    equipment: 'Craft supplies — cardboard, tape, glue, paint, scissors — and a Lightning Piggy device to fit inside.',
+    materials: [
+      { label: 'Challenge Brief', formats: [
+        { ext: '.docx', href: '/files/piggy-build-challenge-v1.docx' },
+        { ext: '.pdf', href: '/files/piggy-build-challenge-v1.pdf' },
+      ]},
+    ],
+    link: { label: 'Challenge Details', href: '/news/build-challenge' },
+  },
+];
+
+const difficultyColor = (d: string) => {
+  if (d === 'Easy') return 'bg-green-100 text-green-800';
+  if (d === 'Medium') return 'bg-yellow-100 text-yellow-800';
+  return 'bg-red-100 text-red-800';
+};
 ---
 
-<ContentLayout
-  title="For Educators"
-  description="Resources for teachers and workshop leaders to bring Lightning Piggy into the classroom"
->
-  <div class="not-prose mb-8 p-6 bg-gradient-to-br from-pink-light/30 to-yellow-light/30 rounded-2xl border border-pink/20">
-    <h2 class="text-xl font-bold text-gray-900 mb-2">Bring Bitcoin education to your classroom</h2>
-    <p class="text-gray-600">
-      Lightning Piggy combines STEM learning with financial literacy. Perfect for workshops,
-      maker spaces, and Bitcoin meetups.
-    </p>
-  </div>
+<BaseLayout title="For Educators" description="Resources for teachers and workshop leaders to bring Lightning Piggy into the classroom">
+  <section class="py-10 md:py-16">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <header class="mb-12">
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">For Educators</h1>
+        <p class="text-lg text-gray-600 max-w-2xl">
+          Lightning Piggy combines STEM learning with financial literacy. Everything you need to plan and run a session is below.
+        </p>
+      </header>
 
-  <p>Lightning Piggy works well in the following settings:</p>
-  <ul>
-    <li>A group build workshop.</li>
-    <li>As part of an open-source project informal build area.</li>
-    <li>A hands-on 'Character Design Challenge' for kids.</li>
-    <li>A hands-on 'Piggy Build Challenge' for kids.</li>
-  </ul>
+      <div class="space-y-8">
+        {activities.map((activity) => (
+          <div class="bg-white rounded-2xl border border-gray-200 hover:shadow-lg transition-shadow">
+            {activity.image && (
+              <img src={activity.image} alt={activity.title} class="w-full h-48 md:h-56 object-cover rounded-t-2xl" />
+            )}
+            <div class="p-6 md:p-8">
+              <div class="flex flex-wrap items-center gap-3 mb-3">
+                <h3 class="text-xl font-bold text-gray-900">{activity.title}</h3>
+                <span class={`text-xs font-medium px-2.5 py-0.5 rounded-full ${difficultyColor(activity.difficulty)}`}>
+                  {activity.difficulty}
+                </span>
+              </div>
 
-  <h3>Group Build Workshop</h3>
-  <p><a href="https://docs.google.com/presentation/d/1xdNpUF5waQ8qq2cIfzs03Brlgp1zpgLD4LHkzS0hOxs/embed?start=false&loop=false&delayms=3000">Embedded content</a></p>
+              <p class="text-gray-600 mb-5" set:html={activity.description} />
 
-  <h3>Open-Source Project Informal Build Area</h3>
-  <p>Minimum Equipment List: A room/build area, table(s), chairs, laptop, wifi, power points, LightingPiggy boards and optional additional hardware as required.</p>
+              <div class="grid sm:grid-cols-2 gap-x-6 gap-y-4 text-sm">
+                <div class="flex gap-3">
+                  <div class="flex-shrink-0 w-5 h-5 mt-0.5 text-gray-400">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  </div>
+                  <div>
+                    <p class="font-medium text-gray-700">Duration</p>
+                    <p class="text-gray-500">{activity.duration}</p>
+                  </div>
+                </div>
 
-  <h3>Character Design Challenge</h3>
-  <p>Students either choose or create their own character through drawing, painting, or coloring. Inspiration comes from Lightning Piggy's <a href="/about/origin-story">origin story</a>, about how he found freedom following an incredible journey down a rabbit hole, while on the run from an industrial pig farm.</p>
-  <div class="not-prose mt-4 mb-8">
-    <a href="/news/character-design-challenge" class="group block p-6 bg-white rounded-2xl border border-gray-200 hover:border-pink hover:shadow-lg transition-all">
-      <h4 class="text-lg font-bold text-gray-900 group-hover:text-pink transition-colors">Character Design Challenge →</h4>
-      <p class="text-gray-600 mt-1">Choose a character and draw, paint and/or colour it.</p>
-    </a>
-  </div>
+                <div class="flex gap-3">
+                  <div class="flex-shrink-0 w-5 h-5 mt-0.5 text-gray-400">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                  </div>
+                  <div>
+                    <p class="font-medium text-gray-700">Audience</p>
+                    <p class="text-gray-500">{activity.audience}</p>
+                  </div>
+                </div>
 
-  <h3>Piggy Build Challenge</h3>
-  <p>Students design, build and decorate a piggy bank enclosure that can house the Lightning Piggy device using any materials they wish.</p>
-  <div class="not-prose mt-4 mb-8">
-    <a href="/news/build-challenge" class="group block p-6 bg-white rounded-2xl border border-gray-200 hover:border-pink hover:shadow-lg transition-all">
-      <h4 class="text-lg font-bold text-gray-900 group-hover:text-pink transition-colors">Piggy Build Challenge →</h4>
-      <p class="text-gray-600 mt-1">Design, build and decorate a piggy using any materials you wish.</p>
-    </a>
-  </div>
+                <div class="flex gap-3">
+                  <div class="flex-shrink-0 w-5 h-5 mt-0.5 text-gray-400">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                  </div>
+                  <div>
+                    <p class="font-medium text-gray-700">Venue</p>
+                    <p class="text-gray-500">{activity.venue}</p>
+                  </div>
+                </div>
 
-  <hr class="my-12 border-gray-200" />
+                <div class="flex gap-3">
+                  <div class="flex-shrink-0 w-5 h-5 mt-0.5 text-gray-400">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                  </div>
+                  <div>
+                    <p class="font-medium text-gray-700">Equipment</p>
+                    <p class="text-gray-500" set:html={activity.equipment} />
+                  </div>
+                </div>
+              </div>
 
-  <h2>Get in Touch</h2>
-  <p>
-    Planning a workshop or educational event? We're here to help.
-    Contact us at <a href="mailto:oink@lightningpiggy.com" class="text-pink">oink@lightningpiggy.com</a>
-    for resources, bulk orders, or collaboration opportunities.
-  </p>
-</ContentLayout>
+              {(activity.materials.length > 0 || activity.link) && (
+                <div class="mt-5 pt-5 border-t border-gray-100 flex flex-wrap gap-3">
+                  {activity.materials.map((m: any) => (
+                    m.formats ? (
+                      <div class="relative edu-dropdown">
+                        <button type="button" class="edu-dropdown-btn inline-flex items-center gap-2 px-4 py-2 bg-pink text-white text-sm font-medium rounded-lg hover:bg-pink/90 transition-colors">
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                          {m.label}
+                          <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                        </button>
+                        <div class="edu-dropdown-menu hidden absolute left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-[140px]">
+                          {m.formats.map((f: any) => (
+                            <a href={f.href} download class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 first:rounded-t-lg last:rounded-b-lg">
+                              Download {f.ext}
+                            </a>
+                          ))}
+                        </div>
+                      </div>
+                    ) : (
+                      <a href={m.href} download class="inline-flex items-center gap-2 px-4 py-2 bg-pink text-white text-sm font-medium rounded-lg hover:bg-pink/90 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                        {m.label}
+                      </a>
+                    )
+                  ))}
+                  {activity.link && (
+                    <a href={activity.link.href} class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors">
+                      {activity.link.label}
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                    </a>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div class="mt-16 p-6 bg-gray-50 rounded-2xl text-center">
+        <h2 class="text-xl font-bold text-gray-900 mb-2">Get in Touch</h2>
+        <p class="text-gray-600 mb-4">
+          Planning a workshop or educational event? We're here to help with resources, bulk orders, or collaboration opportunities.
+        </p>
+        <a href="mailto:oink@lightningpiggy.com" class="inline-flex items-center gap-2 px-6 py-3 bg-pink text-white font-medium rounded-xl hover:bg-pink/90 transition-colors">
+          oink@lightningpiggy.com
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    function initDropdowns() {
+      document.querySelectorAll('.edu-dropdown-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const menu = btn.nextElementSibling as HTMLElement;
+          const wasOpen = !menu.classList.contains('hidden');
+          // Close all dropdowns
+          document.querySelectorAll('.edu-dropdown-menu').forEach(m => m.classList.add('hidden'));
+          if (!wasOpen) menu.classList.remove('hidden');
+        });
+      });
+
+      document.addEventListener('click', () => {
+        document.querySelectorAll('.edu-dropdown-menu').forEach(m => m.classList.add('hidden'));
+      });
+    }
+
+    document.addEventListener('astro:page-load', initDropdowns);
+    initDropdowns();
+  </script>
+</BaseLayout>
