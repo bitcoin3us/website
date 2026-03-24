@@ -32,5 +32,5 @@
 [[redirects]]
   from = "https://pos.lightningpiggy.com/*"
   to = "https://lightningpiggy.com/pos/:splat"
-  status = 200
+  status = 301
   force = true
