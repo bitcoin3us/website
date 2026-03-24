@@ -52,7 +52,6 @@ const BASE_URL = 'https://btcpay.lightningpiggy.com/apps/';
     <iframe
       id="pos-iframe"
       src={`${BASE_URL}${defaultTerminal.appId}/pos`}
-      sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
       allow="payment"
       loading="lazy"
       title={`BTCPay Point of Sale - ${defaultTerminal.label}`}

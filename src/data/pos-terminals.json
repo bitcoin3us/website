@@ -4,41 +4,41 @@
     "currency": "USD",
     "label": "US Dollar",
     "flag": "🇺🇸",
-    "appId": "B9vXfVBbtHPeH6PUNbdBwonpHwP7U4vTZDxS5ri9SpLU"
+    "appId": "2z5iuZagCtD2dh48ZxzowoYFum8L"
   },
   {
     "id": "eur",
     "currency": "EUR",
     "label": "Euro",
     "flag": "🇪🇺",
-    "appId": "3EHhUEY9VKtaviN8JTH1tcubeG3KhhuD8od6CZH2kFYj"
+    "appId": "3TWNNhkRGrVsnmfUoSjSjLQ8cq5T"
   },
   {
     "id": "gbp",
     "currency": "GBP",
     "label": "British Pound",
     "flag": "🇬🇧",
-    "appId": "68o4B2MGtuZTSTZGqaXm2egLpHw7T8qySptf8HMd4BTF"
+    "appId": "f99ZzyK8RHS9WAP7w6YtfAuEUXB"
   },
   {
     "id": "dkk",
     "currency": "DKK",
     "label": "Danish Krone",
     "flag": "🇩🇰",
-    "appId": "3zTVE5F87wbH1du58nQpcC8qdndTSj3ZkLaH7fAcZ4HF"
+    "appId": "47rdYq3363SBg8ivUHVEPRdSWWgn"
   },
   {
     "id": "chf",
     "currency": "CHF",
     "label": "Swiss Franc",
     "flag": "🇨🇭",
-    "appId": "47gFWtr4Nra8DY88WGKXu9T9gPxqGb4XJdSxWF2S7Woa"
+    "appId": "49YpQ92twfiG7m1XCyfQoKFrseE7"
   },
   {
     "id": "pln",
     "currency": "PLN",
     "label": "Polish Złoty",
     "flag": "🇵🇱",
-    "appId": "7JfJW73oVUQgeeWNSqLVkRzDUxfPNVSCehniLSjXXfvY"
+    "appId": "3AkPANRfYCX5s85nnoDWao6Ae46g"
   }
 ]
