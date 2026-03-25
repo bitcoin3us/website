@@ -42,8 +42,15 @@ async function sendEmailNotification(amount, currency, metadata) {
   }
 
   const details = [];
-  if (metadata.nostrNpub) details.push('Nostr: ' + escapeHtml(metadata.nostrNpub));
-  if (metadata.xHandle) details.push('X: @' + escapeHtml(metadata.xHandle));
+  if (metadata.nostrNpub) {
+    const primalLink = 'https://primal.net/p/' + encodeURIComponent(metadata.nostrNpub);
+    details.push('Nostr: <a href="' + primalLink + '" style="color:#e91e8c;">' + escapeHtml(metadata.nostrNpub.slice(0, 20)) + '...</a>');
+  }
+  if (metadata.xHandle) {
+    const handle = metadata.xHandle.replace(/^@/, '');
+    const xLink = 'https://x.com/' + encodeURIComponent(handle);
+    details.push('X: <a href="' + xLink + '" style="color:#e91e8c;">@' + escapeHtml(handle) + '</a>');
+  }
   const detailsHtml = details.length > 0
     ? '<p style="color:#666;margin-top:8px;">' + details.join('<br>') + '</p>'
     : '';
@@ -224,9 +231,8 @@ exports.handler = async function (event) {
   await sendEmailNotification(amount, currency, metadata);
 
   // Add supporter if they donated $50+ and have a validated avatar
-  // TODO: restore to 50 after testing
   const numericAmount = parseFloat(amount);
-  if (numericAmount >= 1 && metadata.avatarUrl) {
+  if (numericAmount >= 50 && metadata.avatarUrl) {
     const url = metadata.avatarUrl;
     if (url.startsWith('https://primal.b-cdn.net/') || url.startsWith('https://unavatar.io/')) {
       await addSupporter(url);

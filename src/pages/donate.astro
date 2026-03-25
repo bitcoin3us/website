@@ -170,7 +170,7 @@ import supporters from '../data/supporters.json';
 
       function toggleDonorFields() {
         var amount = parseFloat(amountInput.value) || 0;
-        var enabled = amount >= 1; // TODO: restore to 50 after testing
+        var enabled = amount >= 50;
         npubInput.disabled = !enabled;
         xHandleInput.disabled = !enabled;
         if (enabled) {
@@ -314,8 +314,7 @@ import supporters from '../data/supporters.json';
         setLoading(true);
 
         // Validate profile before creating invoice (for $50+ with a handle)
-        // TODO: restore to 50 after testing
-        if (amount >= 1 && (npub || xHandle)) {
+        if (amount >= 50 && (npub || xHandle)) {
           btnText.textContent = 'Validating profile…';
           btnText.classList.remove('hidden');
           btnLoading.classList.add('hidden');
