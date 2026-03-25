@@ -77,6 +77,15 @@ exports.handler = async function (event) {
     };
   }
 
+  // Block handles 2 characters or fewer
+  if (handle.length <= 2) {
+    return {
+      statusCode: 200,
+      headers: Object.assign({ 'Content-Type': 'application/json' }, corsHeaders(event)),
+      body: JSON.stringify({ available: false, reason: 'reserved' })
+    };
+  }
+
   // Check reserved list
   if (RESERVED_HANDLES.includes(handle)) {
     return {
