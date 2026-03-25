@@ -92,7 +92,7 @@ async function addSupporter(avatarUrl) {
 
   const apiBase = 'https://api.github.com/repos/' + GITHUB_REPO + '/contents/' + SUPPORTERS_PATH;
   const headers = {
-    'Authorization': 'token ' + token,
+    'Authorization': 'Bearer ' + token,
     'Accept': 'application/vnd.github.v3+json',
     'User-Agent': 'LightningPiggy-Webhook'
   };
@@ -200,7 +200,7 @@ exports.handler = async function (event) {
     const res = await fetch(
       BTCPAY_URL + '/api/v1/stores/' + STORE_ID + '/invoices/' + invoiceId,
       {
-        headers: { 'Authorization': 'token ' + apiKey }
+        headers: { 'Authorization': 'Bearer ' + apiKey }
       }
     );
 

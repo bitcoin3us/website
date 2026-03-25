@@ -29,7 +29,7 @@ async function fetchNostrJson() {
     'https://api.github.com/repos/' + GITHUB_REPO + '/contents/' + NOSTR_JSON_PATH,
     {
       headers: {
-        'Authorization': 'token ' + token,
+        'Authorization': 'Bearer ' + token,
         'Accept': 'application/vnd.github.v3+json',
         'User-Agent': 'LightningPiggy-NIP05'
       }

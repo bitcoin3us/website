@@ -69,7 +69,7 @@ async function isHandleTaken(handle) {
       'https://api.github.com/repos/' + GITHUB_REPO + '/contents/' + NOSTR_JSON_PATH,
       {
         headers: {
-          'Authorization': 'token ' + token,
+          'Authorization': 'Bearer ' + token,
           'Accept': 'application/vnd.github.v3+json',
           'User-Agent': 'LightningPiggy-NIP05'
         }
@@ -172,7 +172,7 @@ exports.handler = async function (event) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'token ' + apiKey
+          'Authorization': 'Bearer ' + apiKey
         },
         body: JSON.stringify(invoicePayload)
       }

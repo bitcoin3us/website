@@ -46,7 +46,7 @@ async function addNip05Handle(handle, hex) {
 
   var apiBase = 'https://api.github.com/repos/' + GITHUB_REPO + '/contents/' + NOSTR_JSON_PATH;
   var headers = {
-    'Authorization': 'token ' + token,
+    'Authorization': 'Bearer ' + token,
     'Accept': 'application/vnd.github.v3+json',
     'User-Agent': 'LightningPiggy-NIP05'
   };
@@ -210,7 +210,7 @@ exports.handler = async function (event) {
     var res = await fetch(
       BTCPAY_URL + '/api/v1/stores/' + storeId + '/invoices/' + invoiceId,
       {
-        headers: { 'Authorization': 'token ' + apiKey }
+        headers: { 'Authorization': 'Bearer ' + apiKey }
       }
     );
 
