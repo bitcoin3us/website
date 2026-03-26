@@ -10,17 +10,20 @@ import Button from '../../components/ui/Button.astro';
         <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
           Build Your Own
         </h2>
-        <div class="max-w-2xl mx-auto text-left mb-6">
-          <p class="text-gray-600 mb-4">
-            LightningPiggy began with a simple idea and a C++ codebase running on LILYGO hardware via the Arduino development environment. After months of iteration, we shipped something we were proud of — but one thing nagged at us. The code wasn't as accessible as we wanted. If we were serious about helping kids develop real STEMM skills by tinkering with their own piggy banks, we needed a codebase they could actually read, understand, and make their own.
-          </p>
-          <p class="text-gray-600 mb-4">
-            So we started over. Our lead developer Thomas built an entirely new lightweight operating system from scratch using MicroPython, designed to run on any ESP32-based board. That foundation became the launchpad for the first MicroPythonOS app — and the beginning of the LightningPiggy 'p' series. P for Python, or P for Piggy? We'll let you decide.
-          </p>
-        </div>
-        <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+        <p class="text-lg text-gray-600 max-w-2xl mx-auto mb-6">
           Choose the version that's right for you. Both are fully open source with step-by-step guides.
         </p>
+        <details class="max-w-2xl mx-auto text-left mb-2">
+          <summary class="cursor-pointer text-sm font-medium text-pink hover:text-pink/80 transition-colors">Learn more about the different options</summary>
+          <div class="mt-4 space-y-4">
+            <p class="text-gray-600">
+              LightningPiggy began with a simple idea and a C++ codebase running on LILYGO hardware via the Arduino development environment. After months of iteration, we shipped something we were proud of — but one thing nagged at us. The code wasn't as accessible as we wanted. If we were serious about helping kids develop real STEMM skills by tinkering with their own piggy banks, we needed a codebase they could actually read, understand, and make their own.
+            </p>
+            <p class="text-gray-600">
+              So we started over. Our lead developer Thomas built an entirely new lightweight operating system from scratch using MicroPython, designed to run on any ESP32-based board. That foundation became the launchpad for the first MicroPythonOS app — and the beginning of the LightningPiggy 'p' series. P for Python, or P for Piggy? We'll let you decide.
+            </p>
+          </div>
+        </details>
       </div>
 
       <div class="mt-16 grid md:grid-cols-2 gap-8">
@@ -40,7 +43,7 @@ import Button from '../../components/ui/Button.astro';
             <h3 class="text-2xl font-bold text-gray-900 mb-2">Lightning Piggy Classic</h3>
             <p class="text-gray-500 mb-2">Arduino-based</p>
             <p class="text-gray-600 mb-6">
-              The original Lightning Piggy — Arduino-based firmware designed for LILYGO T5 boards, supporting both 2.13” and 2.66” e-paper displays.
+              The original Lightning Piggy — Arduino-based firmware designed for LILYGO T5 boards, supporting both 2.13” and 2.66” e-paper displays. Displayed here in a “Genesis Piggy” 3D printed case.
             </p>
             <ul class="space-y-2 text-sm text-gray-600 mb-6">
               <li class="flex items-center gap-2">
@@ -77,7 +80,7 @@ import Button from '../../components/ui/Button.astro';
             <img
               src="/images/v2-example.jpeg"
               alt="LightningPiggy MPOS LCD edition"
-              class="w-[120%] h-[120%] object-cover object-[55%_85%]"
+              class="w-full h-full object-cover object-center"
             />
           </div>
           <div class="p-8">
@@ -87,7 +90,7 @@ import Button from '../../components/ui/Button.astro';
             <h3 class="text-2xl font-bold text-gray-900 mb-2">Lightning Piggy p1</h3>
             <p class="text-gray-500 mb-2">Runs on MicroPythonOS</p>
             <p class="text-gray-600 mb-6">
-              Our first piggy running on MicroPythonOS. Using the latest WaveShare ESP32-S3 board with a 2 inch colour touchscreen display.
+              Our first piggy running on MicroPythonOS. Using the latest WaveShare ESP32-S3 board with a 2 inch colour touchscreen display. Displayed here in a "Genesis Piggy" 3D printed case.
             </p>
             <ul class="space-y-2 text-sm text-gray-600 mb-6">
               <li class="flex items-center gap-2">
