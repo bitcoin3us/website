@@ -1,0 +1,273 @@
+---
+import ContentLayout from '../../layouts/ContentLayout.astro';
+---
+
+<ContentLayout
+  title="Serial Monitor"
+  description="Real-time serial console for debugging your Lightning Piggy device"
+>
+  <div class="not-prose">
+    <!-- Browser support warning -->
+    <div id="browser-warning" class="hidden bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-6">
+      <p class="text-yellow-800 text-sm font-medium">Your browser does not support the Web Serial API. Please use <a href="https://www.google.com/chrome/" target="_blank" rel="noopener noreferrer" class="text-pink hover:underline">Google Chrome</a> or Microsoft Edge.</p>
+    </div>
+
+    <!-- Instructions -->
+    <div class="bg-gray-50 rounded-xl p-4 mb-6 text-sm text-gray-600 space-y-2">
+      <p><strong>How to use:</strong> Connect your ESP32-S3 device via USB-C, click <em>Connect</em>, and select the serial port. The device log will appear below in real time.</p>
+      <p class="text-xs text-gray-400">Tip: Close any other serial connections (Arduino IDE, esp-web-tools, screen) before connecting.</p>
+    </div>
+
+    <!-- Controls -->
+    <div class="flex flex-wrap items-center gap-3 mb-4">
+      <button id="btn-connect" class="px-5 py-2 rounded-full text-sm font-medium bg-gray-900 text-white hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+        Connect
+      </button>
+      <button id="btn-disconnect" class="hidden px-5 py-2 rounded-full text-sm font-medium border border-gray-300 text-gray-600 hover:bg-gray-100 transition-colors">
+        Disconnect
+      </button>
+
+      <span class="w-px h-6 bg-gray-300 mx-1"></span>
+
+      <button id="btn-clear" class="px-4 py-2 rounded-full text-sm font-medium border border-gray-300 text-gray-600 hover:bg-gray-100 transition-colors">
+        Clear
+      </button>
+      <button id="btn-download" class="px-4 py-2 rounded-full text-sm font-medium border border-gray-300 text-gray-600 hover:bg-gray-100 transition-colors">
+        Download Log
+      </button>
+
+      <span class="w-px h-6 bg-gray-300 mx-1"></span>
+
+      <label class="flex items-center gap-2 text-sm text-gray-600 cursor-pointer select-none">
+        <input type="checkbox" id="chk-autoscroll" checked class="rounded border-gray-300 text-pink focus:ring-pink" />
+        Auto-scroll
+      </label>
+      <label class="flex items-center gap-2 text-sm text-gray-600 cursor-pointer select-none">
+        <input type="checkbox" id="chk-timestamps" class="rounded border-gray-300 text-pink focus:ring-pink" />
+        Timestamps
+      </label>
+
+      <!-- Connection status -->
+      <span id="status-indicator" class="ml-auto flex items-center gap-1.5 text-xs text-gray-400">
+        <span id="status-dot" class="w-2 h-2 rounded-full bg-gray-300"></span>
+        <span id="status-text">Disconnected</span>
+      </span>
+    </div>
+
+    <!-- Log output -->
+    <div id="log-container" class="relative bg-gray-900 rounded-xl overflow-hidden" style="height: 480px;">
+      <pre id="log-output" class="h-full overflow-y-auto p-4 text-xs leading-relaxed font-mono text-green-400 whitespace-pre-wrap break-all"></pre>
+      <div id="log-empty" class="absolute inset-0 flex items-center justify-center text-gray-500 text-sm pointer-events-none">
+        Connect your device to see serial output here
+      </div>
+    </div>
+
+    <!-- Send command -->
+    <div class="mt-3 flex gap-2">
+      <input
+        id="cmd-input"
+        type="text"
+        placeholder="Type a command and press Enter..."
+        disabled
+        class="flex-1 px-4 py-2 text-sm rounded-lg border border-gray-300 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-pink focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed font-mono"
+      />
+      <button id="btn-send" disabled class="px-5 py-2 rounded-lg text-sm font-medium bg-gray-900 text-white hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+        Send
+      </button>
+    </div>
+  </div>
+
+  <script>
+    function initSerialMonitor() {
+      const btnConnect = document.getElementById('btn-connect') as HTMLButtonElement;
+      const btnDisconnect = document.getElementById('btn-disconnect') as HTMLButtonElement;
+      const btnClear = document.getElementById('btn-clear') as HTMLButtonElement;
+      const btnDownload = document.getElementById('btn-download') as HTMLButtonElement;
+      const btnSend = document.getElementById('btn-send') as HTMLButtonElement;
+      const cmdInput = document.getElementById('cmd-input') as HTMLInputElement;
+      const logOutput = document.getElementById('log-output') as HTMLPreElement;
+      const logEmpty = document.getElementById('log-empty') as HTMLDivElement;
+      const chkAutoscroll = document.getElementById('chk-autoscroll') as HTMLInputElement;
+      const chkTimestamps = document.getElementById('chk-timestamps') as HTMLInputElement;
+      const statusDot = document.getElementById('status-dot') as HTMLSpanElement;
+      const statusText = document.getElementById('status-text') as HTMLSpanElement;
+      const browserWarning = document.getElementById('browser-warning') as HTMLDivElement;
+
+      // Check Web Serial API support
+      if (!('serial' in navigator)) {
+        browserWarning.classList.remove('hidden');
+        btnConnect.disabled = true;
+        return;
+      }
+
+      let port: SerialPort | null = null;
+      let reader: ReadableStreamDefaultReader<Uint8Array> | null = null;
+      let writer: WritableStreamDefaultWriter<Uint8Array> | null = null;
+      let logContent = '';
+      let lineBuffer = '';
+
+      function setStatus(connected: boolean) {
+        if (connected) {
+          statusDot.classList.remove('bg-gray-300');
+          statusDot.classList.add('bg-green-400');
+          statusText.textContent = 'Connected';
+          statusText.classList.remove('text-gray-400');
+          statusText.classList.add('text-green-600');
+          btnConnect.classList.add('hidden');
+          btnDisconnect.classList.remove('hidden');
+          cmdInput.disabled = false;
+          btnSend.disabled = false;
+        } else {
+          statusDot.classList.remove('bg-green-400');
+          statusDot.classList.add('bg-gray-300');
+          statusText.textContent = 'Disconnected';
+          statusText.classList.remove('text-green-600');
+          statusText.classList.add('text-gray-400');
+          btnConnect.classList.remove('hidden');
+          btnDisconnect.classList.add('hidden');
+          cmdInput.disabled = true;
+          btnSend.disabled = true;
+        }
+      }
+
+      function timestamp(): string {
+        const now = new Date();
+        const hh = String(now.getHours()).padStart(2, '0');
+        const mm = String(now.getMinutes()).padStart(2, '0');
+        const ss = String(now.getSeconds()).padStart(2, '0');
+        return `[${hh}:${mm}:${ss}] `;
+      }
+
+      function appendLine(line: string) {
+        const prefix = chkTimestamps.checked ? timestamp() : '';
+        const text = prefix + line + '\n';
+        logContent += text;
+        logOutput.textContent += text;
+        logEmpty.classList.add('hidden');
+
+        // Keep log from growing too large (max ~500KB displayed)
+        if (logOutput.textContent!.length > 500000) {
+          const lines = logOutput.textContent!.split('\n');
+          const trimmed = lines.slice(lines.length - 5000).join('\n');
+          logOutput.textContent = trimmed;
+        }
+
+        if (chkAutoscroll.checked) {
+          logOutput.scrollTop = logOutput.scrollHeight;
+        }
+      }
+
+      async function connect() {
+        try {
+          port = await navigator.serial.requestPort();
+          await port.open({ baudRate: 115200 });
+
+          setStatus(true);
+          appendLine('--- Serial port opened ---');
+
+          // Set up writer
+          if (port.writable) {
+            writer = port.writable.getWriter();
+          }
+
+          // Read loop
+          while (port.readable) {
+            reader = port.readable.getReader();
+            try {
+              while (true) {
+                const { value, done } = await reader.read();
+                if (done) break;
+                if (value) {
+                  const text = new TextDecoder().decode(value);
+                  // Buffer partial lines
+                  lineBuffer += text;
+                  const lines = lineBuffer.split('\n');
+                  // Last element is either empty (line ended with \n) or a partial line
+                  lineBuffer = lines.pop() || '';
+                  for (const line of lines) {
+                    appendLine(line.replace(/\r$/, ''));
+                  }
+                }
+              }
+            } catch (e: any) {
+              if (e.name !== 'NetworkError') {
+                appendLine(`--- Error: ${e.message} ---`);
+              }
+            } finally {
+              reader.releaseLock();
+              reader = null;
+            }
+          }
+        } catch (e: any) {
+          if (e.name !== 'NotFoundError') {
+            appendLine(`--- Connection error: ${e.message} ---`);
+          }
+        } finally {
+          await disconnect();
+        }
+      }
+
+      async function disconnect() {
+        // Flush remaining buffer
+        if (lineBuffer) {
+          appendLine(lineBuffer);
+          lineBuffer = '';
+        }
+
+        if (writer) {
+          try { writer.releaseLock(); } catch {}
+          writer = null;
+        }
+        if (reader) {
+          try { await reader.cancel(); reader.releaseLock(); } catch {}
+          reader = null;
+        }
+        if (port) {
+          try { await port.close(); } catch {}
+          port = null;
+        }
+
+        setStatus(false);
+        appendLine('--- Disconnected ---');
+      }
+
+      async function sendCommand() {
+        const cmd = cmdInput.value;
+        if (!cmd || !writer) return;
+        const encoder = new TextEncoder();
+        await writer.write(encoder.encode(cmd + '\r\n'));
+        cmdInput.value = '';
+      }
+
+      // Event listeners
+      btnConnect.addEventListener('click', connect);
+      btnDisconnect.addEventListener('click', disconnect);
+
+      btnClear.addEventListener('click', () => {
+        logOutput.textContent = '';
+        logContent = '';
+        logEmpty.classList.remove('hidden');
+      });
+
+      btnDownload.addEventListener('click', () => {
+        const blob = new Blob([logContent], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        const now = new Date();
+        const dateStr = now.toISOString().slice(0, 19).replace(/[T:]/g, '-');
+        a.href = url;
+        a.download = `lightning-piggy-log-${dateStr}.txt`;
+        a.click();
+        URL.revokeObjectURL(url);
+      });
+
+      btnSend.addEventListener('click', sendCommand);
+      cmdInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') sendCommand();
+      });
+    }
+
+    document.addEventListener('astro:page-load', initSerialMonitor);
+    initSerialMonitor();
+  </script>
+</ContentLayout>
