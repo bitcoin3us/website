@@ -7,9 +7,12 @@ import ContentLayout from '../../layouts/ContentLayout.astro';
   description="Real-time serial console for debugging your Lightning Piggy device"
 >
   <div class="not-prose">
-    <!-- Browser support warning -->
-    <div id="browser-warning" class="hidden bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-6">
-      <p class="text-yellow-800 text-sm font-medium">Your browser does not support the Web Serial API. Please use <a href="https://www.google.com/chrome/" target="_blank" rel="noopener noreferrer" class="text-pink hover:underline">Google Chrome</a> or Microsoft Edge.</p>
+    <!-- Browser support banner -->
+    <div id="browser-warning" class="hidden bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6">
+      <p class="text-amber-800 text-sm font-medium">
+        <strong id="browser-warning-name"></strong> does not support the Web Serial API.
+        Please use <a href="https://www.google.com/chrome/" target="_blank" rel="noopener noreferrer" class="underline hover:no-underline">Google Chrome</a>, <a href="https://www.microsoft.com/edge" target="_blank" rel="noopener noreferrer" class="underline hover:no-underline">Microsoft Edge</a>, or <a href="https://brave.com/" target="_blank" rel="noopener noreferrer" class="underline hover:no-underline">Brave</a> to use the Serial Monitor.
+      </p>
     </div>
 
     <!-- Instructions -->
@@ -95,6 +98,11 @@ import ContentLayout from '../../layouts/ContentLayout.astro';
 
       // Check Web Serial API support
       if (!('serial' in navigator)) {
+        const ua = navigator.userAgent;
+        let browserName = 'Your browser';
+        if (ua.includes('Firefox')) browserName = 'Firefox';
+        else if (ua.includes('Safari') && !ua.includes('Chrome')) browserName = 'Safari';
+        (document.getElementById('browser-warning-name') as HTMLElement).textContent = browserName;
         browserWarning.classList.remove('hidden');
         btnConnect.disabled = true;
         return;
