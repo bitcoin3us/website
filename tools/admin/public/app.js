@@ -1,0 +1,2468 @@
+// --- Tab Switching ---
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById(tab.dataset.tab).classList.add('active');
+  });
+});
+
+// --- Wild Photo Upload ---
+const dropzone = document.getElementById('wild-dropzone');
+const wildFile = document.getElementById('wild-file');
+const wildPreview = document.getElementById('wild-preview');
+const wildPreviewImg = document.getElementById('wild-preview-img');
+const wildPreviewInfo = document.getElementById('wild-preview-info');
+const wildUploadBtn = document.getElementById('wild-upload-btn');
+const wildResult = document.getElementById('wild-result');
+
+let selectedWildFile = null;
+
+dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('dragover'); });
+dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+dropzone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropzone.classList.remove('dragover');
+  if (e.dataTransfer.files[0]) showWildPreview(e.dataTransfer.files[0]);
+});
+
+wildFile.addEventListener('change', () => {
+  if (wildFile.files[0]) showWildPreview(wildFile.files[0]);
+});
+
+function showWildPreview(file) {
+  selectedWildFile = file;
+  const url = URL.createObjectURL(file);
+  wildPreviewImg.src = url;
+  wildPreviewInfo.textContent = `${file.name} — ${(file.size / 1024).toFixed(0)}KB`;
+  wildPreview.hidden = false;
+  wildUploadBtn.hidden = false;
+  wildResult.hidden = true;
+}
+
+wildUploadBtn.addEventListener('click', async () => {
+  if (!selectedWildFile) return;
+  wildUploadBtn.disabled = true;
+  wildUploadBtn.textContent = 'Uploading...';
+
+  const formData = new FormData();
+  formData.append('image', selectedWildFile);
+
+  try {
+    const resp = await fetch('/api/wild/upload', { method: 'POST', body: formData });
+    const data = await resp.json();
+
+    if (data.success) {
+      wildResult.className = 'result success';
+      wildResult.innerHTML = `Saved as <strong>${data.filename}</strong> (${data.size})`;
+    } else {
+      wildResult.className = 'result error';
+      wildResult.textContent = data.error;
+    }
+  } catch (err) {
+    wildResult.className = 'result error';
+    wildResult.textContent = err.message;
+  }
+
+  wildResult.hidden = false;
+  wildUploadBtn.disabled = false;
+  wildUploadBtn.textContent = 'Upload & Optimize';
+});
+
+// --- Wild Gallery ---
+const wildGallery = document.getElementById('wild-gallery');
+const wildLightbox = document.getElementById('wild-lightbox');
+const wildLightboxImg = document.getElementById('wild-lightbox-img');
+
+async function loadWildGallery() {
+  try {
+    const resp = await fetch('/api/wild/list');
+    const images = await resp.json();
+    wildGallery.innerHTML = '';
+    if (images.length === 0) {
+      wildGallery.innerHTML = '<p style="color:#999;grid-column:1/-1;">No wild images yet.</p>';
+      return;
+    }
+    images.forEach(img => {
+      const card = document.createElement('div');
+      card.style.cssText = 'position:relative; border-radius:8px; overflow:hidden; border:1px solid #e5e7eb; background:#f9fafb;';
+      card.innerHTML = `
+        <img src="${img.path}" alt="${img.filename}" style="width:100%; aspect-ratio:1; object-fit:cover; cursor:pointer; display:block;" data-full="${img.path}">
+        <div style="padding:6px 8px; display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-size:11px; color:#666;">${img.filename}<br>${img.size} · ${img.modified ? new Date(img.modified).toLocaleDateString() : ''}</span>
+          <button data-filename="${img.filename}" style="background:#ef4444; color:white; border:none; border-radius:4px; padding:2px 8px; font-size:11px; cursor:pointer;">Delete</button>
+        </div>
+      `;
+      card.querySelector('img').addEventListener('click', () => {
+        wildLightboxImg.src = img.path;
+        wildLightbox.style.display = 'flex';
+      });
+      card.querySelector('button').addEventListener('click', async (e) => {
+        const filename = e.target.dataset.filename;
+        if (!confirm(`Delete ${filename}?`)) return;
+        const resp = await fetch(`/api/wild/${filename}`, { method: 'DELETE' });
+        if (resp.ok) loadWildGallery();
+      });
+      wildGallery.appendChild(card);
+    });
+  } catch (err) {
+    wildGallery.innerHTML = `<p style="color:red;">Failed to load gallery: ${err.message}</p>`;
+  }
+}
+
+wildLightbox.addEventListener('click', () => { wildLightbox.style.display = 'none'; });
+
+const wildResultEl = document.getElementById('wild-result');
+const wildResultObserver = new MutationObserver(() => {
+  if (wildResultEl.classList.contains('success')) loadWildGallery();
+});
+wildResultObserver.observe(wildResultEl, { attributes: true, attributeFilter: ['class'] });
+
+// Load wild gallery on page load (default tab)
+loadWildGallery();
+
+// --- Showcase Photo Upload ---
+const showcaseDropzone = document.getElementById('showcase-dropzone');
+const showcaseFile = document.getElementById('showcase-file');
+const showcasePreview = document.getElementById('showcase-preview');
+const showcasePreviewImg = document.getElementById('showcase-preview-img');
+const showcasePreviewInfo = document.getElementById('showcase-preview-info');
+const showcaseUploadBtn = document.getElementById('showcase-upload-btn');
+const showcaseResult = document.getElementById('showcase-result');
+
+let selectedShowcaseFile = null;
+
+showcaseDropzone.addEventListener('dragover', e => { e.preventDefault(); showcaseDropzone.classList.add('dragover'); });
+showcaseDropzone.addEventListener('dragleave', () => showcaseDropzone.classList.remove('dragover'));
+showcaseDropzone.addEventListener('drop', e => {
+  e.preventDefault();
+  showcaseDropzone.classList.remove('dragover');
+  if (e.dataTransfer.files[0]) showShowcasePreview(e.dataTransfer.files[0]);
+});
+
+showcaseFile.addEventListener('change', () => {
+  if (showcaseFile.files[0]) showShowcasePreview(showcaseFile.files[0]);
+});
+
+function showShowcasePreview(file) {
+  selectedShowcaseFile = file;
+  const url = URL.createObjectURL(file);
+  showcasePreviewImg.src = url;
+  showcasePreviewInfo.textContent = `${file.name} — ${(file.size / 1024).toFixed(0)}KB`;
+  showcasePreview.hidden = false;
+  showcaseUploadBtn.hidden = false;
+  showcaseResult.hidden = true;
+}
+
+showcaseUploadBtn.addEventListener('click', async () => {
+  if (!selectedShowcaseFile) return;
+  showcaseUploadBtn.disabled = true;
+  showcaseUploadBtn.textContent = 'Uploading...';
+
+  const formData = new FormData();
+  formData.append('image', selectedShowcaseFile);
+
+  try {
+    const resp = await fetch('/api/showcase/upload', { method: 'POST', body: formData });
+    const data = await resp.json();
+
+    if (data.success) {
+      showcaseResult.className = 'result success';
+      showcaseResult.innerHTML = `Saved as <strong>${data.filename}</strong> (${data.size})`;
+    } else {
+      showcaseResult.className = 'result error';
+      showcaseResult.textContent = data.error;
+    }
+  } catch (err) {
+    showcaseResult.className = 'result error';
+    showcaseResult.textContent = err.message;
+  }
+
+  showcaseResult.hidden = false;
+  showcaseUploadBtn.disabled = false;
+  showcaseUploadBtn.textContent = 'Upload & Optimize';
+});
+
+// --- Showcase Gallery ---
+const showcaseGallery = document.getElementById('showcase-gallery');
+const showcaseLightbox = document.getElementById('showcase-lightbox');
+const showcaseLightboxImg = document.getElementById('showcase-lightbox-img');
+
+async function loadShowcaseGallery() {
+  try {
+    const resp = await fetch('/api/showcase/list');
+    const images = await resp.json();
+    showcaseGallery.innerHTML = '';
+    if (images.length === 0) {
+      showcaseGallery.innerHTML = '<p style="color:#999;grid-column:1/-1;">No showcase images yet.</p>';
+      return;
+    }
+    images.forEach(img => {
+      const card = document.createElement('div');
+      card.style.cssText = 'position:relative; border-radius:8px; overflow:hidden; border:1px solid #e5e7eb; background:#f9fafb;';
+      card.innerHTML = `
+        <img src="${img.path}" alt="${img.filename}" style="width:100%; aspect-ratio:1; object-fit:cover; cursor:pointer; display:block;" data-full="${img.path}">
+        <div style="padding:6px 8px; display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-size:11px; color:#666;">${img.filename}<br>${img.size}</span>
+          <button data-filename="${img.filename}" style="background:#ef4444; color:white; border:none; border-radius:4px; padding:2px 8px; font-size:11px; cursor:pointer;">Delete</button>
+        </div>
+      `;
+      card.querySelector('img').addEventListener('click', () => {
+        showcaseLightboxImg.src = img.path;
+        showcaseLightbox.style.display = 'flex';
+      });
+      card.querySelector('button').addEventListener('click', async (e) => {
+        const filename = e.target.dataset.filename;
+        if (!confirm(`Delete ${filename}?`)) return;
+        const resp = await fetch(`/api/showcase/${filename}`, { method: 'DELETE' });
+        if (resp.ok) loadShowcaseGallery();
+      });
+      showcaseGallery.appendChild(card);
+    });
+  } catch (err) {
+    showcaseGallery.innerHTML = `<p style="color:red;">Failed to load gallery: ${err.message}</p>`;
+  }
+}
+
+showcaseLightbox.addEventListener('click', () => { showcaseLightbox.style.display = 'none'; });
+
+// Load galleries when tabs are shown
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    if (tab.dataset.tab === 'showcase') loadShowcaseGallery();
+    if (tab.dataset.tab === 'wild') loadWildGallery();
+    if (tab.dataset.tab === 'email') loadResendData();
+    if (tab.dataset.tab === 'nip05') loadNip05Verified();
+  });
+});
+
+// --- NIP-05 Live Verification ---
+
+async function loadNip05Verified() {
+  const el = document.getElementById('nip05-verified');
+  if (!el) return;
+  el.innerHTML = '<p style="color:#999;">Loading verified handles...</p>';
+  try {
+    const resp = await fetch('/api/nip05/verify');
+    const data = await resp.json();
+    if (data.error) { el.innerHTML = `<p style="color:#ef4444;">${data.error}</p>`; return; }
+    if (!data.verified || data.verified.length === 0) {
+      el.innerHTML = '<p style="color:#999;">No verified handles found.</p>';
+      return;
+    }
+    el.innerHTML = `<p style="font-size:13px; color:#666; margin-bottom:8px;">${data.count} verified handle${data.count !== 1 ? 's' : ''}</p>` +
+      '<table style="width:100%; font-size:13px; border-collapse:collapse;">' +
+      '<tr style="text-align:left; border-bottom:2px solid #e5e7eb;"><th style="padding:4px 8px;">Handle</th><th style="padding:4px 8px;">Address</th><th style="padding:4px 8px;">Profile</th><th style="padding:4px 8px;">Relays</th></tr>' +
+      data.verified.map(v => {
+        const npub = hexToNpub(v.hex);
+        const npubShort = npub ? npub.slice(0, 16) + '...' : v.hex.slice(0, 12) + '...';
+        const primalUrl = npub ? 'https://primal.net/p/' + npub : '#';
+        return `
+        <tr style="border-bottom:1px solid #f3f4f6;">
+          <td style="padding:4px 8px; font-weight:500;">${v.name}</td>
+          <td style="padding:4px 8px;"><span style="color:#EC008C;">${v.address}</span></td>
+          <td style="padding:4px 8px;"><a href="${primalUrl}" target="_blank" rel="noopener noreferrer" style="font-family:monospace; font-size:11px; color:#6366f1; text-decoration:none;" title="${npub}">${npubShort}</a></td>
+          <td style="padding:4px 8px;"><span style="font-size:11px; padding:1px 6px; border-radius:99px; background:#dcfce7; color:#16a34a;">${v.relayCount} relays</span></td>
+        </tr>`;
+      }).join('') +
+      '</table>';
+  } catch (err) {
+    el.innerHTML = `<p style="color:#ef4444;">Error: ${err.message}</p>`;
+  }
+}
+
+// --- Resend Email Management ---
+
+async function loadResendData() {
+  loadResendStatus();
+  loadResendDomains();
+  loadResendContacts();
+  loadResendWebhooks();
+}
+
+async function loadResendStatus() {
+  const el = document.getElementById('resend-status');
+  try {
+    const resp = await fetch('/api/resend/status');
+    const data = await resp.json();
+    if (data.authenticated) {
+      el.innerHTML = `<p style="color:#16a34a; font-weight:600;">&#10003; Connected to Resend</p>`;
+    } else {
+      el.innerHTML = `<p style="color:#ef4444; font-weight:600;">&#10007; Not authenticated</p><p style="font-size:13px; color:#666;">Run <code>resend login</code> in your terminal to authenticate.</p>`;
+    }
+  } catch (err) {
+    el.innerHTML = `<p style="color:#ef4444;">Error: ${err.message}</p>`;
+  }
+}
+
+async function loadResendDomains() {
+  const el = document.getElementById('resend-domains');
+  try {
+    const resp = await fetch('/api/resend/domains');
+    const data = await resp.json();
+    if (data.error) { el.innerHTML = `<p style="color:#ef4444; font-size:13px;">${data.error}</p>`; return; }
+    const domains = Array.isArray(data) ? data : (data.data || []);
+    if (domains.length === 0) { el.innerHTML = '<p style="color:#999;">No domains configured.</p>'; return; }
+    el.innerHTML = domains.map(d => `
+      <div style="display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid #e5e7eb; font-size:13px;">
+        <span style="font-weight:500;">${d.name || d.domain || 'Unknown'}</span>
+        <span style="font-size:11px; padding:2px 8px; border-radius:99px; background:${d.status === 'verified' ? '#dcfce7; color:#16a34a' : '#fef3c7; color:#d97706'};">${d.status || 'unknown'}</span>
+      </div>
+    `).join('');
+  } catch (err) {
+    el.innerHTML = `<p style="color:#ef4444; font-size:13px;">${err.message}</p>`;
+  }
+}
+
+async function loadResendContacts() {
+  const el = document.getElementById('resend-contacts');
+  try {
+    const resp = await fetch('/api/resend/contacts');
+    const data = await resp.json();
+    if (data.error) { el.innerHTML = `<p style="color:#ef4444; font-size:13px;">${data.error}</p>`; return; }
+    const contacts = Array.isArray(data) ? data : (data.data || []);
+    if (contacts.length === 0) { el.innerHTML = '<p style="color:#999;">No contacts yet.</p>'; return; }
+    el.innerHTML = `<p style="font-size:13px; color:#666; margin-bottom:8px;">${contacts.length} contact${contacts.length !== 1 ? 's' : ''}</p>` +
+      '<table style="width:100%; font-size:13px; border-collapse:collapse;">' +
+      '<tr style="text-align:left; border-bottom:2px solid #e5e7eb;"><th style="padding:4px 8px;">Email</th><th style="padding:4px 8px;">Status</th><th style="padding:4px 8px;">Created</th></tr>' +
+      contacts.map(c => `
+        <tr style="border-bottom:1px solid #f3f4f6;">
+          <td style="padding:4px 8px;">${c.email || ''}</td>
+          <td style="padding:4px 8px;"><span style="font-size:11px; padding:1px 6px; border-radius:99px; background:${c.unsubscribed ? '#fef2f2; color:#ef4444' : '#dcfce7; color:#16a34a'};">${c.unsubscribed ? 'unsubscribed' : 'subscribed'}</span></td>
+          <td style="padding:4px 8px; color:#999;">${c.created_at ? new Date(c.created_at).toLocaleDateString() : ''}</td>
+        </tr>
+      `).join('') +
+      '</table>';
+  } catch (err) {
+    el.innerHTML = `<p style="color:#ef4444; font-size:13px;">${err.message}</p>`;
+  }
+}
+
+async function loadResendWebhooks() {
+  const el = document.getElementById('resend-webhooks');
+  try {
+    const resp = await fetch('/api/resend/webhooks');
+    const data = await resp.json();
+    if (data.error) { el.innerHTML = `<p style="color:#ef4444; font-size:13px;">${data.error}</p>`; return; }
+    const webhooks = Array.isArray(data) ? data : (data.data || []);
+    if (webhooks.length === 0) { el.innerHTML = '<p style="color:#999;">No webhooks configured.</p>'; return; }
+    el.innerHTML = webhooks.map(w => `
+      <div style="padding:6px 0; border-bottom:1px solid #e5e7eb; font-size:13px;">
+        <div style="font-weight:500; word-break:break-all;">${w.endpoint_url || w.url || 'Unknown'}</div>
+        <div style="color:#999; font-size:11px; margin-top:2px;">${(w.events || []).join(', ') || 'all events'}</div>
+      </div>
+    `).join('');
+  } catch (err) {
+    el.innerHTML = `<p style="color:#ef4444; font-size:13px;">${err.message}</p>`;
+  }
+}
+
+// Send test email
+document.getElementById('send-test-email-btn').addEventListener('click', async () => {
+  const to = document.getElementById('test-email-to').value.trim();
+  const subject = document.getElementById('test-email-subject').value.trim();
+  const resultEl = document.getElementById('test-email-result');
+  if (!to) { resultEl.innerHTML = '<span style="color:#ef4444;">Enter a recipient email.</span>'; return; }
+  resultEl.innerHTML = '<span style="color:#666;">Sending...</span>';
+  try {
+    const resp = await fetch('/api/resend/send-test', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ to, subject }),
+    });
+    const data = await resp.json();
+    if (data.success) {
+      resultEl.innerHTML = '<span style="color:#16a34a;">&#10003; Email sent successfully!</span>';
+    } else {
+      resultEl.innerHTML = `<span style="color:#ef4444;">Failed: ${data.error}</span>`;
+    }
+  } catch (err) {
+    resultEl.innerHTML = `<span style="color:#ef4444;">Error: ${err.message}</span>`;
+  }
+});
+
+// Also reload gallery after successful upload
+const origShowcaseUploadClick = showcaseUploadBtn.onclick;
+const origShowcaseResultObserver = new MutationObserver(() => {
+  if (showcaseResult.classList.contains('success')) loadShowcaseGallery();
+});
+origShowcaseResultObserver.observe(showcaseResult, { attributes: true, attributeFilter: ['class'] });
+
+// Initial load if showcase tab is already active
+if (document.getElementById('showcase')?.classList.contains('active')) loadShowcaseGallery();
+
+// --- News Post ---
+const newsTitle = document.getElementById('news-title');
+const newsSlug = document.getElementById('news-slug');
+const newsDate = document.getElementById('news-date');
+const newsForm = document.getElementById('news-form');
+const newsResult = document.getElementById('news-result');
+
+// Auto-set today's date
+newsDate.value = new Date().toISOString().split('T')[0];
+
+// Auto-generate slug from title
+newsTitle.addEventListener('input', () => {
+  newsSlug.value = newsTitle.value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+});
+
+newsForm.addEventListener('submit', async e => {
+  e.preventDefault();
+  const formData = new FormData(newsForm);
+  const submitBtn = newsForm.querySelector('button[type="submit"]');
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Publishing...';
+
+  try {
+    const resp = await fetch('/api/news/publish', { method: 'POST', body: formData });
+    const data = await resp.json();
+
+    if (data.success) {
+      newsResult.className = 'result success';
+      newsResult.innerHTML = `Published! View at <strong>${data.path}</strong> (restart dev server to see it)`;
+    } else {
+      newsResult.className = 'result error';
+      newsResult.textContent = data.error;
+    }
+  } catch (err) {
+    newsResult.className = 'result error';
+    newsResult.textContent = err.message;
+  }
+
+  newsResult.hidden = false;
+  submitBtn.disabled = false;
+  submitBtn.textContent = 'Publish';
+});
+
+// --- Credits ---
+const creditsList = document.getElementById('credits-list');
+const creditModal = document.getElementById('credit-modal');
+const creditForm = document.getElementById('credit-form');
+const modalTitle = document.getElementById('modal-title');
+const addCreditBtn = document.getElementById('add-credit-btn');
+const cancelCreditBtn = document.getElementById('cancel-credit-btn');
+const creditsSearch = document.getElementById('credits-search');
+const syncCreditsBtn = document.getElementById('sync-credits-btn');
+const syncResult = document.getElementById('sync-result');
+
+let allCredits = [];
+
+// Bech32 decoding for npub -> hex conversion
+const BECH32_CHARSET = 'qpzry9x8gf2tvdw0s3jn54khce6mua7l';
+
+function bech32Decode(str) {
+  str = str.toLowerCase();
+  const pos = str.lastIndexOf('1');
+  if (pos < 1 || pos + 7 > str.length) return null;
+
+  const hrp = str.slice(0, pos);
+  const dataStr = str.slice(pos + 1);
+
+  const data = [];
+  for (const c of dataStr) {
+    const idx = BECH32_CHARSET.indexOf(c);
+    if (idx === -1) return null;
+    data.push(idx);
+  }
+
+  // Remove checksum (last 6 characters)
+  const values = data.slice(0, -6);
+
+  // Convert 5-bit values to 8-bit bytes
+  let acc = 0;
+  let bits = 0;
+  const bytes = [];
+  for (const v of values) {
+    acc = (acc << 5) | v;
+    bits += 5;
+    while (bits >= 8) {
+      bits -= 8;
+      bytes.push((acc >> bits) & 0xff);
+    }
+  }
+
+  return { hrp, bytes };
+}
+
+function npubToHex(npub) {
+  if (!npub || !npub.startsWith('npub1')) return '';
+  const decoded = bech32Decode(npub);
+  if (!decoded || decoded.hrp !== 'npub') return '';
+  return decoded.bytes.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// Extract X username from profile URL
+function extractXUsername(url) {
+  if (!url) return '';
+  // Match twitter.com/username or x.com/username
+  const match = url.match(/(?:twitter\.com|x\.com)\/([a-zA-Z0-9_]+)/i);
+  return match ? match[1] : '';
+}
+
+async function loadCredits() {
+  try {
+    const resp = await fetch('/api/credits');
+    allCredits = await resp.json();
+    renderCredits(allCredits);
+  } catch (err) {
+    creditsList.innerHTML = `<p class="error">Failed to load credits: ${err.message}</p>`;
+  }
+}
+
+// SVG icons for social links
+const ICONS = {
+  nostr: `<svg viewBox="40 38 185 180" width="16" height="16" fill="currentColor"><path d="M210.8 199.4c0 3.1-2.5 5.7-5.7 5.7h-68c-3.1 0-5.7-2.5-5.7-5.7v-15.5c.3-19 2.3-37.2 6.5-45.5 2.5-5 6.7-7.7 11.5-9.1 9.1-2.7 24.9-.9 31.7-1.2 0 0 20.4.8 20.4-10.7s-9.1-8.6-9.1-8.6c-10 .3-17.7-.4-22.6-2.4-8.3-3.3-8.6-9.2-8.6-11.2-.4-23.1-34.5-25.9-64.5-20.1-32.8 6.2.4 53.3.4 116.1v8.4c0 3.1-2.6 5.6-5.7 5.6H57.7c-3.1 0-5.7-2.5-5.7-5.7v-144c0-3.1 2.5-5.7 5.7-5.7h31.7c3.1 0 5.7 2.5 5.7 5.7 0 4.7 5.2 7.2 9 4.5 11.4-8.2 26-12.5 42.4-12.5 36.6 0 64.4 21.4 64.4 68.7v83.2ZM150 99.3c0-6.7-5.4-12.1-12.1-12.1s-12.1 5.4-12.1 12.1 5.4 12.1 12.1 12.1S150 106 150 99.3Z"/></svg>`,
+  x: `<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>`,
+  github: `<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.604-3.369-1.341-3.369-1.341-.454-1.155-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg>`,
+  web: `<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>`
+};
+
+function renderCreditCard(c, index, sectionArr) {
+  const isFirst = index === 0;
+  const isLast = index === sectionArr.length - 1;
+  return `
+    <div class="credit-card" data-id="${c.id}">
+      <div class="credit-avatar">
+        ${c.nostrProfilePic || c.xProfilePic
+          ? `<img src="${c.nostrProfilePic || c.xProfilePic}" alt="${c.name}" onerror="this.style.display='none'">`
+          : `<span>${(c.name || '?')[0].toUpperCase()}</span>`
+        }
+      </div>
+      <div class="credit-info">
+        <div class="credit-name">
+          ${c.isBitcoinKid ? '<span class="bitcoin-kid-star">⭐</span>' : ''}
+          ${c.name || 'Unnamed'}
+        </div>
+        <div class="credit-role">${c.notes || ''}</div>
+        <div class="credit-links">
+          ${c.nostrNpub ? `<a href="https://njump.me/${c.nostrNpub}" target="_blank" title="Nostr" class="social-icon">${ICONS.nostr}</a>` : ''}
+          ${c.xProfileUrl ? `<a href="${c.xProfileUrl}" target="_blank" title="X" class="social-icon">${ICONS.x}</a>` : ''}
+          ${c.githubUrl ? `<a href="${c.githubUrl}" target="_blank" title="GitHub" class="social-icon">${ICONS.github}</a>` : ''}
+          ${c.websiteUrl ? `<a href="${c.websiteUrl}" target="_blank" title="Website" class="social-icon">${ICONS.web}</a>` : ''}
+        </div>
+      </div>
+      <div class="credit-actions">
+        <button class="btn-move move-credit-up" data-id="${c.id}" title="Move up" ${isFirst ? 'disabled' : ''}>&#9650;</button>
+        <button class="btn-move move-credit-down" data-id="${c.id}" title="Move down" ${isLast ? 'disabled' : ''}>&#9660;</button>
+        <button class="btn-icon edit-credit" title="Edit">✏️</button>
+        <button class="btn-icon delete-credit" title="Delete">🗑️</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderCredits(credits) {
+  if (credits.length === 0) {
+    creditsList.innerHTML = '<p class="empty">No credits yet. Click "Add Credit" to create one.</p>';
+    return;
+  }
+
+  // Group credits by section (Special Thanks merged into Contributors)
+  const coreTeam = credits.filter(c => c.websiteSection === 'Core Team');
+  const contributors = credits.filter(c => c.websiteSection === 'Contributor' || c.websiteSection === 'Special Thanks');
+  const other = credits.filter(c => !c.websiteSection || !['Core Team', 'Contributor', 'Special Thanks'].includes(c.websiteSection));
+
+  let html = '';
+
+  if (coreTeam.length > 0) {
+    html += `
+      <div class="credits-section">
+        <h3 class="credits-section-title">Core Team <span class="credits-section-count">(${coreTeam.length})</span></h3>
+        <div class="credits-section-list">${coreTeam.map((c, i, arr) => renderCreditCard(c, i, arr)).join('')}</div>
+      </div>
+    `;
+  }
+
+  if (contributors.length > 0) {
+    html += `
+      <div class="credits-section">
+        <h3 class="credits-section-title">Contributors <span class="credits-section-count">(${contributors.length})</span></h3>
+        <div class="credits-section-list">${contributors.map((c, i, arr) => renderCreditCard(c, i, arr)).join('')}</div>
+      </div>
+    `;
+  }
+
+  if (other.length > 0) {
+    html += `
+      <div class="credits-section">
+        <h3 class="credits-section-title">Not Assigned <span class="credits-section-count">(${other.length})</span></h3>
+        <div class="credits-section-list">${other.map((c, i, arr) => renderCreditCard(c, i, arr)).join('')}</div>
+      </div>
+    `;
+  }
+
+  creditsList.innerHTML = html;
+
+  // Attach event listeners
+  creditsList.querySelectorAll('.edit-credit').forEach(btn => {
+    btn.addEventListener('click', () => editCredit(btn.closest('.credit-card').dataset.id));
+  });
+  creditsList.querySelectorAll('.delete-credit').forEach(btn => {
+    btn.addEventListener('click', () => deleteCredit(btn.closest('.credit-card').dataset.id));
+  });
+  creditsList.querySelectorAll('.move-credit-up').forEach(btn => {
+    btn.addEventListener('click', () => moveCredit(btn.dataset.id, 'up'));
+  });
+  creditsList.querySelectorAll('.move-credit-down').forEach(btn => {
+    btn.addEventListener('click', () => moveCredit(btn.dataset.id, 'down'));
+  });
+}
+
+function openModal(credit = null) {
+  modalTitle.textContent = credit ? 'Edit Credit' : 'Add Credit';
+  document.getElementById('credit-id').value = credit?.id || '';
+  document.getElementById('credit-name').value = credit?.name || '';
+  document.getElementById('credit-nostr-npub').value = credit?.nostrNpub || '';
+  // Auto-calculate hex from npub when opening modal
+  const npubValue = credit?.nostrNpub || '';
+  const hex = npubValue ? npubToHex(npubValue) : '';
+  document.getElementById('credit-nostr-hex').value = hex;
+  // Use stored pic or fetch from Primal
+  if (credit?.nostrProfilePic) {
+    document.getElementById('credit-nostr-pic').value = credit.nostrProfilePic;
+  } else if (hex) {
+    document.getElementById('credit-nostr-pic').value = 'Loading...';
+    fetch(`/api/nostr/profile/${hex}`)
+      .then(r => r.json())
+      .then(p => { document.getElementById('credit-nostr-pic').value = p.picture || ''; })
+      .catch(() => { document.getElementById('credit-nostr-pic').value = ''; });
+  } else {
+    document.getElementById('credit-nostr-pic').value = '';
+  }
+  document.getElementById('credit-x-url').value = credit?.xProfileUrl || '';
+  // Use stored pic or auto-generate from X URL
+  if (credit?.xProfilePic) {
+    document.getElementById('credit-x-pic').value = credit.xProfilePic;
+  } else if (credit?.xProfileUrl) {
+    const username = extractXUsername(credit.xProfileUrl);
+    document.getElementById('credit-x-pic').value = username ? `https://unavatar.io/twitter/${username}` : '';
+  } else {
+    document.getElementById('credit-x-pic').value = '';
+  }
+  document.getElementById('credit-website-url').value = credit?.websiteUrl || '';
+  document.getElementById('credit-github-url').value = credit?.githubUrl || '';
+  document.getElementById('credit-notes').value = credit?.notes || '';
+  document.getElementById('credit-show-on-website').checked = credit?.showOnWebsite || false;
+  document.getElementById('credit-website-section').value = credit?.websiteSection || '';
+  document.getElementById('credit-bitcoin-kid').checked = credit?.isBitcoinKid || false;
+  creditModal.hidden = false;
+}
+
+function closeModal() {
+  creditModal.hidden = true;
+  creditForm.reset();
+}
+
+function editCredit(id) {
+  const credit = allCredits.find(c => c.id === id);
+  if (credit) openModal(credit);
+}
+
+async function deleteCredit(id) {
+  const credit = allCredits.find(c => c.id === id);
+  if (!confirm(`Delete credit "${credit?.name || 'Unnamed'}"?`)) return;
+
+  try {
+    await fetch(`/api/credits/${id}`, { method: 'DELETE' });
+    loadCredits();
+  } catch (err) {
+    alert('Failed to delete: ' + err.message);
+  }
+}
+
+async function moveCredit(id, direction) {
+  const credit = allCredits.find(c => c.id === id);
+  if (!credit) return;
+
+  // Credits use websiteSection: 'Core Team', 'Contributor', 'Special Thanks'
+  // Contributors and Special Thanks are merged in the UI
+  const getCreditSection = (c) => {
+    if (c.websiteSection === 'Core Team') return 'Core Team';
+    if (c.websiteSection === 'Contributor' || c.websiteSection === 'Special Thanks') return 'Contributors';
+    return 'Not Assigned';
+  };
+
+  const creditSection = getCreditSection(credit);
+  const sectionCredits = allCredits.filter(c => getCreditSection(c) === creditSection);
+  const indexInSection = sectionCredits.findIndex(c => c.id === id);
+
+  if (direction === 'up' && indexInSection <= 0) return;
+  if (direction === 'down' && indexInSection >= sectionCredits.length - 1) return;
+
+  const swapIndex = direction === 'up' ? indexInSection - 1 : indexInSection + 1;
+  [sectionCredits[indexInSection], sectionCredits[swapIndex]] = [sectionCredits[swapIndex], sectionCredits[indexInSection]];
+
+  // Rebuild the full allCredits array preserving section order
+  const sectionOrder = ['Core Team', 'Contributors', 'Not Assigned'];
+  const reordered = [];
+  for (const section of sectionOrder) {
+    if (section === creditSection) {
+      reordered.push(...sectionCredits);
+    } else {
+      reordered.push(...allCredits.filter(c => getCreditSection(c) === section));
+    }
+  }
+
+  const ids = reordered.map(c => c.id);
+  try {
+    const resp = await fetch('/api/credits/reorder', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ids }),
+    });
+    const result = await resp.json();
+    if (result.success) {
+      allCredits = reordered;
+      const query = creditsSearch.value.toLowerCase();
+      if (query) {
+        const filtered = allCredits.filter(c =>
+          (c.name || '').toLowerCase().includes(query) ||
+          (c.email || '').toLowerCase().includes(query) ||
+          (c.role || '').toLowerCase().includes(query) ||
+          (c.notes || '').toLowerCase().includes(query)
+        );
+        renderCredits(filtered);
+      } else {
+        renderCredits(allCredits);
+      }
+    }
+  } catch (err) {
+    alert('Failed to reorder: ' + err.message);
+  }
+}
+
+addCreditBtn.addEventListener('click', () => openModal());
+cancelCreditBtn.addEventListener('click', closeModal);
+creditModal.addEventListener('click', e => {
+  if (e.target === creditModal) closeModal();
+});
+
+creditForm.addEventListener('submit', async e => {
+  e.preventDefault();
+  const id = document.getElementById('credit-id').value;
+  const data = {
+    name: document.getElementById('credit-name').value,
+    nostrNpub: document.getElementById('credit-nostr-npub').value,
+    nostrHex: document.getElementById('credit-nostr-hex').value,
+    nostrProfilePic: document.getElementById('credit-nostr-pic').value,
+    xProfileUrl: document.getElementById('credit-x-url').value,
+    xProfilePic: document.getElementById('credit-x-pic').value,
+    websiteUrl: document.getElementById('credit-website-url').value,
+    githubUrl: document.getElementById('credit-github-url').value,
+    notes: document.getElementById('credit-notes').value,
+    showOnWebsite: document.getElementById('credit-show-on-website').checked,
+    websiteSection: document.getElementById('credit-website-section').value,
+    isBitcoinKid: document.getElementById('credit-bitcoin-kid').checked,
+  };
+
+  try {
+    if (id) {
+      await fetch(`/api/credits/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+    } else {
+      await fetch('/api/credits', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+    }
+    closeModal();
+    loadCredits();
+  } catch (err) {
+    alert('Failed to save: ' + err.message);
+  }
+});
+
+creditsSearch.addEventListener('input', () => {
+  const query = creditsSearch.value.toLowerCase();
+  const filtered = allCredits.filter(c =>
+    (c.name || '').toLowerCase().includes(query) ||
+    (c.email || '').toLowerCase().includes(query) ||
+    (c.role || '').toLowerCase().includes(query) ||
+    (c.notes || '').toLowerCase().includes(query)
+  );
+  renderCredits(filtered);
+});
+
+// Sync credits to website
+syncCreditsBtn.addEventListener('click', async () => {
+  syncCreditsBtn.disabled = true;
+  syncCreditsBtn.textContent = 'Syncing...';
+
+  // Always sync all sections (Special Thanks merged into Contributors)
+  const sections = ['Core Team', 'Contributor'];
+
+  try {
+    const resp = await fetch('/api/credits/sync', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sections }),
+    });
+    const data = await resp.json();
+
+    if (data.success) {
+      syncResult.className = 'result success';
+      syncResult.innerHTML = `Synced to <strong>${data.path}</strong>: ${data.exported.coreTeam} Core Team, ${data.exported.contributors} Contributors`;
+    } else {
+      syncResult.className = 'result error';
+      syncResult.textContent = data.error;
+    }
+  } catch (err) {
+    syncResult.className = 'result error';
+    syncResult.textContent = err.message;
+  }
+
+  syncResult.hidden = false;
+  syncCreditsBtn.disabled = false;
+  syncCreditsBtn.textContent = 'Sync to Website';
+});
+
+// Load credits when tab is clicked
+document.querySelector('[data-tab="credits"]').addEventListener('click', loadCredits);
+
+// Auto-calculate nostr hex and fetch profile picture from Primal
+document.getElementById('credit-nostr-npub').addEventListener('input', async e => {
+  const npub = e.target.value.trim();
+  const hexField = document.getElementById('credit-nostr-hex');
+  const picField = document.getElementById('credit-nostr-pic');
+  const hex = npubToHex(npub);
+  hexField.value = hex;
+
+  // Fetch profile picture from Primal via our API
+  if (hex) {
+    picField.value = 'Loading...';
+    try {
+      const resp = await fetch(`/api/nostr/profile/${hex}`);
+      const profile = await resp.json();
+      picField.value = profile.picture || '';
+    } catch (err) {
+      picField.value = '';
+    }
+  } else {
+    picField.value = '';
+  }
+});
+
+// Copy hex to clipboard
+document.getElementById('copy-hex-btn').addEventListener('click', async () => {
+  const hexField = document.getElementById('credit-nostr-hex');
+  const copyBtn = document.getElementById('copy-hex-btn');
+  if (!hexField.value) return;
+
+  try {
+    await navigator.clipboard.writeText(hexField.value);
+    copyBtn.textContent = '✓';
+    copyBtn.classList.add('copied');
+    setTimeout(() => {
+      copyBtn.textContent = '📋';
+      copyBtn.classList.remove('copied');
+    }, 1500);
+  } catch (err) {
+    hexField.select();
+    document.execCommand('copy');
+  }
+});
+
+// Auto-populate X profile picture from X profile URL
+document.getElementById('credit-x-url').addEventListener('input', e => {
+  const url = e.target.value.trim();
+  const picField = document.getElementById('credit-x-pic');
+  const username = extractXUsername(url);
+
+  if (username) {
+    picField.value = `https://unavatar.io/twitter/${username}`;
+  } else {
+    picField.value = '';
+  }
+});
+
+// Copy X profile pic URL to clipboard
+document.getElementById('copy-x-pic-btn').addEventListener('click', async () => {
+  const picField = document.getElementById('credit-x-pic');
+  const copyBtn = document.getElementById('copy-x-pic-btn');
+  if (!picField.value) return;
+
+  try {
+    await navigator.clipboard.writeText(picField.value);
+    copyBtn.textContent = '✓';
+    copyBtn.classList.add('copied');
+    setTimeout(() => {
+      copyBtn.textContent = '📋';
+      copyBtn.classList.remove('copied');
+    }, 1500);
+  } catch (err) {
+    picField.select();
+    document.execCommand('copy');
+  }
+});
+
+// --- Partners / Friends & Family ---
+const partnersList = document.getElementById('partners-list');
+const partnerModal = document.getElementById('partner-modal');
+const partnerForm = document.getElementById('partner-form');
+const partnerModalTitle = document.getElementById('partner-modal-title');
+const addPartnerBtn = document.getElementById('add-partner-btn');
+const cancelPartnerBtn = document.getElementById('cancel-partner-btn');
+const partnersSearch = document.getElementById('partners-search');
+const syncPartnersBtn = document.getElementById('sync-partners-btn');
+const partnersSyncResult = document.getElementById('partners-sync-result');
+
+let allPartners = [];
+
+async function loadPartners() {
+  try {
+    const resp = await fetch('/api/partners');
+    allPartners = await resp.json();
+    renderPartners(allPartners);
+  } catch (err) {
+    partnersList.innerHTML = `<p class="error">Failed to load partners: ${err.message}</p>`;
+  }
+}
+
+function renderPartnerCard(p, index, sectionArr) {
+  const isFirst = index === 0;
+  const isLast = index === sectionArr.length - 1;
+  return `
+    <div class="credit-card" data-id="${p.id}">
+      <div class="credit-avatar">
+        ${p.logoUrl || p.nostrProfilePic || p.xProfilePic
+          ? `<img src="${p.logoUrl || p.nostrProfilePic || p.xProfilePic}" alt="${p.name}" onerror="this.style.display='none'">`
+          : `<span>${(p.name || '?')[0].toUpperCase()}</span>`
+        }
+      </div>
+      <div class="credit-info">
+        <div class="credit-name">${p.name || 'Unnamed'}</div>
+        <div class="credit-role">${p.description || ''}</div>
+        <div class="credit-links">
+          ${p.nostrNpub ? `<a href="https://njump.me/${p.nostrNpub}" target="_blank" title="Nostr" class="social-icon">${ICONS.nostr}</a>` : ''}
+          ${p.xProfileUrl ? `<a href="${p.xProfileUrl}" target="_blank" title="X" class="social-icon">${ICONS.x}</a>` : ''}
+          ${p.githubUrl ? `<a href="${p.githubUrl}" target="_blank" title="GitHub" class="social-icon">${ICONS.github}</a>` : ''}
+          ${p.websiteUrl ? `<a href="${p.websiteUrl}" target="_blank" title="Website" class="social-icon">${ICONS.web}</a>` : ''}
+        </div>
+      </div>
+      <div class="credit-actions">
+        <button class="btn-move move-partner-up" data-id="${p.id}" title="Move up" ${isFirst ? 'disabled' : ''}>&#9650;</button>
+        <button class="btn-move move-partner-down" data-id="${p.id}" title="Move down" ${isLast ? 'disabled' : ''}>&#9660;</button>
+        <button class="btn-icon edit-partner" title="Edit">✏️</button>
+        <button class="btn-icon delete-partner" title="Delete">🗑️</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderPartners(partners) {
+  if (partners.length === 0) {
+    partnersList.innerHTML = '<p class="empty">No partners yet. Click "Add Partner" to create one.</p>';
+    return;
+  }
+
+  // Group partners by section
+  const communitySponsors = partners.filter(p => p.section === 'Community Sponsors');
+  const educationPartners = partners.filter(p => p.section === 'Education Partners');
+  const technologyPartners = partners.filter(p => p.section === 'Enabling Technologies');
+  const appearances = partners.filter(p => p.section === 'Appearances');
+  const inTheNews = partners.filter(p => p.section === 'In the News');
+  const other = partners.filter(p => !p.section || !['Community Sponsors', 'Education Partners', 'Enabling Technologies', 'Appearances', 'In the News'].includes(p.section));
+
+  let html = '';
+
+  if (communitySponsors.length > 0) {
+    html += `
+      <div class="credits-section">
+        <h3 class="credits-section-title">Community Sponsors <span class="credits-section-count">(${communitySponsors.length})</span></h3>
+        <div class="credits-section-list">${communitySponsors.map((p, i, arr) => renderPartnerCard(p, i, arr)).join('')}</div>
+      </div>
+    `;
+  }
+
+  if (educationPartners.length > 0) {
+    html += `
+      <div class="credits-section">
+        <h3 class="credits-section-title">Education Partners <span class="credits-section-count">(${educationPartners.length})</span></h3>
+        <div class="credits-section-list">${educationPartners.map((p, i, arr) => renderPartnerCard(p, i, arr)).join('')}</div>
+      </div>
+    `;
+  }
+
+  if (technologyPartners.length > 0) {
+    html += `
+      <div class="credits-section">
+        <h3 class="credits-section-title">Enabling Technologies <span class="credits-section-count">(${technologyPartners.length})</span></h3>
+        <div class="credits-section-list">${technologyPartners.map((p, i, arr) => renderPartnerCard(p, i, arr)).join('')}</div>
+      </div>
+    `;
+  }
+
+  if (appearances.length > 0) {
+    html += `
+      <div class="credits-section">
+        <h3 class="credits-section-title">Appearances <span class="credits-section-count">(${appearances.length})</span></h3>
+        <div class="credits-section-list">${appearances.map((p, i, arr) => renderPartnerCard(p, i, arr)).join('')}</div>
+      </div>
+    `;
+  }
+
+  if (inTheNews.length > 0) {
+    html += `
+      <div class="credits-section">
+        <h3 class="credits-section-title">In the News <span class="credits-section-count">(${inTheNews.length})</span></h3>
+        <div class="credits-section-list">${inTheNews.map((p, i, arr) => renderPartnerCard(p, i, arr)).join('')}</div>
+      </div>
+    `;
+  }
+
+  if (other.length > 0) {
+    html += `
+      <div class="credits-section">
+        <h3 class="credits-section-title">Not Assigned <span class="credits-section-count">(${other.length})</span></h3>
+        <div class="credits-section-list">${other.map((p, i, arr) => renderPartnerCard(p, i, arr)).join('')}</div>
+      </div>
+    `;
+  }
+
+  partnersList.innerHTML = html;
+
+  // Attach event listeners
+  partnersList.querySelectorAll('.edit-partner').forEach(btn => {
+    btn.addEventListener('click', () => editPartner(btn.closest('.credit-card').dataset.id));
+  });
+  partnersList.querySelectorAll('.delete-partner').forEach(btn => {
+    btn.addEventListener('click', () => deletePartner(btn.closest('.credit-card').dataset.id));
+  });
+  partnersList.querySelectorAll('.move-partner-up').forEach(btn => {
+    btn.addEventListener('click', () => movePartner(btn.dataset.id, 'up'));
+  });
+  partnersList.querySelectorAll('.move-partner-down').forEach(btn => {
+    btn.addEventListener('click', () => movePartner(btn.dataset.id, 'down'));
+  });
+}
+
+let pendingLogoFile = null;
+
+function openPartnerModal(partner = null) {
+  partnerModalTitle.textContent = partner ? 'Edit Partner' : 'Add Partner';
+  document.getElementById('partner-id').value = partner?.id || '';
+  document.getElementById('partner-name').value = partner?.name || '';
+  document.getElementById('partner-description').value = partner?.description || '';
+  document.getElementById('partner-website-url').value = partner?.websiteUrl || '';
+  document.getElementById('partner-logo-url').value = partner?.logoUrl || '';
+  document.getElementById('partner-nostr-npub').value = partner?.nostrNpub || '';
+  document.getElementById('partner-nostr-pic').value = partner?.nostrProfilePic || '';
+  document.getElementById('partner-x-url').value = partner?.xProfileUrl || '';
+  // Auto-generate X pic from URL
+  if (partner?.xProfilePic) {
+    document.getElementById('partner-x-pic').value = partner.xProfilePic;
+  } else if (partner?.xProfileUrl) {
+    const username = extractXUsername(partner.xProfileUrl);
+    document.getElementById('partner-x-pic').value = username ? `https://unavatar.io/twitter/${username}` : '';
+  } else {
+    document.getElementById('partner-x-pic').value = '';
+  }
+  document.getElementById('partner-github-url').value = partner?.githubUrl || '';
+  document.getElementById('partner-show-on-website').checked = partner?.showOnWebsite || false;
+  document.getElementById('partner-section').value = partner?.section || '';
+
+  // Reset logo upload state
+  pendingLogoFile = null;
+  document.getElementById('partner-logo-file').value = '';
+  const logoPreview = document.getElementById('partner-logo-preview');
+  const logoPreviewImg = document.getElementById('partner-logo-preview-img');
+  if (partner?.logoUrl) {
+    logoPreviewImg.src = partner.logoUrl;
+    logoPreview.hidden = false;
+  } else {
+    logoPreview.hidden = true;
+  }
+
+  partnerModal.hidden = false;
+}
+
+function closePartnerModal() {
+  partnerModal.hidden = true;
+  partnerForm.reset();
+  pendingLogoFile = null;
+  document.getElementById('partner-logo-preview').hidden = true;
+}
+
+function editPartner(id) {
+  const partner = allPartners.find(p => p.id === id);
+  if (partner) openPartnerModal(partner);
+}
+
+async function deletePartner(id) {
+  const partner = allPartners.find(p => p.id === id);
+  if (!confirm(`Delete partner "${partner?.name || 'Unnamed'}"?`)) return;
+
+  try {
+    await fetch(`/api/partners/${id}`, { method: 'DELETE' });
+    loadPartners();
+  } catch (err) {
+    alert('Failed to delete: ' + err.message);
+  }
+}
+
+async function movePartner(id, direction) {
+  // Find the partner and its section
+  const partner = allPartners.find(p => p.id === id);
+  if (!partner) return;
+
+  // Get partners in the same section, preserving their order from allPartners
+  const sectionPartners = allPartners.filter(p => p.section === partner.section);
+  const indexInSection = sectionPartners.findIndex(p => p.id === id);
+
+  // Check boundaries
+  if (direction === 'up' && indexInSection <= 0) return;
+  if (direction === 'down' && indexInSection >= sectionPartners.length - 1) return;
+
+  // Swap within the section array
+  const swapIndex = direction === 'up' ? indexInSection - 1 : indexInSection + 1;
+  [sectionPartners[indexInSection], sectionPartners[swapIndex]] = [sectionPartners[swapIndex], sectionPartners[indexInSection]];
+
+  // Rebuild the full allPartners array preserving section order
+  const sectionOrder = ['Community Sponsors', 'Education Partners', 'Enabling Technologies', 'Appearances', 'In the News'];
+  const reordered = [];
+  for (const section of sectionOrder) {
+    if (section === partner.section) {
+      reordered.push(...sectionPartners);
+    } else {
+      reordered.push(...allPartners.filter(p => p.section === section));
+    }
+  }
+  // Add any partners with no section or unknown sections
+  reordered.push(...allPartners.filter(p => !p.section || !sectionOrder.includes(p.section)));
+
+  // Send the new order to the server
+  const ids = reordered.map(p => p.id);
+  try {
+    const resp = await fetch('/api/partners/reorder', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ids }),
+    });
+    const result = await resp.json();
+    if (result.success) {
+      allPartners = reordered;
+      // Re-render, respecting any active search filter
+      const query = partnersSearch.value.toLowerCase();
+      if (query) {
+        const filtered = allPartners.filter(p =>
+          (p.name || '').toLowerCase().includes(query) ||
+          (p.description || '').toLowerCase().includes(query)
+        );
+        renderPartners(filtered);
+      } else {
+        renderPartners(allPartners);
+      }
+    }
+  } catch (err) {
+    alert('Failed to reorder: ' + err.message);
+  }
+}
+
+addPartnerBtn.addEventListener('click', () => openPartnerModal());
+cancelPartnerBtn.addEventListener('click', closePartnerModal);
+partnerModal.addEventListener('click', e => {
+  if (e.target === partnerModal) closePartnerModal();
+});
+
+partnerForm.addEventListener('submit', async e => {
+  e.preventDefault();
+  const id = document.getElementById('partner-id').value;
+  let logoUrl = document.getElementById('partner-logo-url').value;
+
+  // Upload logo if a file is pending
+  if (pendingLogoFile) {
+    const formData = new FormData();
+    formData.append('logo', pendingLogoFile);
+    formData.append('name', document.getElementById('partner-name').value);
+
+    try {
+      const uploadResp = await fetch('/api/partners/logo', { method: 'POST', body: formData });
+      const uploadData = await uploadResp.json();
+      if (uploadData.success) {
+        logoUrl = uploadData.path;
+      } else {
+        alert('Failed to upload logo: ' + uploadData.error);
+        return;
+      }
+    } catch (err) {
+      alert('Failed to upload logo: ' + err.message);
+      return;
+    }
+  }
+
+  const data = {
+    name: document.getElementById('partner-name').value,
+    description: document.getElementById('partner-description').value,
+    websiteUrl: document.getElementById('partner-website-url').value,
+    logoUrl: logoUrl,
+    nostrNpub: document.getElementById('partner-nostr-npub').value,
+    nostrProfilePic: document.getElementById('partner-nostr-pic').value,
+    xProfileUrl: document.getElementById('partner-x-url').value,
+    xProfilePic: document.getElementById('partner-x-pic').value,
+    githubUrl: document.getElementById('partner-github-url').value,
+    showOnWebsite: document.getElementById('partner-show-on-website').checked,
+    section: document.getElementById('partner-section').value,
+  };
+
+  try {
+    if (id) {
+      await fetch(`/api/partners/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+    } else {
+      await fetch('/api/partners', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+    }
+    closePartnerModal();
+    loadPartners();
+  } catch (err) {
+    alert('Failed to save: ' + err.message);
+  }
+});
+
+partnersSearch.addEventListener('input', () => {
+  const query = partnersSearch.value.toLowerCase();
+  const filtered = allPartners.filter(p =>
+    (p.name || '').toLowerCase().includes(query) ||
+    (p.description || '').toLowerCase().includes(query)
+  );
+  renderPartners(filtered);
+});
+
+// Logo upload handling
+const logoFileInput = document.getElementById('partner-logo-file');
+const logoUploadBtn = document.getElementById('partner-logo-upload-btn');
+const logoPreview = document.getElementById('partner-logo-preview');
+const logoPreviewImg = document.getElementById('partner-logo-preview-img');
+const logoClearBtn = document.getElementById('partner-logo-clear');
+const logoUrlInput = document.getElementById('partner-logo-url');
+
+logoUploadBtn.addEventListener('click', () => logoFileInput.click());
+
+logoFileInput.addEventListener('change', () => {
+  if (logoFileInput.files[0]) {
+    pendingLogoFile = logoFileInput.files[0];
+    const url = URL.createObjectURL(pendingLogoFile);
+    logoPreviewImg.src = url;
+    logoPreview.hidden = false;
+    logoUrlInput.value = ''; // Clear URL when file is selected
+  }
+});
+
+logoClearBtn.addEventListener('click', () => {
+  pendingLogoFile = null;
+  logoFileInput.value = '';
+  logoPreview.hidden = true;
+  logoUrlInput.value = '';
+});
+
+// Update preview when URL is entered manually
+logoUrlInput.addEventListener('input', () => {
+  const url = logoUrlInput.value.trim();
+  if (url) {
+    logoPreviewImg.src = url;
+    logoPreview.hidden = false;
+    pendingLogoFile = null; // Clear pending file when URL is entered
+    logoFileInput.value = '';
+  } else if (!pendingLogoFile) {
+    logoPreview.hidden = true;
+  }
+});
+
+// Sync partners to website
+syncPartnersBtn.addEventListener('click', async () => {
+  syncPartnersBtn.disabled = true;
+  syncPartnersBtn.textContent = 'Syncing...';
+
+  try {
+    const resp = await fetch('/api/partners/sync', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    const data = await resp.json();
+
+    if (data.success) {
+      partnersSyncResult.className = 'result success';
+      partnersSyncResult.innerHTML = `Synced to <strong>${data.path}</strong>: ${data.exported.educationPartners} Education, ${data.exported.technologyPartners} Technology, ${data.exported.appearances} Appearances, ${data.exported.inTheNews} News`;
+    } else {
+      partnersSyncResult.className = 'result error';
+      partnersSyncResult.textContent = data.error;
+    }
+  } catch (err) {
+    partnersSyncResult.className = 'result error';
+    partnersSyncResult.textContent = err.message;
+  }
+
+  partnersSyncResult.hidden = false;
+  syncPartnersBtn.disabled = false;
+  syncPartnersBtn.textContent = 'Sync to Website';
+});
+
+// Load partners when tab is clicked
+document.querySelector('[data-tab="partners"]').addEventListener('click', loadPartners);
+
+// Auto-populate X profile picture from X URL for partners
+document.getElementById('partner-x-url').addEventListener('input', e => {
+  const url = e.target.value.trim();
+  const picField = document.getElementById('partner-x-pic');
+  const username = extractXUsername(url);
+
+  if (username) {
+    picField.value = `https://unavatar.io/twitter/${username}`;
+  } else {
+    picField.value = '';
+  }
+});
+
+// Auto-fetch Nostr profile pic for partners
+document.getElementById('partner-nostr-npub').addEventListener('input', async e => {
+  const npub = e.target.value.trim();
+  const picField = document.getElementById('partner-nostr-pic');
+  const hex = npubToHex(npub);
+
+  if (hex) {
+    picField.value = 'Loading...';
+    try {
+      const resp = await fetch(`/api/nostr/profile/${hex}`);
+      const profile = await resp.json();
+      picField.value = profile.picture || '';
+    } catch (err) {
+      picField.value = '';
+    }
+  } else {
+    picField.value = '';
+  }
+});
+
+// --- NIP-05 Management ---
+
+const nip05List = document.getElementById('nip05-list');
+const nip05Modal = document.getElementById('nip05-modal');
+const nip05Form = document.getElementById('nip05-form');
+const nip05ModalTitle = document.getElementById('nip05-modal-title');
+const addNip05Btn = document.getElementById('add-nip05-btn');
+const cancelNip05Btn = document.getElementById('cancel-nip05-btn');
+const nip05Search = document.getElementById('nip05-search');
+
+let allNip05Entries = [];
+let nip05ProfileCache = {};
+
+async function loadNip05() {
+  try {
+    const resp = await fetch('/api/nip05');
+    allNip05Entries = await resp.json();
+    // Fetch profile pics for all entries
+    await Promise.all(allNip05Entries.map(async (entry) => {
+      if (!nip05ProfileCache[entry.hex]) {
+        try {
+          const profileResp = await fetch(`/api/nostr/profile/${entry.hex}`);
+          const profile = await profileResp.json();
+          nip05ProfileCache[entry.hex] = profile;
+        } catch {
+          nip05ProfileCache[entry.hex] = { picture: '', name: '' };
+        }
+      }
+    }));
+    renderNip05(allNip05Entries);
+  } catch (err) {
+    nip05List.innerHTML = `<p class="error">Failed to load NIP-05 entries: ${err.message}</p>`;
+  }
+}
+
+function hexToNpub(hex) {
+  const CHARSET = 'qpzry9x8gf2tvdw0s3jn54khce6mua7l';
+  const GEN = [0x3b6a57b2, 0x26508e6d, 0x1ea119fa, 0x3d4233dd, 0x2a1462b3];
+
+  function polymod(values) {
+    let chk = 1;
+    for (const v of values) {
+      const top = chk >> 25;
+      chk = ((chk & 0x1ffffff) << 5) ^ v;
+      for (let i = 0; i < 5; i++) {
+        if ((top >> i) & 1) chk ^= GEN[i];
+      }
+    }
+    return chk;
+  }
+
+  function hrpExpand(hrp) {
+    const ret = [];
+    for (let i = 0; i < hrp.length; i++) ret.push(hrp.charCodeAt(i) >> 5);
+    ret.push(0);
+    for (let i = 0; i < hrp.length; i++) ret.push(hrp.charCodeAt(i) & 31);
+    return ret;
+  }
+
+  // Convert hex to bytes
+  const bytes = [];
+  for (let i = 0; i < hex.length; i += 2) {
+    bytes.push(parseInt(hex.substr(i, 2), 16));
+  }
+
+  // Convert 8-bit bytes to 5-bit groups
+  let bits = 0, value = 0;
+  const data = [];
+  for (const byte of bytes) {
+    value = (value << 8) | byte;
+    bits += 8;
+    while (bits >= 5) {
+      bits -= 5;
+      data.push((value >> bits) & 31);
+    }
+  }
+  if (bits > 0) data.push((value << (5 - bits)) & 31);
+
+  // Create checksum
+  const expanded = hrpExpand('npub');
+  const chkInput = [...expanded, ...data, 0, 0, 0, 0, 0, 0];
+  const checksum = polymod(chkInput) ^ 1;
+  const checksumData = [];
+  for (let i = 0; i < 6; i++) {
+    checksumData.push((checksum >> (5 * (5 - i))) & 31);
+  }
+
+  return 'npub1' + [...data, ...checksumData].map(d => CHARSET[d]).join('');
+}
+
+function renderNip05Card(entry) {
+  const profile = nip05ProfileCache[entry.hex] || {};
+  const npub = hexToNpub(entry.hex);
+
+  return `
+    <div class="credit-card" data-name="${entry.name}">
+      <div class="credit-avatar">
+        ${profile.picture
+          ? `<img src="${profile.picture}" alt="${entry.name}" onerror="this.style.display='none'">`
+          : `<span>${entry.name[0].toUpperCase()}</span>`
+        }
+      </div>
+      <div class="credit-info">
+        <div class="credit-name">${profile.name || entry.name}</div>
+        <div class="credit-role">${entry.name}@lightningpiggy.com</div>
+        <div class="credit-details">
+          <span title="Hex">${entry.hex.substring(0, 8)}...${entry.hex.substring(56)}</span>
+        </div>
+        <div class="credit-links">
+          <a href="https://njump.me/${npub}" target="_blank" title="View on Nostr" class="social-icon">${ICONS.nostr}</a>
+        </div>
+      </div>
+      <div class="credit-actions">
+        <button class="btn-icon edit-nip05" title="Edit">✏️</button>
+        <button class="btn-icon delete-nip05" title="Delete">🗑️</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderNip05(entries) {
+  if (entries.length === 0) {
+    nip05List.innerHTML = '<p class="empty">No NIP-05 entries yet. Click "Add Entry" to create one.</p>';
+    return;
+  }
+
+  nip05List.innerHTML = `
+    <div class="credits-section">
+      <h3 class="credits-section-title">Verified Addresses <span class="credits-section-count">(${entries.length})</span></h3>
+      <div class="credits-section-list">${entries.map(renderNip05Card).join('')}</div>
+    </div>
+  `;
+
+  // Attach event listeners
+  nip05List.querySelectorAll('.edit-nip05').forEach(btn => {
+    btn.addEventListener('click', () => editNip05(btn.closest('.credit-card').dataset.name));
+  });
+  nip05List.querySelectorAll('.delete-nip05').forEach(btn => {
+    btn.addEventListener('click', () => deleteNip05(btn.closest('.credit-card').dataset.name));
+  });
+}
+
+function openNip05Modal(entry = null) {
+  nip05ModalTitle.textContent = entry ? 'Edit NIP-05 Entry' : 'Add NIP-05 Entry';
+  document.getElementById('nip05-original-name').value = entry?.name || '';
+  document.getElementById('nip05-name').value = entry?.name || '';
+
+  if (entry) {
+    const npub = hexToNpub(entry.hex);
+    document.getElementById('nip05-npub').value = npub;
+    document.getElementById('nip05-hex').value = entry.hex;
+    document.getElementById('nip05-relays').value = (entry.relays || []).join('\n');
+    const profile = nip05ProfileCache[entry.hex] || {};
+    document.getElementById('nip05-pic').value = profile.picture || '';
+  } else {
+    document.getElementById('nip05-npub').value = '';
+    document.getElementById('nip05-hex').value = '';
+    document.getElementById('nip05-relays').value = 'wss://relay.primal.net\nwss://relay.damus.io\nwss://relay.nostr.band\nwss://nos.lol\nwss://relay.snort.social';
+    document.getElementById('nip05-pic').value = '';
+  }
+
+  nip05Modal.hidden = false;
+}
+
+function closeNip05Modal() {
+  nip05Modal.hidden = true;
+  nip05Form.reset();
+}
+
+function editNip05(name) {
+  const entry = allNip05Entries.find(e => e.name === name);
+  if (entry) openNip05Modal(entry);
+}
+
+async function deleteNip05(name) {
+  if (!confirm(`Delete NIP-05 entry "${name}@lightningpiggy.com"?`)) return;
+
+  try {
+    await fetch(`/api/nip05/${name}`, { method: 'DELETE' });
+    loadNip05();
+  } catch (err) {
+    alert('Failed to delete: ' + err.message);
+  }
+}
+
+addNip05Btn.addEventListener('click', () => openNip05Modal());
+cancelNip05Btn.addEventListener('click', closeNip05Modal);
+nip05Modal.addEventListener('click', e => {
+  if (e.target === nip05Modal) closeNip05Modal();
+});
+
+nip05Form.addEventListener('submit', async e => {
+  e.preventDefault();
+  const originalName = document.getElementById('nip05-original-name').value;
+  const name = document.getElementById('nip05-name').value.toLowerCase().trim();
+  const hex = document.getElementById('nip05-hex').value;
+  const relaysText = document.getElementById('nip05-relays').value;
+  const relays = relaysText.split('\n').map(r => r.trim()).filter(Boolean);
+
+  if (!hex) {
+    alert('Please enter a valid npub');
+    return;
+  }
+
+  try {
+    if (originalName) {
+      // Update existing
+      await fetch(`/api/nip05/${originalName}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, hex, relays }),
+      });
+    } else {
+      // Create new
+      await fetch('/api/nip05', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, hex, relays }),
+      });
+    }
+    closeNip05Modal();
+    loadNip05();
+  } catch (err) {
+    alert('Failed to save: ' + err.message);
+  }
+});
+
+nip05Search.addEventListener('input', () => {
+  const query = nip05Search.value.toLowerCase();
+  const filtered = allNip05Entries.filter(e =>
+    e.name.toLowerCase().includes(query) ||
+    e.hex.toLowerCase().includes(query)
+  );
+  renderNip05(filtered);
+});
+
+// Auto-calculate hex and fetch profile pic from npub for NIP-05
+document.getElementById('nip05-npub').addEventListener('input', async e => {
+  const npub = e.target.value.trim();
+  const hexField = document.getElementById('nip05-hex');
+  const picField = document.getElementById('nip05-pic');
+  const hex = npubToHex(npub);
+  hexField.value = hex;
+
+  if (hex) {
+    picField.value = 'Loading...';
+    try {
+      const resp = await fetch(`/api/nostr/profile/${hex}`);
+      const profile = await resp.json();
+      picField.value = profile.picture || '';
+      nip05ProfileCache[hex] = profile;
+    } catch (err) {
+      picField.value = '';
+    }
+  } else {
+    picField.value = '';
+  }
+});
+
+// Copy hex to clipboard for NIP-05
+document.getElementById('copy-nip05-hex-btn').addEventListener('click', async () => {
+  const hexField = document.getElementById('nip05-hex');
+  const copyBtn = document.getElementById('copy-nip05-hex-btn');
+  if (!hexField.value) return;
+
+  try {
+    await navigator.clipboard.writeText(hexField.value);
+    copyBtn.textContent = '✓';
+    copyBtn.classList.add('copied');
+    setTimeout(() => {
+      copyBtn.textContent = '📋';
+      copyBtn.classList.remove('copied');
+    }, 1500);
+  } catch (err) {
+    hexField.select();
+    document.execCommand('copy');
+  }
+});
+
+// Load NIP-05 entries when tab is clicked
+document.querySelector('[data-tab="nip05"]').addEventListener('click', loadNip05);
+
+// --- Testimonials ---
+const testimonialsList = document.getElementById('testimonials-list');
+const testimonialModal = document.getElementById('testimonial-modal');
+const testimonialForm = document.getElementById('testimonial-form');
+const testimonialModalTitle = document.getElementById('testimonial-modal-title');
+const addTestimonialBtn = document.getElementById('add-testimonial-btn');
+const cancelTestimonialBtn = document.getElementById('cancel-testimonial-btn');
+const testimonialsSearch = document.getElementById('testimonials-search');
+const syncTestimonialsBtn = document.getElementById('sync-testimonials-btn');
+const testimonialsSyncResult = document.getElementById('testimonials-sync-result');
+
+let allTestimonials = [];
+
+// Platform icons for testimonials
+const PLATFORM_ICONS = {
+  nostr: ICONS.nostr,
+  x: ICONS.x,
+  telegram: `<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>`,
+  youtube: `<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>`,
+  other: ICONS.web
+};
+
+async function loadTestimonials() {
+  try {
+    const resp = await fetch('/api/testimonials');
+    allTestimonials = await resp.json();
+    renderTestimonials(allTestimonials);
+  } catch (err) {
+    testimonialsList.innerHTML = `<p class="error">Failed to load testimonials: ${err.message}</p>`;
+  }
+}
+
+function renderTestimonialCard(t, index, sectionArr) {
+  const platformIcon = PLATFORM_ICONS[t.sourcePlatform] || PLATFORM_ICONS.other;
+  const truncatedQuote = t.quote.length > 100 ? t.quote.substring(0, 100) + '...' : t.quote;
+  const isFirst = index === 0;
+  const isLast = index === sectionArr.length - 1;
+
+  return `
+    <div class="credit-card" data-id="${t.id}">
+      <div class="credit-avatar">
+        ${t.profilePic
+          ? `<img src="${t.profilePic}" alt="${t.name}" onerror="this.style.display='none'">`
+          : `<span>${(t.name || '?')[0].toUpperCase()}</span>`
+        }
+      </div>
+      <div class="credit-info">
+        <div class="credit-name">${t.name || 'Anonymous'}</div>
+        <div class="credit-role testimonial-quote">"${truncatedQuote}"</div>
+        <div class="credit-links">
+          <a href="${t.sourceUrl}" target="_blank" title="View on ${t.sourcePlatform}" class="social-icon">${platformIcon}</a>
+          ${!t.showOnWebsite ? '<span class="status-badge hidden">Hidden</span>' : ''}
+        </div>
+      </div>
+      <div class="credit-actions">
+        <button class="btn-move move-testimonial-up" title="Move up" ${isFirst ? 'disabled' : ''}>▲</button>
+        <button class="btn-move move-testimonial-down" title="Move down" ${isLast ? 'disabled' : ''}>▼</button>
+        <button class="btn-icon edit-testimonial" title="Edit">✏️</button>
+        <button class="btn-icon delete-testimonial" title="Delete">🗑️</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderTestimonials(testimonials) {
+  if (testimonials.length === 0) {
+    testimonialsList.innerHTML = '<p class="empty">No testimonials yet. Click "Add Testimonial" to create one.</p>';
+    return;
+  }
+
+  const visible = testimonials.filter(t => t.showOnWebsite);
+  const hidden = testimonials.filter(t => !t.showOnWebsite);
+
+  let html = '';
+
+  if (visible.length > 0) {
+    html += `
+      <div class="credits-section">
+        <h3 class="credits-section-title">Visible on Website <span class="credits-section-count">(${visible.length})</span></h3>
+        <div class="credits-section-list">${visible.map((t, i, arr) => renderTestimonialCard(t, i, arr)).join('')}</div>
+      </div>
+    `;
+  }
+
+  if (hidden.length > 0) {
+    html += `
+      <div class="credits-section">
+        <h3 class="credits-section-title">Hidden <span class="credits-section-count">(${hidden.length})</span></h3>
+        <div class="credits-section-list">${hidden.map((t, i, arr) => renderTestimonialCard(t, i, arr)).join('')}</div>
+      </div>
+    `;
+  }
+
+  testimonialsList.innerHTML = html;
+
+  // Attach event listeners
+  testimonialsList.querySelectorAll('.edit-testimonial').forEach(btn => {
+    btn.addEventListener('click', () => editTestimonial(btn.closest('.credit-card').dataset.id));
+  });
+  testimonialsList.querySelectorAll('.delete-testimonial').forEach(btn => {
+    btn.addEventListener('click', () => deleteTestimonial(btn.closest('.credit-card').dataset.id));
+  });
+  testimonialsList.querySelectorAll('.move-testimonial-up').forEach(btn => {
+    btn.addEventListener('click', () => moveTestimonial(btn.closest('.credit-card').dataset.id, 'up'));
+  });
+  testimonialsList.querySelectorAll('.move-testimonial-down').forEach(btn => {
+    btn.addEventListener('click', () => moveTestimonial(btn.closest('.credit-card').dataset.id, 'down'));
+  });
+}
+
+function openTestimonialModal(testimonial = null) {
+  testimonialModalTitle.textContent = testimonial ? 'Edit Testimonial' : 'Add Testimonial';
+  document.getElementById('testimonial-id').value = testimonial?.id || '';
+  document.getElementById('testimonial-name').value = testimonial?.name || '';
+  document.getElementById('testimonial-nostr-npub').value = testimonial?.nostrNpub || '';
+  document.getElementById('testimonial-profile-pic').value = testimonial?.profilePic || '';
+  document.getElementById('testimonial-quote').value = testimonial?.quote || '';
+  document.getElementById('testimonial-source-platform').value = testimonial?.sourcePlatform || '';
+  document.getElementById('testimonial-source-url').value = testimonial?.sourceUrl || '';
+  document.getElementById('testimonial-show-on-website').checked = testimonial?.showOnWebsite !== false;
+
+  // Reset profile pic source to URL mode
+  document.querySelector('input[name="profile-pic-source"][value="url"]').checked = true;
+  document.getElementById('testimonial-profile-pic').style.display = 'block';
+  document.getElementById('testimonial-profile-upload').style.display = 'none';
+  document.getElementById('testimonial-profile-upload').value = '';
+
+  // Show preview if there's a profile pic URL
+  const preview = document.getElementById('testimonial-pic-preview');
+  if (testimonial?.profilePic) {
+    preview.src = testimonial.profilePic;
+    preview.style.display = 'block';
+  } else {
+    preview.style.display = 'none';
+  }
+
+  testimonialModal.hidden = false;
+}
+
+function closeTestimonialModal() {
+  testimonialModal.hidden = true;
+  testimonialForm.reset();
+}
+
+function editTestimonial(id) {
+  const testimonial = allTestimonials.find(t => t.id === id);
+  if (testimonial) openTestimonialModal(testimonial);
+}
+
+async function deleteTestimonial(id) {
+  const testimonial = allTestimonials.find(t => t.id === id);
+  if (!confirm(`Delete testimonial from "${testimonial?.name || 'Anonymous'}"?`)) return;
+
+  try {
+    await fetch(`/api/testimonials/${id}`, { method: 'DELETE' });
+    loadTestimonials();
+  } catch (err) {
+    alert('Failed to delete: ' + err.message);
+  }
+}
+
+async function moveTestimonial(id, direction) {
+  const testimonial = allTestimonials.find(t => t.id === id);
+  if (!testimonial) return;
+
+  // Group by showOnWebsite (visible vs hidden)
+  const section = testimonial.showOnWebsite ? 'visible' : 'hidden';
+  const sectionTestimonials = allTestimonials.filter(t =>
+    section === 'visible' ? t.showOnWebsite : !t.showOnWebsite
+  );
+
+  const indexInSection = sectionTestimonials.findIndex(t => t.id === id);
+  if (direction === 'up' && indexInSection <= 0) return;
+  if (direction === 'down' && indexInSection >= sectionTestimonials.length - 1) return;
+
+  const swapIndex = direction === 'up' ? indexInSection - 1 : indexInSection + 1;
+  [sectionTestimonials[indexInSection], sectionTestimonials[swapIndex]] =
+    [sectionTestimonials[swapIndex], sectionTestimonials[indexInSection]];
+
+  // Rebuild full array: visible first, then hidden
+  const reordered = [];
+  if (section === 'visible') {
+    reordered.push(...sectionTestimonials);
+    reordered.push(...allTestimonials.filter(t => !t.showOnWebsite));
+  } else {
+    reordered.push(...allTestimonials.filter(t => t.showOnWebsite));
+    reordered.push(...sectionTestimonials);
+  }
+
+  const ids = reordered.map(t => t.id);
+
+  try {
+    const resp = await fetch('/api/testimonials/reorder', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ids }),
+    });
+    const result = await resp.json();
+    if (result.success) {
+      allTestimonials = reordered;
+      const query = testimonialsSearch.value.toLowerCase();
+      if (query) {
+        const filtered = allTestimonials.filter(t =>
+          (t.name || '').toLowerCase().includes(query) ||
+          (t.quote || '').toLowerCase().includes(query)
+        );
+        renderTestimonials(filtered);
+      } else {
+        renderTestimonials(allTestimonials);
+      }
+    }
+  } catch (err) {
+    alert('Failed to reorder: ' + err.message);
+  }
+}
+
+addTestimonialBtn.addEventListener('click', () => openTestimonialModal());
+cancelTestimonialBtn.addEventListener('click', closeTestimonialModal);
+testimonialModal.addEventListener('click', e => {
+  if (e.target === testimonialModal) closeTestimonialModal();
+});
+
+testimonialForm.addEventListener('submit', async e => {
+  e.preventDefault();
+  const id = document.getElementById('testimonial-id').value;
+  const isUpload = document.querySelector('input[name="profile-pic-source"]:checked')?.value === 'upload';
+  const uploadFile = document.getElementById('testimonial-profile-upload').files[0];
+
+  let profilePicUrl = document.getElementById('testimonial-profile-pic').value;
+
+  // If uploading a file, upload it first to get the URL
+  if (isUpload && uploadFile) {
+    try {
+      const formData = new FormData();
+      formData.append('profilePic', uploadFile);
+      if (id) formData.append('testimonialId', id);
+
+      const uploadResp = await fetch('/api/testimonials/upload-profile', {
+        method: 'POST',
+        body: formData,
+      });
+      const uploadData = await uploadResp.json();
+
+      if (!uploadResp.ok || !uploadData.success) {
+        throw new Error(uploadData.error || 'Upload failed');
+      }
+      profilePicUrl = uploadData.profilePic;
+    } catch (err) {
+      alert('Failed to upload profile picture: ' + err.message);
+      return;
+    }
+  }
+
+  const data = {
+    name: document.getElementById('testimonial-name').value,
+    nostrNpub: document.getElementById('testimonial-nostr-npub').value,
+    profilePic: profilePicUrl,
+    quote: document.getElementById('testimonial-quote').value,
+    sourcePlatform: document.getElementById('testimonial-source-platform').value,
+    sourceUrl: document.getElementById('testimonial-source-url').value,
+    showOnWebsite: document.getElementById('testimonial-show-on-website').checked,
+  };
+
+  try {
+    if (id) {
+      await fetch(`/api/testimonials/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+    } else {
+      await fetch('/api/testimonials', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+    }
+    closeTestimonialModal();
+    loadTestimonials();
+  } catch (err) {
+    alert('Failed to save: ' + err.message);
+  }
+});
+
+testimonialsSearch.addEventListener('input', () => {
+  const query = testimonialsSearch.value.toLowerCase();
+  const filtered = allTestimonials.filter(t =>
+    (t.name || '').toLowerCase().includes(query) ||
+    (t.quote || '').toLowerCase().includes(query)
+  );
+  renderTestimonials(filtered);
+});
+
+// Sync testimonials to website
+syncTestimonialsBtn.addEventListener('click', async () => {
+  syncTestimonialsBtn.disabled = true;
+  syncTestimonialsBtn.textContent = 'Syncing...';
+
+  try {
+    const resp = await fetch('/api/testimonials/sync', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    const data = await resp.json();
+
+    if (data.success) {
+      testimonialsSyncResult.className = 'result success';
+      testimonialsSyncResult.innerHTML = `Synced to <strong>${data.path}</strong>: ${data.exported} testimonials`;
+    } else {
+      testimonialsSyncResult.className = 'result error';
+      testimonialsSyncResult.textContent = data.error;
+    }
+  } catch (err) {
+    testimonialsSyncResult.className = 'result error';
+    testimonialsSyncResult.textContent = err.message;
+  }
+
+  testimonialsSyncResult.hidden = false;
+  syncTestimonialsBtn.disabled = false;
+  syncTestimonialsBtn.textContent = 'Sync to Website';
+});
+
+// Load testimonials when tab is clicked
+document.querySelector('[data-tab="testimonials"]').addEventListener('click', loadTestimonials);
+
+// Auto-fetch Nostr profile pic and name for testimonials
+document.getElementById('testimonial-nostr-npub').addEventListener('input', async e => {
+  const npub = e.target.value.trim();
+  const picField = document.getElementById('testimonial-profile-pic');
+  const nameField = document.getElementById('testimonial-name');
+  const hex = npubToHex(npub);
+
+  if (hex) {
+    picField.value = 'Loading...';
+    try {
+      const resp = await fetch(`/api/nostr/profile/${hex}`);
+      const profile = await resp.json();
+      picField.value = profile.picture || '';
+      // Auto-fill name if empty
+      if (!nameField.value && profile.name) {
+        nameField.value = profile.name;
+      }
+    } catch (err) {
+      picField.value = '';
+    }
+  }
+});
+
+// Auto-detect platform and fetch profile pic from source URL
+document.getElementById('testimonial-source-url').addEventListener('input', e => {
+  const url = e.target.value.trim();
+  const platformField = document.getElementById('testimonial-source-platform');
+  const picField = document.getElementById('testimonial-profile-pic');
+
+  // Auto-detect platform from URL
+  if (url.match(/(?:twitter\.com|x\.com)\//i)) {
+    platformField.value = 'x';
+    // Extract username and set profile pic if not already set
+    const username = extractXUsername(url);
+    if (username && !picField.value) {
+      picField.value = `https://unavatar.io/twitter/${username}`;
+    }
+  } else if (url.match(/(?:primal\.net|njump\.me|snort\.social|nostr\.band)/i)) {
+    platformField.value = 'nostr';
+  } else if (url.match(/(?:t\.me|telegram\.)/i)) {
+    platformField.value = 'telegram';
+  } else if (url.match(/(?:youtube\.com|youtu\.be)/i)) {
+    platformField.value = 'youtube';
+  }
+});
+
+// Profile picture source toggle (URL vs Upload)
+const profilePicUrlInput = document.getElementById('testimonial-profile-pic');
+const profilePicUploadInput = document.getElementById('testimonial-profile-upload');
+const profilePicPreview = document.getElementById('testimonial-pic-preview');
+
+document.querySelectorAll('input[name="profile-pic-source"]').forEach(radio => {
+  radio.addEventListener('change', e => {
+    const isUpload = e.target.value === 'upload';
+    profilePicUrlInput.style.display = isUpload ? 'none' : 'block';
+    profilePicUploadInput.style.display = isUpload ? 'block' : 'none';
+    // Clear the non-selected input
+    if (isUpload) {
+      profilePicUrlInput.value = '';
+    } else {
+      profilePicUploadInput.value = '';
+      profilePicPreview.style.display = 'none';
+    }
+  });
+});
+
+// Handle file selection - show preview
+profilePicUploadInput.addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      profilePicPreview.src = ev.target.result;
+      profilePicPreview.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+  } else {
+    profilePicPreview.style.display = 'none';
+  }
+});
+
+// Also show preview for URL input
+profilePicUrlInput.addEventListener('input', e => {
+  const url = e.target.value.trim();
+  if (url && url.startsWith('http')) {
+    profilePicPreview.src = url;
+    profilePicPreview.style.display = 'block';
+  } else {
+    profilePicPreview.style.display = 'none';
+  }
+});
+
+// --- Vendors / Market ---
+
+const vendorsList = document.getElementById('vendors-list');
+const vendorModal = document.getElementById('vendor-modal');
+const vendorForm = document.getElementById('vendor-form');
+const vendorModalTitle = document.getElementById('vendor-modal-title');
+const addVendorBtn = document.getElementById('add-vendor-btn');
+const cancelVendorBtn = document.getElementById('cancel-vendor-btn');
+const vendorsSearch = document.getElementById('vendors-search');
+const syncVendorsBtn = document.getElementById('sync-vendors-btn');
+const vendorsSyncResult = document.getElementById('vendors-sync-result');
+
+let allVendors = [];
+let pendingVendorLogoFile = null;
+
+const SHOP_TYPE_LABELS = {
+  online: '🌐 Online',
+  physical: '🏪 Physical',
+  both: '🌐🏪 Online & Physical',
+};
+
+async function loadVendors() {
+  try {
+    const resp = await fetch('/api/vendors');
+    allVendors = await resp.json();
+    renderVendors(allVendors);
+  } catch (err) {
+    vendorsList.innerHTML = `<p class="error">Failed to load vendors: ${err.message}</p>`;
+  }
+}
+
+function renderVendorCard(v, index, sectionArr) {
+  const isFirst = index === 0;
+  const isLast = index === sectionArr.length - 1;
+  const logo = v.logoUrl || v.nostrProfilePic || v.xProfilePic;
+  const shipping = (v.shippingRegions || []).join(', ') || 'Not specified';
+  const shopLabel = SHOP_TYPE_LABELS[v.shopType] || SHOP_TYPE_LABELS.online;
+
+  return `
+    <div class="credit-card" data-id="${v.id}">
+      <div class="credit-avatar">
+        ${logo
+          ? `<img src="${logo}" alt="${v.name}" onerror="this.style.display='none'">`
+          : `<span>${(v.name || '?')[0].toUpperCase()}</span>`
+        }
+      </div>
+      <div class="credit-info">
+        <div class="credit-name">${v.name || 'Unnamed'} <span class="vendor-shop-type">${shopLabel}</span></div>
+        <div class="credit-role">${v.country || ''}${v.country && shipping !== 'Not specified' ? ' · Ships to ' + shipping : ''}</div>
+        <div class="credit-role">${v.description || ''}</div>
+        <div class="credit-links">
+          ${v.nostrNpub ? `<a href="https://njump.me/${v.nostrNpub}" target="_blank" title="Nostr" class="social-icon">${ICONS.nostr}</a>` : ''}
+          ${v.xProfileUrl ? `<a href="${v.xProfileUrl}" target="_blank" title="X" class="social-icon">${ICONS.x}</a>` : ''}
+          ${v.websiteUrl ? `<a href="${v.websiteUrl}" target="_blank" title="Website" class="social-icon">${ICONS.web}</a>` : ''}
+          ${!v.showOnWebsite ? '<span class="status-badge hidden">Hidden</span>' : ''}
+        </div>
+      </div>
+      <div class="credit-actions">
+        <button class="btn-move move-vendor-up" title="Move up" ${isFirst ? 'disabled' : ''}>▲</button>
+        <button class="btn-move move-vendor-down" title="Move down" ${isLast ? 'disabled' : ''}>▼</button>
+        <button class="btn-icon edit-vendor" title="Edit">✏️</button>
+        <button class="btn-icon delete-vendor" title="Delete">🗑️</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderVendors(vendors) {
+  if (vendors.length === 0) {
+    vendorsList.innerHTML = '<p class="empty">No vendors yet. Click "Add Vendor" to create one.</p>';
+    return;
+  }
+
+  const visible = vendors.filter(v => v.showOnWebsite);
+  const hidden = vendors.filter(v => !v.showOnWebsite);
+
+  let html = '';
+
+  if (visible.length > 0) {
+    html += `
+      <div class="credits-section">
+        <h3 class="credits-section-title">Visible on Website <span class="credits-section-count">(${visible.length})</span></h3>
+        <div class="credits-section-list">${visible.map((v, i, arr) => renderVendorCard(v, i, arr)).join('')}</div>
+      </div>
+    `;
+  }
+
+  if (hidden.length > 0) {
+    html += `
+      <div class="credits-section">
+        <h3 class="credits-section-title">Hidden <span class="credits-section-count">(${hidden.length})</span></h3>
+        <div class="credits-section-list">${hidden.map((v, i, arr) => renderVendorCard(v, i, arr)).join('')}</div>
+      </div>
+    `;
+  }
+
+  vendorsList.innerHTML = html;
+
+  vendorsList.querySelectorAll('.edit-vendor').forEach(btn => {
+    btn.addEventListener('click', () => editVendor(btn.closest('.credit-card').dataset.id));
+  });
+  vendorsList.querySelectorAll('.delete-vendor').forEach(btn => {
+    btn.addEventListener('click', () => deleteVendor(btn.closest('.credit-card').dataset.id));
+  });
+  vendorsList.querySelectorAll('.move-vendor-up').forEach(btn => {
+    btn.addEventListener('click', () => moveVendor(btn.closest('.credit-card').dataset.id, 'up'));
+  });
+  vendorsList.querySelectorAll('.move-vendor-down').forEach(btn => {
+    btn.addEventListener('click', () => moveVendor(btn.closest('.credit-card').dataset.id, 'down'));
+  });
+}
+
+function openVendorModal(vendor = null) {
+  vendorModalTitle.textContent = vendor ? 'Edit Vendor' : 'Add Vendor';
+  document.getElementById('vendor-id').value = vendor?.id || '';
+  document.getElementById('vendor-name').value = vendor?.name || '';
+  document.getElementById('vendor-country').value = vendor?.country || '';
+  document.getElementById('vendor-shop-type').value = vendor?.shopType || 'online';
+  document.getElementById('vendor-description').value = vendor?.description || '';
+  document.getElementById('vendor-website-url').value = vendor?.websiteUrl || '';
+  document.getElementById('vendor-logo-url').value = vendor?.logoUrl || '';
+  document.getElementById('vendor-nostr-npub').value = vendor?.nostrNpub || '';
+  document.getElementById('vendor-nostr-pic').value = vendor?.nostrProfilePic || '';
+  document.getElementById('vendor-x-url').value = vendor?.xProfileUrl || '';
+  if (vendor?.xProfilePic) {
+    document.getElementById('vendor-x-pic').value = vendor.xProfilePic;
+  } else if (vendor?.xProfileUrl) {
+    const username = extractXUsername(vendor.xProfileUrl);
+    document.getElementById('vendor-x-pic').value = username ? `https://unavatar.io/twitter/${username}` : '';
+  } else {
+    document.getElementById('vendor-x-pic').value = '';
+  }
+  document.getElementById('vendor-show-on-website').checked = vendor?.showOnWebsite !== false;
+
+  // Set shipping region checkboxes
+  const regions = vendor?.shippingRegions || [];
+  document.querySelectorAll('#vendor-form input[name="shipping-region"]').forEach(cb => {
+    cb.checked = regions.includes(cb.value);
+  });
+
+  // Reset logo upload state
+  pendingVendorLogoFile = null;
+  document.getElementById('vendor-logo-file').value = '';
+  const vLogoPreview = document.getElementById('vendor-logo-preview');
+  const vLogoPreviewImg = document.getElementById('vendor-logo-preview-img');
+  if (vendor?.logoUrl) {
+    vLogoPreviewImg.src = vendor.logoUrl;
+    vLogoPreview.hidden = false;
+  } else {
+    vLogoPreview.hidden = true;
+  }
+
+  vendorModal.hidden = false;
+}
+
+function closeVendorModal() {
+  vendorModal.hidden = true;
+  vendorForm.reset();
+  pendingVendorLogoFile = null;
+  document.getElementById('vendor-logo-preview').hidden = true;
+}
+
+function editVendor(id) {
+  const vendor = allVendors.find(v => v.id === id);
+  if (vendor) openVendorModal(vendor);
+}
+
+async function deleteVendor(id) {
+  const vendor = allVendors.find(v => v.id === id);
+  if (!confirm(`Delete vendor "${vendor?.name || 'Unnamed'}"?`)) return;
+
+  try {
+    await fetch(`/api/vendors/${id}`, { method: 'DELETE' });
+    loadVendors();
+  } catch (err) {
+    alert('Failed to delete: ' + err.message);
+  }
+}
+
+async function moveVendor(id, direction) {
+  const vendor = allVendors.find(v => v.id === id);
+  if (!vendor) return;
+
+  const section = vendor.showOnWebsite ? 'visible' : 'hidden';
+  const sectionVendors = allVendors.filter(v =>
+    section === 'visible' ? v.showOnWebsite : !v.showOnWebsite
+  );
+
+  const indexInSection = sectionVendors.findIndex(v => v.id === id);
+  if (direction === 'up' && indexInSection <= 0) return;
+  if (direction === 'down' && indexInSection >= sectionVendors.length - 1) return;
+
+  const swapIndex = direction === 'up' ? indexInSection - 1 : indexInSection + 1;
+  [sectionVendors[indexInSection], sectionVendors[swapIndex]] =
+    [sectionVendors[swapIndex], sectionVendors[indexInSection]];
+
+  const reordered = [];
+  if (section === 'visible') {
+    reordered.push(...sectionVendors);
+    reordered.push(...allVendors.filter(v => !v.showOnWebsite));
+  } else {
+    reordered.push(...allVendors.filter(v => v.showOnWebsite));
+    reordered.push(...sectionVendors);
+  }
+
+  const ids = reordered.map(v => v.id);
+
+  try {
+    const resp = await fetch('/api/vendors/reorder', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ids }),
+    });
+    const result = await resp.json();
+    if (result.success) {
+      allVendors = reordered;
+      const query = vendorsSearch.value.toLowerCase();
+      if (query) {
+        const filtered = allVendors.filter(v =>
+          (v.name || '').toLowerCase().includes(query) ||
+          (v.description || '').toLowerCase().includes(query) ||
+          (v.country || '').toLowerCase().includes(query)
+        );
+        renderVendors(filtered);
+      } else {
+        renderVendors(allVendors);
+      }
+    }
+  } catch (err) {
+    alert('Failed to reorder: ' + err.message);
+  }
+}
+
+addVendorBtn.addEventListener('click', () => openVendorModal());
+cancelVendorBtn.addEventListener('click', closeVendorModal);
+vendorModal.addEventListener('click', e => {
+  if (e.target === vendorModal) closeVendorModal();
+});
+
+vendorForm.addEventListener('submit', async e => {
+  e.preventDefault();
+  const id = document.getElementById('vendor-id').value;
+  let logoUrl = document.getElementById('vendor-logo-url').value;
+
+  // Upload logo if a file is pending
+  if (pendingVendorLogoFile) {
+    const formData = new FormData();
+    formData.append('logo', pendingVendorLogoFile);
+    formData.append('name', document.getElementById('vendor-name').value);
+
+    try {
+      const uploadResp = await fetch('/api/vendors/logo', { method: 'POST', body: formData });
+      const uploadData = await uploadResp.json();
+      if (uploadData.success) {
+        logoUrl = uploadData.path;
+      } else {
+        alert('Failed to upload logo: ' + uploadData.error);
+        return;
+      }
+    } catch (err) {
+      alert('Failed to upload logo: ' + err.message);
+      return;
+    }
+  }
+
+  // Collect shipping regions from checkboxes
+  const shippingRegions = [];
+  document.querySelectorAll('#vendor-form input[name="shipping-region"]:checked').forEach(cb => {
+    shippingRegions.push(cb.value);
+  });
+
+  const data = {
+    name: document.getElementById('vendor-name').value,
+    country: document.getElementById('vendor-country').value,
+    shippingRegions,
+    shopType: document.getElementById('vendor-shop-type').value,
+    description: document.getElementById('vendor-description').value,
+    websiteUrl: document.getElementById('vendor-website-url').value,
+    logoUrl: logoUrl,
+    nostrNpub: document.getElementById('vendor-nostr-npub').value,
+    nostrProfilePic: document.getElementById('vendor-nostr-pic').value,
+    xProfileUrl: document.getElementById('vendor-x-url').value,
+    xProfilePic: document.getElementById('vendor-x-pic').value,
+    showOnWebsite: document.getElementById('vendor-show-on-website').checked,
+  };
+
+  try {
+    if (id) {
+      await fetch(`/api/vendors/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+    } else {
+      await fetch('/api/vendors', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+    }
+    closeVendorModal();
+    loadVendors();
+  } catch (err) {
+    alert('Failed to save: ' + err.message);
+  }
+});
+
+vendorsSearch.addEventListener('input', () => {
+  const query = vendorsSearch.value.toLowerCase();
+  const filtered = allVendors.filter(v =>
+    (v.name || '').toLowerCase().includes(query) ||
+    (v.description || '').toLowerCase().includes(query) ||
+    (v.country || '').toLowerCase().includes(query)
+  );
+  renderVendors(filtered);
+});
+
+// Vendor logo upload handling
+const vendorLogoFileInput = document.getElementById('vendor-logo-file');
+const vendorLogoUploadBtn = document.getElementById('vendor-logo-upload-btn');
+const vendorLogoPreview = document.getElementById('vendor-logo-preview');
+const vendorLogoPreviewImg = document.getElementById('vendor-logo-preview-img');
+const vendorLogoClearBtn = document.getElementById('vendor-logo-clear');
+const vendorLogoUrlInput = document.getElementById('vendor-logo-url');
+
+vendorLogoUploadBtn.addEventListener('click', () => vendorLogoFileInput.click());
+
+vendorLogoFileInput.addEventListener('change', () => {
+  if (vendorLogoFileInput.files[0]) {
+    pendingVendorLogoFile = vendorLogoFileInput.files[0];
+    const url = URL.createObjectURL(pendingVendorLogoFile);
+    vendorLogoPreviewImg.src = url;
+    vendorLogoPreview.hidden = false;
+    vendorLogoUrlInput.value = '';
+  }
+});
+
+vendorLogoClearBtn.addEventListener('click', () => {
+  pendingVendorLogoFile = null;
+  vendorLogoFileInput.value = '';
+  vendorLogoPreview.hidden = true;
+  vendorLogoUrlInput.value = '';
+});
+
+vendorLogoUrlInput.addEventListener('input', () => {
+  const url = vendorLogoUrlInput.value.trim();
+  if (url) {
+    vendorLogoPreviewImg.src = url;
+    vendorLogoPreview.hidden = false;
+    pendingVendorLogoFile = null;
+    vendorLogoFileInput.value = '';
+  } else if (!pendingVendorLogoFile) {
+    vendorLogoPreview.hidden = true;
+  }
+});
+
+// Sync vendors to website
+syncVendorsBtn.addEventListener('click', async () => {
+  syncVendorsBtn.disabled = true;
+  syncVendorsBtn.textContent = 'Syncing...';
+
+  try {
+    const resp = await fetch('/api/vendors/sync', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    const data = await resp.json();
+
+    if (data.success) {
+      vendorsSyncResult.className = 'result success';
+      vendorsSyncResult.innerHTML = `Synced to <strong>${data.path}</strong>: ${data.exported} vendors`;
+    } else {
+      vendorsSyncResult.className = 'result error';
+      vendorsSyncResult.textContent = data.error;
+    }
+  } catch (err) {
+    vendorsSyncResult.className = 'result error';
+    vendorsSyncResult.textContent = err.message;
+  }
+
+  vendorsSyncResult.hidden = false;
+  syncVendorsBtn.disabled = false;
+  syncVendorsBtn.textContent = 'Sync to Website';
+});
+
+// Load vendors when tab is clicked
+document.querySelector('[data-tab="vendors"]').addEventListener('click', loadVendors);
+
+// Auto-populate X profile picture from X URL for vendors
+document.getElementById('vendor-x-url').addEventListener('input', e => {
+  const url = e.target.value.trim();
+  const picField = document.getElementById('vendor-x-pic');
+  const username = extractXUsername(url);
+
+  if (username) {
+    picField.value = `https://unavatar.io/twitter/${username}`;
+  } else {
+    picField.value = '';
+  }
+});
+
+// Auto-fetch Nostr profile pic for vendors
+document.getElementById('vendor-nostr-npub').addEventListener('input', async e => {
+  const npub = e.target.value.trim();
+  const picField = document.getElementById('vendor-nostr-pic');
+  const hex = npubToHex(npub);
+
+  if (hex) {
+    picField.value = 'Loading...';
+    try {
+      const resp = await fetch(`/api/nostr/profile/${hex}`);
+      const profile = await resp.json();
+      picField.value = profile.picture || '';
+    } catch (err) {
+      picField.value = '';
+    }
+  } else {
+    picField.value = '';
+  }
+});

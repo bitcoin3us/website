@@ -6,8 +6,11 @@ import path from 'node:path';
 const wildDir = path.join(process.cwd(), 'public/images/wild');
 const images = fs.readdirSync(wildDir)
   .filter((f: string) => /\.(jpe?g|png|webp|gif)$/i.test(f))
-  .sort()
-  .reverse()
+  .sort((a: string, b: string) => {
+    const statA = fs.statSync(path.join(wildDir, a));
+    const statB = fs.statSync(path.join(wildDir, b));
+    return statB.mtimeMs - statA.mtimeMs;
+  })
   .map((f: string) => `/images/wild/${f}`);
 ---
 
@@ -24,15 +27,15 @@ const images = fs.readdirSync(wildDir)
       </header>
 
       <!-- Gallery Grid -->
-      <div class="columns-2 sm:columns-3 gap-3 space-y-3">
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
         {images.map((src, i) => (
-          <div class="gallery-item break-inside-avoid">
+          <div class="gallery-item">
             <input type="checkbox" id={`lightbox-${i}`} class="lightbox-toggle hidden" />
             <label for={`lightbox-${i}`} class="cursor-pointer block">
               <img
                 src={src}
                 alt={`LightningPiggy in the wild ${i + 1}`}
-                class="w-full rounded-lg hover:opacity-90 transition-opacity"
+                class="w-full aspect-square object-cover object-center rounded-lg hover:opacity-90 transition-opacity"
                 loading="lazy"
               />
             </label>
