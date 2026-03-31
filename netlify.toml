@@ -23,8 +23,14 @@
     Permissions-Policy = "camera=(), microphone=(), geolocation=()"
 
 [[redirects]]
-  from = "/.well-known/lnurlp/oink"
-  to = "https://lnbits.lightningpiggy.com/.well-known/lnurlp/oink"
+  from = "/.well-known/lnurlp/*"
+  to = "https://lnbits.lightningpiggy.com/.well-known/lnurlp/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/lnurlp/*"
+  to = "https://lnbits.lightningpiggy.com/lnurlp/:splat"
   status = 200
   force = true
 
